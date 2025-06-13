@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import type { StringValue } from 'ms';
 import bcrypt from 'bcryptjs';
 import config from './config';
 
@@ -13,7 +12,7 @@ const refreshTokens = new Set<string>();
  */
 export function signToken(id: string): string {
   return jwt.sign({ id }, config.jwtSecret, {
-    expiresIn: config.expiresIn as StringValue,
+    expiresIn: config.expiresIn,
   });
 }
 
@@ -24,7 +23,7 @@ export function signToken(id: string): string {
  */
 export function signRefreshToken(id: string): string {
   const token = jwt.sign({ id }, config.jwtSecret, {
-    expiresIn: config.refreshExpiresIn as StringValue,
+    expiresIn: config.refreshExpiresIn,
   });
   refreshTokens.add(token);
   return token;

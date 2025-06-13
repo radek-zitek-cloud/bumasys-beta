@@ -20,13 +20,22 @@ const configSchema = z.object({
  * Load and validate configuration using the `config` package.
  */
 function loadConfig() {
-  return configSchema.parse({
-    port: configLib.get<number>('port'),
-    jwtSecret: configLib.get<string>('jwtSecret'),
-    expiresIn: configLib.get<string>('expiresIn'),
-    refreshExpiresIn: configLib.get<string>('refreshExpiresIn'),
-    dbFile: configLib.get<string>('dbFile'),
-  });
+  try {
+    return configSchema.parse({
+      port: configLib.get<number>('port'),
+      jwtSecret: configLib.get<string>('jwtSecret'),
+      expiresIn: configLib.get<string>('expiresIn'),
+      refreshExpiresIn: configLib.get<string>('refreshExpiresIn'),
+      dbFile: configLib.get<string>('dbFile'),
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Failed to load configuration:', error.message);
+    } else {
+      console.error('Failed to load configuration:', error);
+    }
+    process.exit(1); // Exit process with an error code
+  }
 }
 
 /** Parsed configuration object */
