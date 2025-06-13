@@ -45,3 +45,8 @@
 - Display backend readiness in the front-end footer using the health query.
 - Updated README with footer description.
 - Ran pnpm lint, npm run lint and npm test.
+2025-06-13
+- Added authentication menu with two states using Pinia.
+- Created reusable dialog cards for login, registration, password reset, profile, password change and logout.
+- Documented the menu behaviour in README.
+- Ran pnpm lint in `fe` and npm run lint & npm test in `be`.
