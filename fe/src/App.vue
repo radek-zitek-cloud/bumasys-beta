@@ -56,37 +56,43 @@
       </v-main>
 
       <!-- Authentication dialogs positioned under the top-right navbar -->
-      <v-dialog
+      <v-dialog 
+        max-width="400"
         v-model="showLogin"
         persistent
       >
         <LoginCard @cancel="showLogin = false" @login="handleLogin" />
       </v-dialog>
       <v-dialog
+        max-width="400"
         v-model="showRegister"
         persistent
       >
         <RegisterCard @cancel="showRegister = false" @register="handleRegister" />
       </v-dialog>
       <v-dialog
+        max-width="400"
         v-model="showReset"
         persistent
       >
         <PasswordResetCard @cancel="showReset = false" @reset="handleReset" />
       </v-dialog>
       <v-dialog
+        max-width="400"
         v-model="showChange"
         persistent
       >
         <ChangePasswordCard @cancel="showChange = false" @change="handleChange" />
       </v-dialog>
       <v-dialog
+        max-width="400"
         v-model="showLogout"
         persistent
       >
         <LogoutCard @cancel="showLogout = false" @logout="handleLogout" />
       </v-dialog>
       <v-dialog
+        max-width="400"
         v-model="showProfile"
         persistent
       >

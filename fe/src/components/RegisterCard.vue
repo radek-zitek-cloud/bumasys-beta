@@ -1,22 +1,25 @@
 <template>
   <v-card width="400">
-    <v-card-title>Register</v-card-title>
-    <v-card-text>
-      <v-text-field v-model="email" label="Email" type="email" />
-      <v-text-field v-model="password" label="Password" type="password" />
-      <v-text-field
-        v-model="confirm"
-        :error="confirm !== '' && !match"
-        :error-messages="confirm !== '' && !match ? 'Passwords do not match' : ''"
-        label="Confirm Password"
-        type="password"
-      />
-    </v-card-text>
-    <v-card-actions>
-      <v-spacer />
-      <v-btn color="primary" :disabled="!match" @click="onRegister">Register</v-btn>
-      <v-btn @click="$emit('cancel')">Cancel</v-btn>
-    </v-card-actions>
+    <form @submit.prevent="onRegister">
+      <v-card-title>Register</v-card-title>
+      <v-card-text>
+        <v-text-field v-model="email" label="Email" type="email" autocomplete="email" />
+        <v-text-field v-model="password" label="Password" type="password" autocomplete="new-password" />
+        <v-text-field
+          v-model="confirm"
+          :error="confirm !== '' && !match"
+          :error-messages="confirm !== '' && !match ? 'Passwords do not match' : ''"
+          label="Confirm Password"
+          type="password"
+          autocomplete="new-password"
+        />
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn type="submit" color="primary" :disabled="!match">Register</v-btn>
+        <v-btn type="button" @click="$emit('cancel')">Cancel</v-btn>
+      </v-card-actions>
+    </form>
   </v-card>
 </template>
 

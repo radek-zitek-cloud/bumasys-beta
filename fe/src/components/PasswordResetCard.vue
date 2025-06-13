@@ -1,14 +1,16 @@
 <template>
   <v-card width="400">
-    <v-card-title>Password Reset</v-card-title>
-    <v-card-text>
-      <v-text-field v-model="email" label="Email" type="email" />
-    </v-card-text>
-    <v-card-actions>
-      <v-spacer />
-      <v-btn color="primary" @click="onReset">Reset</v-btn>
-      <v-btn @click="$emit('cancel')">Cancel</v-btn>
-    </v-card-actions>
+    <form @submit.prevent="onReset">
+      <v-card-title>Password Reset</v-card-title>
+      <v-card-text>
+        <v-text-field v-model="email" label="Email" type="email" autocomplete="email" />
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn type="submit" color="primary">Reset</v-btn>
+        <v-btn type="button" @click="$emit('cancel')">Cancel</v-btn>
+      </v-card-actions>
+    </form>
   </v-card>
 </template>
 
