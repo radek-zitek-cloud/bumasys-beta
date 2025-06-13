@@ -11,6 +11,8 @@ import { z } from 'zod';
 const configSchema = z.object({
   port: z.coerce.number().default(4000),
   jwtSecret: z.string().min(1),
+  expiresIn: z.string().default('60m'),
+  refreshExpiresIn: z.string().default('7d'),
   dbFile: z.string().default('../data/db.json'),
 });
 
@@ -21,6 +23,8 @@ function loadConfig() {
   return configSchema.parse({
     port: configLib.get<number>('port'),
     jwtSecret: configLib.get<string>('jwtSecret'),
+    expiresIn: configLib.get<string>('expiresIn'),
+    refreshExpiresIn: configLib.get<string>('refreshExpiresIn'),
     dbFile: configLib.get<string>('dbFile'),
   });
 }

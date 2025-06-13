@@ -11,7 +11,7 @@ const refreshTokens = new Set<string>();
  * @returns Signed JWT
  */
 export function signToken(id: string): string {
-  return jwt.sign({ id }, config.jwtSecret, { expiresIn: '15m' });
+  return jwt.sign({ id }, config.jwtSecret as string, { expiresIn: config.expiresIn as string});
 }
 
 /**
@@ -20,7 +20,7 @@ export function signToken(id: string): string {
  * @returns Signed refresh JWT
  */
 export function signRefreshToken(id: string): string {
-  const token = jwt.sign({ id }, config.jwtSecret, { expiresIn: '7d' });
+  const token = jwt.sign({ id }, config.jwtSecret as string, { expiresIn: config.refreshExpiresIn as string });
   refreshTokens.add(token);
   return token;
 }

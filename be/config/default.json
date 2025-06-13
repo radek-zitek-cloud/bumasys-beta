@@ -1,5 +1,7 @@
 {
   "port": 4000,
-  "jwtSecret": "secret",
+  "jwtSecret": "ThM/VvmMNkqf5UTFQjfokPw+oHzIKhkTiugaCo9Za5exUVoqQr2+76IFJ8FFQF5F9A30XyWE3u2VCxtWUvxxvQ==",
+  "expiresIn": "60m",
+  "refreshExpiresIn": "7d",
   "dbFile": "../data/db.json"
 }
