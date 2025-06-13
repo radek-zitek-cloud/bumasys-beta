@@ -8,8 +8,11 @@
         </template>
         <v-app-bar-title>Fulcrum</v-app-bar-title>
         <template #append>
-          <v-btn :icon="vuetifyTheme.global.current.value.dark ? 'mdi-weather-night' : 'mdi-weather-sunny'" slim
-            @click="toggleTheme" />
+          <v-btn
+            :icon="vuetifyTheme.global.current.value.dark ? 'mdi-weather-night' : 'mdi-weather-sunny'"
+            slim
+            @click="toggleTheme"
+          />
           <v-btn icon="mdi-dots-vertical" />
         </template>
       </v-app-bar>
@@ -20,9 +23,11 @@
             <v-divider v-if="item.separator" />
             <v-list-item
               v-else
+              link
               :prepend-icon="item.icon"
               :subtitle="item.subtitle"
               :title="item.title"
+              :to="item.to"
             />
           </template>
         </v-list>
@@ -38,19 +43,19 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { useTheme } from 'vuetify'
+  import { ref } from 'vue'
+  import { useTheme } from 'vuetify'
 
-/**
- * Reactive state for the navigation drawer.
- */
-const drawer = ref(false)
+  /**
+   * Reactive state for the navigation drawer.
+   */
+  const drawer = ref(false)
 
-/**
- * Access Vuetify's theme instance so we can switch between light and dark
- * modes.
- */
-const vuetifyTheme = useTheme()
+  /**
+   * Access Vuetify's theme instance so we can switch between light and dark
+   * modes.
+   */
+  const vuetifyTheme = useTheme()
 
   /**
    * Toggle between light and dark themes.
@@ -66,12 +71,13 @@ const vuetifyTheme = useTheme()
    * shown as the subtitle. Separators are represented with `separator: true`.
    */
   const navigationItems = [
-    { icon: 'mdi-account-group', title: 'People', subtitle: 'Manage team members' },
-    { icon: 'mdi-account-multiple-outline', title: 'Teams', subtitle: 'Manage teams' },
-    { icon: 'mdi-clipboard-check-outline', title: 'Tasks', subtitle: 'Manage tasks' },
-    { icon: 'mdi-cash-multiple', title: 'Budget', subtitle: 'Manage budget' },
+    { icon: 'mdi-home', title: 'Home', subtitle: 'Return to home page', to: '/' },
+    { icon: 'mdi-account-group', title: 'People', subtitle: 'Manage team members', to: '/people' },
+    { icon: 'mdi-account-multiple-outline', title: 'Teams', subtitle: 'Manage teams', to: '/teams' },
+    { icon: 'mdi-clipboard-check-outline', title: 'Tasks', subtitle: 'Manage tasks', to: '/tasks' },
+    { icon: 'mdi-cash-multiple', title: 'Budget', subtitle: 'Manage budget', to: '/budget' },
     { separator: true },
-    { icon: 'mdi-book-open-page-variant-outline', title: 'References', subtitle: 'Manage reference data' },
-    { icon: 'mdi-account-cog-outline', title: 'Users', subtitle: 'Manage system users' },
+    { icon: 'mdi-book-open-page-variant-outline', title: 'References', subtitle: 'Manage reference data', to: '/references' },
+    { icon: 'mdi-account-cog-outline', title: 'Users', subtitle: 'Manage system users', to: '/users' },
   ]
 </script>
