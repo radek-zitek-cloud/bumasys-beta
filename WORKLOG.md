@@ -38,3 +38,8 @@
 - Added health GraphQL query and resolver returning readiness state.
 - Documented usage in README and added health tests.
 - Ran npm install, lint and tests.
+2025-06-13
+- Configured Vite dev server proxy to backend GraphQL on port 4000.
+- Updated README with proxy note.
+- Ran pnpm install, lint, and npm install, lint, test.
+

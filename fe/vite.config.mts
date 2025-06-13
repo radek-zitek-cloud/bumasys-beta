@@ -84,6 +84,13 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    proxy: {
+      // Proxy API requests during development to the backend GraphQL server
+      '/graphql': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+      },
+    },
   },
   css: {
     preprocessorOptions: {
