@@ -1,14 +1,21 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
-let dbPath;
-let data;
+export interface Database {
+  data: {
+    users: Array<{ id: string; email: string; password: string }>;
+  };
+  write(): Promise<void>;
+}
+
+let dbPath: string;
+let data: Database['data'];
 
 /**
  * Initialize database with given file.
- * @param {string} file - JSON file path.
+ * @param file - JSON file path
  */
-async function createDb(file) {
+export async function createDb(file: string): Promise<Database> {
   dbPath = path.resolve(file);
   if (!fs.existsSync(dbPath)) {
     fs.writeFileSync(dbPath, JSON.stringify({ users: [] }, null, 2));
@@ -22,7 +29,5 @@ async function createDb(file) {
     async write() {
       fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
     },
-  };
+  } as Database;
 }
-
-module.exports = createDb;

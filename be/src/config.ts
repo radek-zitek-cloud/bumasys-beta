@@ -1,7 +1,8 @@
-const fs = require('fs');
-const path = require('path');
-const { z } = require('zod');
+import fs from 'fs';
+import path from 'path';
+import { z } from 'zod';
 
+/** Configuration schema */
 const configSchema = z.object({
   port: z.number().default(4000),
   jwtSecret: z.string().min(1),
@@ -17,4 +18,6 @@ function loadConfig() {
   return configSchema.parse(JSON.parse(raw));
 }
 
-module.exports = loadConfig();
+/** Parsed configuration object */
+const config = loadConfig();
+export default config;
