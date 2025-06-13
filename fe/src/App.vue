@@ -242,8 +242,25 @@
     }
   }
 
-  /** Close the profile dialog after saving. */
-  function handleProfile () {
-    showProfile.value = false
+  /**
+   * Save the user's profile changes via the GraphQL API and close the dialog.
+   */
+  async function handleProfile (payload: { firstName: string, lastName: string, note: string }) {
+    if (!auth.user) return
+    try {
+      const { updateUser } = await authApi.updateUser(
+        auth.user.id,
+        payload.firstName,
+        payload.lastName,
+        payload.note,
+      )
+      auth.user = updateUser
+      notify('Profile updated')
+    } catch (error) {
+      console.error(error)
+      notify((error as Error).message, false)
+    } finally {
+      showProfile.value = false
+    }
   }
 </script>
