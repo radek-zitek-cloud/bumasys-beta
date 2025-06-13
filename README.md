@@ -65,6 +65,14 @@ query {
 }
 ```
 
+To verify the API server is ready, send the health query:
+
+```graphql
+query {
+  health
+}
+```
+
 ## Contributing Guidelines
 1. Fork the repository and create feature branches for your work.
 2. Run `pnpm run lint` in `fe` and `npm run lint` in `be` before opening a pull request.
