@@ -3,7 +3,14 @@ import path from 'path';
 
 export interface Database {
   data: {
-    users: Array<{ id: string; email: string; password: string }>;
+    users: Array<{
+      id: string;
+      email: string;
+      password: string;
+      firstName?: string;
+      lastName?: string;
+      note?: string;
+    }>;
   };
   write(): Promise<void>;
 }
