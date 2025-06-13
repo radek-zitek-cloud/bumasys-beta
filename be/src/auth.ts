@@ -12,7 +12,7 @@ const refreshTokens = new Set<string>();
  */
 export function signToken(id: string): string {
   return jwt.sign({ id }, config.jwtSecret, {
-    expiresIn: config.expiresIn,
+    expiresIn: config.accessTokenExpiresIn,
   });
 }
 
@@ -23,7 +23,7 @@ export function signToken(id: string): string {
  */
 export function signRefreshToken(id: string): string {
   const token = jwt.sign({ id }, config.jwtSecret, {
-    expiresIn: config.refreshExpiresIn,
+    expiresIn: config.refreshTokenExpiresIn,
   });
   refreshTokens.add(token);
   return token;
