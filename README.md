@@ -59,7 +59,7 @@ The back end reads settings using the [`config`](https://www.npmjs.com/package/c
 
 After running the development server, open `http://localhost:3000` in your browser. The navigation drawer links (Home, People, Teams, Tasks, Budget, References, and Users) each lead to a dedicated page that you can further extend. Edit components in `src/` to continue customizing the application.
 
-The app bar contains a triple-dot menu that adapts based on authentication state. When logged out it offers **Login**, **Register**, and **Password Reset** actions. Once logged in the menu switches to **Profile**, **Change Password**, and **Logout**. Authentication dialogs now appear below the navigation bar on the top-right of the page and submit requests to the GraphQL API for all authentication operations. User actions in these dialogs show success or error notifications via snackbars.
+The app bar contains a triple-dot menu that adapts based on authentication state. When logged out it offers **Login**, **Register**, and **Password Reset** actions. Once logged in the menu switches to **Profile**, **Change Password**, and **Logout**. Authentication dialogs now appear below the navigation bar on the top-right of the page and submit requests to the GraphQL API for all authentication operations. User actions in these dialogs show success or error notifications via snackbars. The **Profile** dialog lets users edit their first and last name as well as a note while the email field is read-only.
 
 For the API you can send the following query using `curl` or a GraphQL client. You can also override configuration values on the fly:
 

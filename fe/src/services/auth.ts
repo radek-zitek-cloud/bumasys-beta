@@ -102,3 +102,26 @@ export function refresh (refreshToken: string) {
     { token: refreshToken },
   )
 }
+
+/** Update the authenticated user's profile fields. */
+export function updateUser (
+  id: string,
+  firstName: string,
+  lastName: string,
+  note: string,
+) {
+  const store = useAuthStore()
+  return graphql<{ updateUser: User }>(
+    `mutation($id: ID!, $firstName: String, $lastName: String, $note: String) {
+      updateUser(id: $id, firstName: $firstName, lastName: $lastName, note: $note) {
+        id
+        email
+        firstName
+        lastName
+        note
+      }
+    }`,
+    { id, firstName, lastName, note },
+    store.token,
+  )
+}

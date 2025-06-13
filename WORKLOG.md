@@ -73,3 +73,8 @@
 - Displayed authenticated user's name and email in the footer.
 - Added snackbar notifications for all authentication dialogs.
 - Ran pnpm install and lint in `fe`, npm install, lint and tests in `be`.
+2025-06-13
+- Implemented profile editing dialog with first/last name and note fields.
+- Added updateUser API call and wired it in App.vue.
+- Documented profile editing in README.
+- Ran pnpm lint and npm test to verify.
