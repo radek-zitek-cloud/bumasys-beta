@@ -45,6 +45,9 @@ Build the front end for production:
 pnpm build
 ```
 
+## Configuration
+The back end reads settings using the [`config`](https://www.npmjs.com/package/config) library. Default values live in `be/config/default.json`. Create additional JSON files in that directory or use environment variables to override the defaults.
+
 ## Examples
 After running the development server, open `http://localhost:3000` in your browser. The navigation drawer links (Home, People, Teams, Tasks, Budget, References, and Users) each lead to a dedicated page that you can further extend. Edit components in `src/` to continue customizing the application.
 
