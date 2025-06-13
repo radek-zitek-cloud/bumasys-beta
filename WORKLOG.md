@@ -23,3 +23,7 @@
 - Replaced deprecated body-parser usage with express.json in the backend.
 - Installed dependencies and executed npm run lint and npm test.
 - Installed front-end dependencies and ran pnpm lint to verify.
+2025-06-13
+- Switched backend configuration to use node-config with JSON files in be/config.
+- Updated tests and README accordingly.
+- Ran npm run lint and npm test to verify.
