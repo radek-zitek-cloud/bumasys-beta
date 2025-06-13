@@ -1,5 +1,5 @@
 <template>
-  <HelloWorld />
+  <HomeCard />
 </template>
 
 <script lang="ts" setup>
