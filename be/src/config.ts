@@ -11,7 +11,7 @@ import { z } from 'zod';
 const configSchema = z.object({
   port: z.coerce.number().default(4000),
   jwtSecret: z.string().min(1),
-  dbFile: z.string().default('db.json'),
+  dbFile: z.string().default('../data/db.json'),
 });
 
 /**

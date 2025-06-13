@@ -1,5 +1,5 @@
 {
   "port": 4000,
   "jwtSecret": "secret",
-  "dbFile": "db.json"
+  "dbFile": "../data/db.json"
 }
