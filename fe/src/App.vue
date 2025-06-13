@@ -8,11 +8,8 @@
         </template>
         <v-app-bar-title>Fulcrum</v-app-bar-title>
         <template #append>
-          <v-btn
-            :icon="vuetifyTheme.global.current.value.dark ? 'mdi-weather-night' : 'mdi-weather-sunny'"
-            slim
-            @click="toggleTheme"
-          />
+          <v-btn :icon="vuetifyTheme.global.current.value.dark ? 'mdi-weather-night' : 'mdi-weather-sunny'" slim
+            @click="toggleTheme" />
           <v-btn icon="mdi-dots-vertical" />
         </template>
       </v-app-bar>
@@ -41,19 +38,19 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue'
-  import { useTheme } from 'vuetify'
+import { ref } from 'vue'
+import { useTheme } from 'vuetify'
 
-  /**
-   * Reactive state for the navigation drawer.
-   */
-  const drawer = ref(false)
+/**
+ * Reactive state for the navigation drawer.
+ */
+const drawer = ref(false)
 
-  /**
-   * Access Vuetify's theme instance so we can switch between light and dark
-   * modes.
-   */
-  const vuetifyTheme = useTheme()
+/**
+ * Access Vuetify's theme instance so we can switch between light and dark
+ * modes.
+ */
+const vuetifyTheme = useTheme()
 
   /**
    * Toggle between light and dark themes.
