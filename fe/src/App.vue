@@ -6,7 +6,7 @@
           <!-- Navigation drawer toggle -->
           <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
         </template>
-        <v-app-bar-title >Fulcrum</v-app-bar-title>
+        <v-app-bar-title>Fulcrum</v-app-bar-title>
         <template #append>
           <v-btn
             :icon="vuetifyTheme.global.current.value.dark ? 'mdi-weather-night' : 'mdi-weather-sunny'"
@@ -55,22 +55,47 @@
         </v-container>
       </v-main>
 
-      <v-dialog v-model="showLogin" persistent>
+      <!-- Authentication dialogs positioned under the top-right navbar -->
+      <v-dialog
+        v-model="showLogin"
+        location="top right"
+        persistent
+      >
         <LoginCard @cancel="showLogin = false" @login="handleLogin" />
       </v-dialog>
-      <v-dialog v-model="showRegister" persistent>
+      <v-dialog
+        v-model="showRegister"
+        location="top right"
+        persistent
+      >
         <RegisterCard @cancel="showRegister = false" @register="handleRegister" />
       </v-dialog>
-      <v-dialog v-model="showReset" persistent>
+      <v-dialog
+        v-model="showReset"
+        location="top right"
+        persistent
+      >
         <PasswordResetCard @cancel="showReset = false" @reset="handleReset" />
       </v-dialog>
-      <v-dialog v-model="showChange" persistent>
+      <v-dialog
+        v-model="showChange"
+        location="top right"
+        persistent
+      >
         <ChangePasswordCard @cancel="showChange = false" @change="handleChange" />
       </v-dialog>
-      <v-dialog v-model="showLogout" persistent>
+      <v-dialog
+        v-model="showLogout"
+        location="top right"
+        persistent
+      >
         <LogoutCard @cancel="showLogout = false" @logout="handleLogout" />
       </v-dialog>
-      <v-dialog v-model="showProfile" persistent>
+      <v-dialog
+        v-model="showProfile"
+        location="top right"
+        persistent
+      >
         <ProfileCard @cancel="showProfile = false" @save="handleProfile" />
       </v-dialog>
     </v-app>

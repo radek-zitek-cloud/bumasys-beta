@@ -50,3 +50,7 @@
 - Created reusable dialog cards for login, registration, password reset, profile, password change and logout.
 - Documented the menu behaviour in README.
 - Ran pnpm lint in `fe` and npm run lint & npm test in `be`.
+2025-06-13
+- Adjusted authentication dialogs to open below the app bar on the top-right.
+- Documented UI change in README.
+- Ran pnpm lint in `fe` and npm run lint & npm test in `be`.

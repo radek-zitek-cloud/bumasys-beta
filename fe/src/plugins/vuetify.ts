@@ -4,13 +4,13 @@
  * Framework documentation: https://vuetifyjs.com`
  */
 
+// https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
+import { createVuetify } from 'vuetify'
+
 // Styles
 import '@mdi/font/css/materialdesignicons.css'
 
 import 'vuetify/styles'
-
-// https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
-import { createVuetify } from 'vuetify'
 
 const vuetify = createVuetify({
   theme: {
@@ -18,8 +18,8 @@ const vuetify = createVuetify({
     themes: {
       light: {
         colors: {
-          background: '#edefe6',
-          surface: '#f9faf1',
+          'background': '#edefe6',
+          'surface': '#f9faf1',
           'surface-dim': '#d9dbd2',
           'surface-bright': '#f9faf1',
           'surface-container-lowest': '#ffffff',
@@ -30,22 +30,22 @@ const vuetify = createVuetify({
           'on-surface': '#1a1c17',
           'inverse-surface': '#2f312c',
           'inverse-on-surface': '#f0f1e9',
-          outline: '#73796c',
+          'outline': '#73796c',
           'outline-variant': '#c2c9ba',
-          primary: '#40682c',
+          'primary': '#40682c',
           'on-primary': '#ffffff',
           'primary-container': '#c0f0a4',
           'on-primary-container': '#072100',
           'inverse-primary': '#a5d48a',
-          secondary: '#656104',
+          'secondary': '#656104',
           'on-secondary': '#ffffff',
           'secondary-container': '#ece681',
           'on-secondary-container': '#1e1c00',
-          tertiary: '#006c4f',
+          'tertiary': '#006c4f',
           'on-tertiary': '#ffffff',
           'tertiary-container': '#9df4cf',
           'on-tertiary-container': '#002116',
-          error: '#ba1a1a',
+          'error': '#ba1a1a',
           'on-error': '#ffffff',
           'error-container': '#ffdad6',
           'on-error-container': '#410002',
@@ -70,8 +70,8 @@ const vuetify = createVuetify({
       },
       dark: {
         colors: {
-          background: '#1e201b',
-          surface: '#11140f',
+          'background': '#1e201b',
+          'surface': '#11140f',
           'surface-dim': '#11140f',
           'surface-bright': '#373a34',
           'surface-container-lowest': '#0c0f0a',
@@ -82,22 +82,22 @@ const vuetify = createVuetify({
           'on-surface': '#e2e3db',
           'inverse-surface': '#e2e3db',
           'inverse-on-surface': '#2f312c',
-          outline: '#8c9385',
+          'outline': '#8c9385',
           'outline-variant': '#42493d',
-          primary: '#a5d48a',
+          'primary': '#a5d48a',
           'on-primary': '#113801',
           'primary-container': '#285016',
           'on-primary-container': '#c0f0a4',
           'inverse-primary': '#40682c',
-          secondary: '#d0ca69',
+          'secondary': '#d0ca69',
           'on-secondary': '#343200',
           'secondary-container': '#4c4900',
           'on-secondary-container': '#ece681',
-          tertiary: '#82d7b4',
+          'tertiary': '#82d7b4',
           'on-tertiary': '#003827',
           'tertiary-container': '#00513b',
           'on-tertiary-container': '#9df4cf',
-          error: '#ffb4ab',
+          'error': '#ffb4ab',
           'on-error': '#690005',
           'error-container': '#93000a',
           'on-error-container': '#ffb4ab',
@@ -126,4 +126,3 @@ const vuetify = createVuetify({
 })
 
 export default vuetify
-
