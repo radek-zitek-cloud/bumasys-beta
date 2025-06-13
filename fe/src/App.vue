@@ -17,10 +17,10 @@
         </template>
       </v-app-bar>
 
-      <v-navigation-drawer v-model="drawer" location="left" :elevation="2">
+      <v-navigation-drawer v-model="drawer" :elevation="2" location="left">
         <v-list density="compact">
           <template v-for="(item, i) in navigationItems" :key="i">
-            <v-divider v-if="item.separator" :thickness="3"  />
+            <v-divider v-if="item.separator" :thickness="3" />
             <v-list-item
               v-else
               link

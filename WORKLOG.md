@@ -38,3 +38,7 @@
 - Added health GraphQL query and resolver returning readiness state.
 - Documented usage in README and added health tests.
 - Ran npm install, lint and tests.
+2025-06-13
+- Display backend readiness in the front-end footer using the health query.
+- Updated README with footer description.
+- Ran pnpm lint, npm run lint and npm test.
