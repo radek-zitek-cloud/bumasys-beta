@@ -40,4 +40,9 @@ function loadConfig() {
 
 /** Parsed configuration object */
 const config = loadConfig();
+
+if (process.env.NODE_ENV) {
+  console.info(`Loaded configuration for environment: ${process.env.NODE_ENV}`);
+}
+
 export default config;
