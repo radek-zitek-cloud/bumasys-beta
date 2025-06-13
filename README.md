@@ -46,12 +46,18 @@ pnpm build
 ```
 
 ## Configuration
-The back end reads settings using the [`config`](https://www.npmjs.com/package/config) library. Default values live in `be/config/default.json`. Create additional JSON files in that directory or use environment variables to override the defaults.
+The back end reads settings using the [`config`](https://www.npmjs.com/package/config) library. Default values live in `be/config/default.json`. Create additional JSON files in that directory or use environment variables to override the defaults. The environment variable mapping is defined in `be/config/custom-environment-variables.json` and supports `PORT`, `JWT_SECRET`, and `DB_FILE`.
 
 ## Examples
 After running the development server, open `http://localhost:3000` in your browser. The navigation drawer links (Home, People, Teams, Tasks, Budget, References, and Users) each lead to a dedicated page that you can further extend. Edit components in `src/` to continue customizing the application.
 
-For the API you can send the following query using `curl` or a GraphQL client:
+For the API you can send the following query using `curl` or a GraphQL client. You can also override configuration values on the fly:
+
+```bash
+PORT=5000 JWT_SECRET=mysecret npm run dev
+```
+
+Then send the following query using `curl` or a GraphQL client:
 
 ```graphql
 query {
