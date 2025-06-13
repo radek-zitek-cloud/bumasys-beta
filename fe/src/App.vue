@@ -2,19 +2,24 @@
   <v-responsive class="border rounded">
     <v-app>
       <v-app-bar :elevation="2">
-        <template v-slot:prepend>
-          <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+        <template #prepend>
+          <!-- Navigation drawer toggle -->
+          <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
         </template>
         <v-app-bar-title>Fulcrum</v-app-bar-title>
-        <template v-slot:append>
-          <v-btn icon="theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'" @click="onClick" slim></v-btn>
-          <v-btn icon="mdi-dots-vertical"></v-btn>
+        <template #append>
+          <v-btn
+            :icon="vuetifyTheme.global.current.value.dark ? 'mdi-weather-night' : 'mdi-weather-sunny'"
+            slim
+            @click="toggleTheme"
+          />
+          <v-btn icon="mdi-dots-vertical" />
         </template>
       </v-app-bar>
 
       <v-navigation-drawer v-model="drawer" :locations="left">
         <v-list>
-          <v-list-item title="Navigation drawer"></v-list-item>
+          <v-list-item title="Navigation drawer" />
         </v-list>
       </v-navigation-drawer>
 
@@ -28,11 +33,25 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+  import { ref } from 'vue'
+  import { useTheme } from 'vuetify'
 
-const theme = ref('light')
+  /**
+   * Reactive state for the navigation drawer.
+   */
+  const drawer = ref(false)
 
-function onClick() {
-  theme.value = theme.value === 'light' ? 'dark' : 'light'
-}
+  /**
+   * Access Vuetify's theme instance so we can switch between light and dark
+   * modes.
+   */
+  const vuetifyTheme = useTheme()
+
+  /**
+   * Toggle between light and dark themes.
+   */
+  function toggleTheme () {
+    vuetifyTheme.global.name.value
+      = vuetifyTheme.global.current.value.dark ? 'light' : 'dark'
+  }
 </script>
