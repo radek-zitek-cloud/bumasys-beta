@@ -6,7 +6,11 @@
 
 import { setupLayouts } from 'virtual:generated-layouts'
 // Composables
+// ESLint marks these imports as duplicates because the auto imports resolve to
+// the same file paths during build. Disable the rule for these lines.
+// eslint-disable-next-line import/no-duplicates
 import { createRouter, createWebHistory } from 'vue-router/auto'
+// eslint-disable-next-line import/no-duplicates
 import { routes } from 'vue-router/auto-routes'
 
 const router = createRouter({
