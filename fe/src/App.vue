@@ -13,7 +13,23 @@
             slim
             @click="toggleTheme"
           />
-          <v-btn icon="mdi-dots-vertical" />
+          <v-menu>
+            <template #activator="{ props }">
+              <v-btn v-bind="props" icon="mdi-dots-vertical" />
+            </template>
+            <v-list density="compact">
+              <template v-if="auth.loggedIn">
+                <v-list-item title="Profile" @click="showProfile = true" />
+                <v-list-item title="Change Password" @click="showChange = true" />
+                <v-list-item title="Logout" @click="showLogout = true" />
+              </template>
+              <template v-else>
+                <v-list-item title="Login" @click="showLogin = true" />
+                <v-list-item title="Register" @click="showRegister = true" />
+                <v-list-item title="Password Reset" @click="showReset = true" />
+              </template>
+            </v-list>
+          </v-menu>
         </template>
       </v-app-bar>
 
@@ -38,6 +54,25 @@
           <router-view />
         </v-container>
       </v-main>
+
+      <v-dialog v-model="showLogin" persistent>
+        <LoginCard @cancel="showLogin = false" @login="handleLogin" />
+      </v-dialog>
+      <v-dialog v-model="showRegister" persistent>
+        <RegisterCard @cancel="showRegister = false" @register="handleRegister" />
+      </v-dialog>
+      <v-dialog v-model="showReset" persistent>
+        <PasswordResetCard @cancel="showReset = false" @reset="handleReset" />
+      </v-dialog>
+      <v-dialog v-model="showChange" persistent>
+        <ChangePasswordCard @cancel="showChange = false" @change="handleChange" />
+      </v-dialog>
+      <v-dialog v-model="showLogout" persistent>
+        <LogoutCard @cancel="showLogout = false" @logout="handleLogout" />
+      </v-dialog>
+      <v-dialog v-model="showProfile" persistent>
+        <ProfileCard @cancel="showProfile = false" @save="handleProfile" />
+      </v-dialog>
     </v-app>
   </v-responsive>
 </template>
@@ -45,11 +80,29 @@
 <script lang="ts" setup>
   import { ref } from 'vue'
   import { useTheme } from 'vuetify'
+  import ChangePasswordCard from './components/ChangePasswordCard.vue'
+  import LoginCard from './components/LoginCard.vue'
+  import LogoutCard from './components/LogoutCard.vue'
+  import PasswordResetCard from './components/PasswordResetCard.vue'
+  import ProfileCard from './components/ProfileCard.vue'
+  import RegisterCard from './components/RegisterCard.vue'
+  import { useAuthStore } from './stores/auth'
 
   /**
    * Reactive state for the navigation drawer.
    */
   const drawer = ref(false)
+
+  /** Authentication store controlling login state. */
+  const auth = useAuthStore()
+
+  /** Dialog visibility flags for each action. */
+  const showLogin = ref(false)
+  const showRegister = ref(false)
+  const showReset = ref(false)
+  const showChange = ref(false)
+  const showLogout = ref(false)
+  const showProfile = ref(false)
 
   /**
    * Access Vuetify's theme instance so we can switch between light and dark
@@ -81,4 +134,37 @@
     { icon: 'mdi-book-open-page-variant-outline', title: 'References', subtitle: 'Manage reference data', to: '/references' },
     { icon: 'mdi-account-cog-outline', title: 'Users', subtitle: 'Manage system users', to: '/users' },
   ]
+
+  /** Handle login form submission. Simply mark the user as logged in. */
+  function handleLogin () {
+    auth.loggedIn = true
+    showLogin.value = false
+  }
+
+  /** Handle register form submission and mark the user as logged in. */
+  function handleRegister () {
+    auth.loggedIn = true
+    showRegister.value = false
+  }
+
+  /** Close the password reset dialog. */
+  function handleReset () {
+    showReset.value = false
+  }
+
+  /** Close the password change dialog. */
+  function handleChange () {
+    showChange.value = false
+  }
+
+  /** Handle logout confirmation. */
+  function handleLogout () {
+    auth.loggedIn = false
+    showLogout.value = false
+  }
+
+  /** Close the profile dialog after saving. */
+  function handleProfile () {
+    showProfile.value = false
+  }
 </script>
