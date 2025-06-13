@@ -5,24 +5,24 @@
       <v-card-text>
         <v-text-field
           v-model="email"
-          label="Email"
-          type="email"
-          autocomplete="email"
           aria-label="Email Address"
+          autocomplete="email"
+          label="Email"
           required
+          type="email"
         />
         <v-text-field
           v-model="password"
-          label="Password"
-          type="password"
-          autocomplete="current-password"
           aria-label="Password"
+          autocomplete="current-password"
+          label="Password"
           required
+          type="password"
         />
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn type="submit" color="primary">Login</v-btn>
+        <v-btn color="primary" type="submit">Login</v-btn>
         <v-btn type="button" @click="$emit('cancel')">Cancel</v-btn>
       </v-card-actions>
     </form>
@@ -30,20 +30,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 
 /** Email address provided by the user. */
-const email = ref('')
+const email = ref("");
 /** Password provided by the user. */
-const password = ref('')
+const password = ref("");
 
 const emit = defineEmits<{
-  (e: 'login', payload: { email: string, password: string }): void
-  (e: 'cancel'): void
-}>()
+  (e: "login", payload: { email: string; password: string }): void;
+  (e: "cancel"): void;
+}>();
 
 /** Emit the login event with the form data. */
 function onLogin() {
-  emit('login', { email: email.value, password: password.value })
+  emit("login", { email: email.value, password: password.value });
 }
 </script>

@@ -1,5 +1,5 @@
 import configLib from 'config';
-import type { StringValue } from 'ms'
+import type { StringValue } from 'ms';
 import { z } from 'zod';
 
 /**
@@ -12,13 +12,26 @@ import { z } from 'zod';
 const configSchema = z.object({
   port: z.coerce.number().int().positive().default(4000), // Ensure 'port' is a positive integer
   jwtSecret: z.string().min(10), // Enforce a minimum length for security
-  accessTokenExpiresIn: z.custom<StringValue>((val) => typeof val === 'string' && /^\d+[smhd]$/.test(val), {
-    message: 'Invalid duration format',
-  }).default('60m'),
-  refreshTokenExpiresIn: z.custom<StringValue>((val) => typeof val === 'string' && /^\d+[smhd]$/.test(val), {
-    message: 'Invalid duration format',
-  }).default('7d'),
-  dbFile: z.string().nonempty('Database file path cannot be empty').default('../data/db.json'),
+  accessTokenExpiresIn: z
+    .custom<StringValue>(
+      (val) => typeof val === 'string' && /^\d+[smhd]$/.test(val),
+      {
+        message: 'Invalid duration format',
+      },
+    )
+    .default('60m'),
+  refreshTokenExpiresIn: z
+    .custom<StringValue>(
+      (val) => typeof val === 'string' && /^\d+[smhd]$/.test(val),
+      {
+        message: 'Invalid duration format',
+      },
+    )
+    .default('7d'),
+  dbFile: z
+    .string()
+    .nonempty('Database file path cannot be empty')
+    .default('../data/db.json'),
 });
 
 /**
@@ -30,7 +43,9 @@ function loadConfig(): ConfigType {
       port: configLib.get<number>('port'),
       jwtSecret: configLib.get<string>('jwtSecret'),
       accessTokenExpiresIn: configLib.get<StringValue>('accessTokenExpiresIn'),
-      refreshTokenExpiresIn: configLib.get<StringValue>('refreshTokenExpiresIn'),
+      refreshTokenExpiresIn: configLib.get<StringValue>(
+        'refreshTokenExpiresIn',
+      ),
       dbFile: configLib.get<string>('dbFile'),
     });
   } catch (error) {
@@ -38,7 +53,11 @@ function loadConfig(): ConfigType {
       console.error('Configuration validation failed:', error.errors);
       throw new Error('Invalid configuration: ' + JSON.stringify(error.errors));
     } else if (error instanceof Error) {
-      console.error('Failed to load configuration:', error.message, error.stack);
+      console.error(
+        'Failed to load configuration:',
+        error.message,
+        error.stack,
+      );
       throw error;
     } else {
       console.error('Failed to load configuration:', error);
