@@ -1,4 +1,9 @@
+# Data
+
+data/
+
 # Logs
+logs/
 logs
 *.log
 npm-debug.log*
