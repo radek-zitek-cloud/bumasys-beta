@@ -16,7 +16,7 @@
           <v-menu>
             <template #activator="{ props }">
               <v-btn v-bind="props" icon="mdi-dots-vertical" />
-            </template>
+            </template> 
             <v-list density="compact">
               <template v-if="auth.loggedIn">
                 <v-list-item title="Profile" @click="showProfile = true" />
@@ -58,42 +58,36 @@
       <!-- Authentication dialogs positioned under the top-right navbar -->
       <v-dialog
         v-model="showLogin"
-        location="top right"
         persistent
       >
         <LoginCard @cancel="showLogin = false" @login="handleLogin" />
       </v-dialog>
       <v-dialog
         v-model="showRegister"
-        location="top right"
         persistent
       >
         <RegisterCard @cancel="showRegister = false" @register="handleRegister" />
       </v-dialog>
       <v-dialog
         v-model="showReset"
-        location="top right"
         persistent
       >
         <PasswordResetCard @cancel="showReset = false" @reset="handleReset" />
       </v-dialog>
       <v-dialog
         v-model="showChange"
-        location="top right"
         persistent
       >
         <ChangePasswordCard @cancel="showChange = false" @change="handleChange" />
       </v-dialog>
       <v-dialog
         v-model="showLogout"
-        location="top right"
         persistent
       >
         <LogoutCard @cancel="showLogout = false" @logout="handleLogout" />
       </v-dialog>
       <v-dialog
         v-model="showProfile"
-        location="top right"
         persistent
       >
         <ProfileCard @cancel="showProfile = false" @save="handleProfile" />
