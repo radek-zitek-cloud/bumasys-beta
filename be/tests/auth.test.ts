@@ -9,7 +9,6 @@ let app: Application;
 beforeAll(async () => {
   const dbFile = path.join(__dirname, 'test-db.json');
   if (fs.existsSync(dbFile)) fs.unlinkSync(dbFile);
-  process.chdir(path.join(__dirname, '..', 'src'));
   const config = require('../src/config').default;
   config.dbFile = dbFile;
   ({ app } = await createApp());

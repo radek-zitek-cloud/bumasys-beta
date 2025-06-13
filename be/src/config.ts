@@ -1,5 +1,4 @@
-import fs from 'fs';
-import path from 'path';
+import configLib from 'config';
 import { z } from 'zod';
 
 /** Configuration schema */
@@ -10,12 +9,14 @@ const configSchema = z.object({
 });
 
 /**
- * Load and validate configuration from config.json.
+ * Load and validate configuration using the `config` package.
  */
 function loadConfig() {
-  const file = path.resolve(__dirname, 'config.json');
-  const raw = fs.readFileSync(file, 'utf-8');
-  return configSchema.parse(JSON.parse(raw));
+  return configSchema.parse({
+    port: configLib.get<number>('port'),
+    jwtSecret: configLib.get<string>('jwtSecret'),
+    dbFile: configLib.get<string>('dbFile'),
+  });
 }
 
 /** Parsed configuration object */
