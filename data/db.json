@@ -1,3 +1,9 @@
 {
-  "users": []
+  "users": [
+    {
+      "id": "1749820195396",
+      "email": "radek@zitek.cloud",
+      "password": "$2b$10$g8ZoaAeSY4JuWv0BlxuW7.igvAZ4m9DW9G0tdlT/bwK1cUSj85yca"
+    }
+  ]
 }
