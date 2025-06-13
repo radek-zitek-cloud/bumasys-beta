@@ -16,7 +16,7 @@
           <v-menu>
             <template #activator="{ props }">
               <v-btn v-bind="props" icon="mdi-dots-vertical" />
-            </template> 
+            </template>
             <v-list density="compact">
               <template v-if="auth.loggedIn">
                 <v-list-item title="Profile" @click="showProfile = true" />
@@ -56,44 +56,44 @@
       </v-main>
 
       <!-- Authentication dialogs positioned under the top-right navbar -->
-      <v-dialog 
-        max-width="400"
+      <v-dialog
         v-model="showLogin"
+        max-width="400"
         persistent
       >
         <LoginCard @cancel="showLogin = false" @login="handleLogin" />
       </v-dialog>
       <v-dialog
-        max-width="400"
         v-model="showRegister"
+        max-width="400"
         persistent
       >
         <RegisterCard @cancel="showRegister = false" @register="handleRegister" />
       </v-dialog>
       <v-dialog
-        max-width="400"
         v-model="showReset"
+        max-width="400"
         persistent
       >
         <PasswordResetCard @cancel="showReset = false" @reset="handleReset" />
       </v-dialog>
       <v-dialog
-        max-width="400"
         v-model="showChange"
+        max-width="400"
         persistent
       >
         <ChangePasswordCard @cancel="showChange = false" @change="handleChange" />
       </v-dialog>
       <v-dialog
-        max-width="400"
         v-model="showLogout"
+        max-width="400"
         persistent
       >
         <LogoutCard @cancel="showLogout = false" @logout="handleLogout" />
       </v-dialog>
       <v-dialog
-        max-width="400"
         v-model="showProfile"
+        max-width="400"
         persistent
       >
         <ProfileCard @cancel="showProfile = false" @save="handleProfile" />
@@ -111,6 +111,7 @@
   import PasswordResetCard from './components/PasswordResetCard.vue'
   import ProfileCard from './components/ProfileCard.vue'
   import RegisterCard from './components/RegisterCard.vue'
+  import * as authApi from './services/auth'
   import { useAuthStore } from './stores/auth'
 
   /**
@@ -160,32 +161,62 @@
     { icon: 'mdi-account-cog-outline', title: 'Users', subtitle: 'Manage system users', to: '/users' },
   ]
 
-  /** Handle login form submission. Simply mark the user as logged in. */
-  function handleLogin () {
-    auth.loggedIn = true
-    showLogin.value = false
+  /** Handle login form submission via the GraphQL API. */
+  async function handleLogin (payload: { email: string, password: string }) {
+    try {
+      const { login } = await authApi.login(payload.email, payload.password)
+      auth.setAuth(login)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      showLogin.value = false
+    }
   }
 
-  /** Handle register form submission and mark the user as logged in. */
-  function handleRegister () {
-    auth.loggedIn = true
-    showRegister.value = false
+  /** Handle register form submission via the GraphQL API. */
+  async function handleRegister (payload: { email: string, password: string }) {
+    try {
+      const { register } = await authApi.register(payload.email, payload.password)
+      auth.setAuth(register)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      showRegister.value = false
+    }
   }
 
-  /** Close the password reset dialog. */
-  function handleReset () {
-    showReset.value = false
+  /** Submit a password reset request. */
+  async function handleReset (email: string) {
+    try {
+      await authApi.resetPassword(email)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      showReset.value = false
+    }
   }
 
-  /** Close the password change dialog. */
-  function handleChange () {
-    showChange.value = false
+  /** Change the authenticated user's password. */
+  async function handleChange (payload: { oldPassword: string, newPassword: string }) {
+    try {
+      await authApi.changePassword(payload.oldPassword, payload.newPassword)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      showChange.value = false
+    }
   }
 
   /** Handle logout confirmation. */
-  function handleLogout () {
-    auth.loggedIn = false
-    showLogout.value = false
+  async function handleLogout () {
+    try {
+      if (auth.refreshToken) await authApi.logout(auth.refreshToken)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      auth.clearAuth()
+      showLogout.value = false
+    }
   }
 
   /** Close the profile dialog after saving. */
