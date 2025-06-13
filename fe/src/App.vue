@@ -6,7 +6,7 @@
           <!-- Navigation drawer toggle -->
           <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
         </template>
-        <v-app-bar-title>Fulcrum</v-app-bar-title>
+        <v-app-bar-title class="font-weight-black text-h4">Fulcrum</v-app-bar-title>
         <template #append>
           <v-btn
             :icon="vuetifyTheme.global.current.value.dark ? 'mdi-weather-night' : 'mdi-weather-sunny'"

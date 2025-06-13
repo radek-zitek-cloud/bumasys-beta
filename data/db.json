@@ -3,7 +3,10 @@
     {
       "id": "1749820195396",
       "email": "radek@zitek.cloud",
-      "password": "$2b$10$jAaEeIONiMEEZrtWGQvDoeyCr2.31/3J.DMozZHvBS3TO1HkM8j4K"
+      "password": "$2b$10$jAaEeIONiMEEZrtWGQvDoeyCr2.31/3J.DMozZHvBS3TO1HkM8j4K",
+      "firstName": "Radek",
+      "lastName": "Zítek",
+      "note": "Yes, it is me!"
     },
     {
       "id": "1749839891408",
