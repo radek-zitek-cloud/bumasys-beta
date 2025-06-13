@@ -98,6 +98,9 @@
       >
         <ProfileCard @cancel="showProfile = false" @save="handleProfile" />
       </v-dialog>
+      <v-snackbar v-model="snackbar" :color="snackbarColor" location="bottom" timeout="4000">
+        {{ snackbarMessage }}
+      </v-snackbar>
     </v-app>
   </v-responsive>
 </template>
@@ -113,6 +116,16 @@
   import RegisterCard from './components/RegisterCard.vue'
   import * as authApi from './services/auth'
   import { useAuthStore } from './stores/auth'
+
+  const snackbar = ref(false)
+  const snackbarMessage = ref('')
+  const snackbarColor = ref<'success' | 'error'>('success')
+
+  function notify (message: string, success = true) {
+    snackbarMessage.value = message
+    snackbarColor.value = success ? 'success' : 'error'
+    snackbar.value = true
+  }
 
   /**
    * Reactive state for the navigation drawer.
@@ -166,8 +179,10 @@
     try {
       const { login } = await authApi.login(payload.email, payload.password)
       auth.setAuth(login)
+      notify('Login successful')
     } catch (error) {
       console.error(error)
+      notify((error as Error).message, false)
     } finally {
       showLogin.value = false
     }
@@ -178,8 +193,10 @@
     try {
       const { register } = await authApi.register(payload.email, payload.password)
       auth.setAuth(register)
+      notify('Registration successful')
     } catch (error) {
       console.error(error)
+      notify((error as Error).message, false)
     } finally {
       showRegister.value = false
     }
@@ -189,8 +206,10 @@
   async function handleReset (email: string) {
     try {
       await authApi.resetPassword(email)
+      notify('Password reset email sent')
     } catch (error) {
       console.error(error)
+      notify((error as Error).message, false)
     } finally {
       showReset.value = false
     }
@@ -200,8 +219,10 @@
   async function handleChange (payload: { oldPassword: string, newPassword: string }) {
     try {
       await authApi.changePassword(payload.oldPassword, payload.newPassword)
+      notify('Password changed')
     } catch (error) {
       console.error(error)
+      notify((error as Error).message, false)
     } finally {
       showChange.value = false
     }
@@ -211,8 +232,10 @@
   async function handleLogout () {
     try {
       if (auth.refreshToken) await authApi.logout(auth.refreshToken)
+      notify('Logged out')
     } catch (error) {
       console.error(error)
+      notify((error as Error).message, false)
     } finally {
       auth.clearAuth()
       showLogout.value = false

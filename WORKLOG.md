@@ -64,8 +64,12 @@
 - Fixed TypeScript type errors in backend auth token generation.
 - Cast JWT expiration config values to ms.StringValue and adjusted imports.
 - Ran npm lint and tests successfully after patch.
-2025-06-13
+ 2025-06-13
 - Connected frontend authentication dialogs to backend GraphQL services using fetch-based API helpers.
 - Added auth store fields for tokens and user data.
 - Updated README with note about dialogs communicating with the API.
 - Adjusted config environment test secret length to pass validation.
+2025-06-13
+- Displayed authenticated user's name and email in the footer.
+- Added snackbar notifications for all authentication dialogs.
+- Ran pnpm install and lint in `fe`, npm install, lint and tests in `be`.
