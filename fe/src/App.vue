@@ -14,8 +14,8 @@
         </template>
       </v-app-bar>
 
-      <v-navigation-drawer v-model="drawer" location="left">
-        <v-list density="comfortable">
+      <v-navigation-drawer v-model="drawer" location="left" :elevation="2">
+        <v-list density="compact">
           <template v-for="(item, i) in navigationItems" :key="i">
             <v-divider v-if="item.separator" />
             <v-list-item
