@@ -25,7 +25,7 @@ pnpm build
 ```
 
 ## Examples
-After running the development server, open `http://localhost:3000` in your browser to see the default welcome page. Edit components in `src/` to begin customizing the application.
+After running the development server, open `http://localhost:3000` in your browser. The navigation drawer links (Home, People, Teams, Tasks, Budget, References, and Users) each lead to a dedicated page that you can further extend. Edit components in `src/` to continue customizing the application.
 
 ## Contributing Guidelines
 1. Fork the repository and create feature branches for your work.
