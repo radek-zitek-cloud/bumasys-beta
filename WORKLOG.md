@@ -27,3 +27,7 @@
 - Switched backend configuration to use node-config with JSON files in be/config.
 - Updated tests and README accordingly.
 - Ran npm run lint and npm test to verify.
+2025-06-13
+- Added environment variable override mapping and related tests.
+- Updated README with override instructions.
+- Ran npm run lint and npm test.
