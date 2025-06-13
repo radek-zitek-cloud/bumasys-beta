@@ -27,13 +27,18 @@
       </span>
       &nbsp;|&nbsp;© {{ (new Date()).getFullYear() }}
       <span class="d-none d-sm-inline-block">Radek Zitek</span>
+      <template v-if="userSummary">
+        &nbsp;|&nbsp;Logged in as {{ userSummary }}
+      </template>
 
     </div>
   </v-footer>
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue'
+  import { storeToRefs } from 'pinia'
+  import { computed, onMounted, ref } from 'vue'
+  import { useAuthStore } from '../stores/auth'
 
   const items = [
     {
@@ -45,6 +50,17 @@
 
   /** Indicates whether the backend server is ready. */
   const ready = ref<boolean | null>(null)
+
+  /** Authentication store for user details */
+  const auth = useAuthStore()
+  const { user } = storeToRefs(auth)
+
+  /** Display name and email for authenticated user */
+  const userSummary = computed(() => {
+    if (!user.value) return ''
+    const name = [user.value.firstName, user.value.lastName].filter(Boolean).join(' ').trim()
+    return name ? `${name} (${user.value.email})` : user.value.email
+  })
 
   /**
    * Query the backend health endpoint and update the readiness state.
