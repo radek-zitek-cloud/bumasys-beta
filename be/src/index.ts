@@ -1,7 +1,6 @@
 import express from 'express';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
-import { json } from 'body-parser';
 import { createDb, Database } from './db';
 import config from './config';
 import logger from './logger';
@@ -21,7 +20,7 @@ export async function createApp() {
 
   app.use(
     '/graphql',
-    json(),
+    express.json(),
     expressMiddleware(server, {
       context: async ({ req }) => {
         const auth = req.headers.authorization || '';

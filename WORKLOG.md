@@ -19,3 +19,7 @@
 - Updated eslint to handle TS and added ts-jest configuration.
 - Adjusted README with TypeScript instructions.
 - Ran npm run lint and npm test to ensure code quality.
+2025-06-13
+- Replaced deprecated body-parser usage with express.json in the backend.
+- Installed dependencies and executed npm run lint and npm test.
+- Installed front-end dependencies and ran pnpm lint to verify.
