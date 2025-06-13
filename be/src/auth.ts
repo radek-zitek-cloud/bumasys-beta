@@ -2,6 +2,9 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import config from './config';
 
+/** In-memory set of active refresh tokens */
+const refreshTokens = new Set<string>();
+
 /**
  * Generate JWT token for a user id.
  * @param id - User identifier
@@ -12,10 +15,32 @@ export function signToken(id: string): string {
 }
 
 /**
+ * Generate long-lived refresh token and track it in memory.
+ * @param id - User identifier
+ * @returns Signed refresh JWT
+ */
+export function signRefreshToken(id: string): string {
+  const token = jwt.sign({ id }, config.jwtSecret, { expiresIn: '7d' });
+  refreshTokens.add(token);
+  return token;
+}
+
+/**
  * Verify JWT token and return payload.
  * @param token - JWT string
  */
 export function verifyToken(token: string): jwt.JwtPayload {
+  return jwt.verify(token, config.jwtSecret) as jwt.JwtPayload;
+}
+
+/**
+ * Validate refresh token existence and signature.
+ * @param token - Refresh JWT string
+ */
+export function verifyRefreshToken(token: string): jwt.JwtPayload {
+  if (!refreshTokens.has(token)) {
+    throw new Error('Invalid refresh token');
+  }
   return jwt.verify(token, config.jwtSecret) as jwt.JwtPayload;
 }
 
@@ -38,4 +63,12 @@ export function comparePassword(
   hash: string,
 ): Promise<boolean> {
   return bcrypt.compare(password, hash);
+}
+
+/**
+ * Remove a refresh token from the active set.
+ * @param token - Refresh token to invalidate
+ */
+export function invalidateRefreshToken(token: string): void {
+  refreshTokens.delete(token);
 }

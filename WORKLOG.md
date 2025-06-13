@@ -28,6 +28,9 @@
 - Updated tests and README accordingly.
 - Ran npm run lint and npm test to verify.
 2025-06-13
+- Implemented refresh tokens and logout invalidation in backend.
+- Added unit tests for refresh and logout.
+- Updated README with refresh token usage.
 - Added environment variable override mapping and related tests.
 - Updated README with override instructions.
 - Ran npm run lint and npm test.
