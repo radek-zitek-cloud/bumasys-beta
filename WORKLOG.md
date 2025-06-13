@@ -39,6 +39,9 @@
 - Documented usage in README and added health tests.
 - Ran npm install, lint and tests.
 2025-06-13
+- Configured Vite dev server proxy to backend GraphQL on port 4000.
+- Updated README with proxy note.
+- Ran pnpm install, lint, and npm install, lint, test.
 - Display backend readiness in the front-end footer using the health query.
 - Updated README with footer description.
 - Ran pnpm lint, npm run lint and npm test.

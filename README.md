@@ -24,6 +24,8 @@ Start a development server with hot reloading:
 ```bash
 pnpm dev
 ```
+The dev server proxies GraphQL requests on `/graphql` to `http://localhost:4000`,
+so make sure the back end is running during development.
 
 Run the GraphQL API in development mode (uses ts-node):
 
