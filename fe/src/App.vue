@@ -14,9 +14,17 @@
         </template>
       </v-app-bar>
 
-      <v-navigation-drawer v-model="drawer" :locations="left">
-        <v-list>
-          <v-list-item title="Navigation drawer" />
+      <v-navigation-drawer v-model="drawer" location="left">
+        <v-list density="comfortable">
+          <template v-for="(item, i) in navigationItems" :key="i">
+            <v-divider v-if="item.separator" />
+            <v-list-item
+              v-else
+              :prepend-icon="item.icon"
+              :subtitle="item.subtitle"
+              :title="item.title"
+            />
+          </template>
         </v-list>
       </v-navigation-drawer>
 
@@ -44,11 +52,26 @@ const drawer = ref(false)
  */
 const vuetifyTheme = useTheme()
 
-/**
- * Toggle between light and dark themes.
- */
-function toggleTheme() {
-  vuetifyTheme.global.name.value
-    = vuetifyTheme.global.current.value.dark ? 'light' : 'dark'
-}
+  /**
+   * Toggle between light and dark themes.
+   */
+  function toggleTheme () {
+    vuetifyTheme.global.name.value
+      = vuetifyTheme.global.current.value.dark ? 'light' : 'dark'
+  }
+
+  /**
+   * Navigation drawer items.
+   * Each entry has a Material Design icon, a title, and a short description
+   * shown as the subtitle. Separators are represented with `separator: true`.
+   */
+  const navigationItems = [
+    { icon: 'mdi-account-group', title: 'People', subtitle: 'Manage team members' },
+    { icon: 'mdi-account-multiple-outline', title: 'Teams', subtitle: 'Manage teams' },
+    { icon: 'mdi-clipboard-check-outline', title: 'Tasks', subtitle: 'Manage tasks' },
+    { icon: 'mdi-cash-multiple', title: 'Budget', subtitle: 'Manage budget' },
+    { separator: true },
+    { icon: 'mdi-book-open-page-variant-outline', title: 'References', subtitle: 'Manage reference data' },
+    { icon: 'mdi-account-cog-outline', title: 'Users', subtitle: 'Manage system users' },
+  ]
 </script>
