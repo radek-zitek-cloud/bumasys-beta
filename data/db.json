@@ -3,7 +3,12 @@
     {
       "id": "1749820195396",
       "email": "radek@zitek.cloud",
-      "password": "$2b$10$g8ZoaAeSY4JuWv0BlxuW7.igvAZ4m9DW9G0tdlT/bwK1cUSj85yca"
+      "password": "$2b$10$jAaEeIONiMEEZrtWGQvDoeyCr2.31/3J.DMozZHvBS3TO1HkM8j4K"
+    },
+    {
+      "id": "1749839891408",
+      "email": "radekzitek@gmail.com",
+      "password": "$2b$10$qC6y3iHEwd34rqB8HuIF2eGAWpWqZDUo7VYU5eW1kdRl1FzvCzZHO"
     }
   ]
 }
