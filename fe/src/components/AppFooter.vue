@@ -22,13 +22,19 @@
       class="text-caption text-disabled"
       style="position: absolute; right: 16px;"
     >
-      &copy; {{ (new Date()).getFullYear() }} <span class="d-none d-sm-inline-block">Radek Zitek</span>
+      <span :class="ready ? 'text-success' : 'text-error'">
+        Backend: {{ ready ? 'ready' : 'offline' }}
+      </span>
+      &nbsp;|&nbsp;© {{ (new Date()).getFullYear() }}
+      <span class="d-none d-sm-inline-block">Radek Zitek</span>
 
     </div>
   </v-footer>
 </template>
 
 <script setup lang="ts">
+  import { onMounted, ref } from 'vue'
+
   const items = [
     {
       title: 'Vuetify Documentation',
@@ -36,6 +42,26 @@
       href: 'https://vuetifyjs.com/',
     },
   ]
+
+  /** Indicates whether the backend server is ready. */
+  const ready = ref<boolean | null>(null)
+
+  /**
+   * Query the backend health endpoint and update the readiness state.
+   */
+  onMounted(async () => {
+    try {
+      const res = await fetch('/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: 'query{ health }' }),
+      })
+      const json = await res.json()
+      ready.value = json?.data?.health === true
+    } catch {
+      ready.value = false
+    }
+  })
 </script>
 
 <style scoped lang="sass">
