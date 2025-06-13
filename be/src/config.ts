@@ -9,11 +9,11 @@ import { z } from 'zod';
 
 /** Configuration schema */
 const configSchema = z.object({
-  port: z.coerce.number().default(4000),
-  jwtSecret: z.string().min(1),
-  expiresIn: z.string().default('60m'),
-  refreshExpiresIn: z.string().default('7d'),
-  dbFile: z.string().default('../data/db.json'),
+  port: z.coerce.number().int().positive().default(4000), // Ensure 'port' is a positive integer
+  jwtSecret: z.string().min(10), // Enforce a minimum length for security
+  expiresIn: z.string().regex(/^\d+[smhd]$/, 'Invalid duration format').default('60m'), // Validate duration format
+  refreshExpiresIn: z.string().regex(/^\d+[smhd]$/, 'Invalid duration format').default('7d'), // Validate duration format
+  dbFile: z.string().nonempty('Database file path cannot be empty').default('../data/db.json'),
 });
 
 /**
