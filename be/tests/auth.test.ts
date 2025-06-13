@@ -19,15 +19,39 @@ afterAll(() => {
 });
 
 describe('Auth', () => {
-  test('register and login', async () => {
+  test('register, login, refresh and logout', async () => {
     const registerRes = await request(app).post('/graphql').send({
-      query: `mutation { register(email: "test@example.com", password: "pass") { token user { id email } } }`,
+      query: `mutation { register(email: "test@example.com", password: "pass") { token refreshToken user { id email } } }`,
     });
-    expect(registerRes.body.data.register.user.email).toBe('test@example.com');
+    const { refreshToken } = registerRes.body.data.register;
+    expect(refreshToken).toBeTruthy();
 
     const loginRes = await request(app).post('/graphql').send({
-      query: `mutation { login(email: "test@example.com", password: "pass") { token user { id } } }`,
+      query: `mutation { login(email: "test@example.com", password: "pass") { token refreshToken user { id } } }`,
     });
-    expect(loginRes.body.data.login.token).toBeTruthy();
+    expect(loginRes.body.data.login.refreshToken).toBeTruthy();
+    const refTok = loginRes.body.data.login.refreshToken;
+
+    const refreshRes = await request(app)
+      .post('/graphql')
+      .send({
+        query: `mutation { refreshToken(refreshToken: "${refTok}") { token refreshToken } }`,
+      });
+    expect(refreshRes.body.data.refreshToken.token).toBeTruthy();
+    const newRefresh = refreshRes.body.data.refreshToken.refreshToken;
+
+    const logoutRes = await request(app)
+      .post('/graphql')
+      .send({
+        query: `mutation { logout(refreshToken: "${newRefresh}") }`,
+      });
+    expect(logoutRes.body.data.logout).toBe(true);
+
+    const invalidRes = await request(app)
+      .post('/graphql')
+      .send({
+        query: `mutation { refreshToken(refreshToken: "${newRefresh}") { token } }`,
+      });
+    expect(invalidRes.body.errors).toBeTruthy();
   });
 });

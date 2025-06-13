@@ -1,5 +1,12 @@
 import { gql } from 'graphql-tag';
-import { signToken, hashPassword, comparePassword } from './auth';
+import {
+  signToken,
+  signRefreshToken,
+  verifyRefreshToken,
+  invalidateRefreshToken,
+  hashPassword,
+  comparePassword,
+} from './auth';
 import { Database } from './db';
 
 let db: Database; // assigned during initialization
@@ -13,6 +20,7 @@ export const typeDefs = gql`
 
   type AuthPayload {
     token: String!
+    refreshToken: String!
     user: User!
   }
 
@@ -25,8 +33,8 @@ export const typeDefs = gql`
     register(email: String!, password: String!): AuthPayload!
     login(email: String!, password: String!): AuthPayload!
     changePassword(oldPassword: String!, newPassword: String!): Boolean!
-    logout: Boolean!
-    refreshToken: AuthPayload!
+    logout(refreshToken: String!): Boolean!
+    refreshToken(refreshToken: String!): AuthPayload!
     resetPassword(email: String!): Boolean!
   }
 `;
@@ -53,7 +61,8 @@ export const resolvers = {
       db.data.users.push(user);
       await db.write();
       const token = signToken(user.id);
-      return { token, user: { id: user.id, email: user.email } };
+      const refreshToken = signRefreshToken(user.id);
+      return { token, refreshToken, user: { id: user.id, email: user.email } };
     },
     async login(
       _: unknown,
@@ -64,7 +73,8 @@ export const resolvers = {
       const valid = await comparePassword(password, user.password);
       if (!valid) throw new Error('Invalid credentials');
       const token = signToken(user.id);
-      return { token, user: { id: user.id, email: user.email } };
+      const refreshToken = signRefreshToken(user.id);
+      return { token, refreshToken, user: { id: user.id, email: user.email } };
     },
     async changePassword(
       _: unknown,
@@ -82,15 +92,22 @@ export const resolvers = {
       await db.write();
       return true;
     },
-    logout: () => true,
-    refreshToken: (
-      _: unknown,
-      __: unknown,
-      { user }: { user?: { id: string; email: string } },
-    ) => {
-      if (!user) throw new Error('Not authenticated');
+    logout: (_: unknown, { refreshToken }: { refreshToken: string }) => {
+      invalidateRefreshToken(refreshToken);
+      return true;
+    },
+    refreshToken: (_: unknown, { refreshToken }: { refreshToken: string }) => {
+      const payload = verifyRefreshToken(refreshToken);
+      invalidateRefreshToken(refreshToken);
+      const user = db.data.users.find((u) => u.id === payload.id);
+      if (!user) throw new Error('Invalid refresh token');
       const token = signToken(user.id);
-      return { token, user };
+      const newRefresh = signRefreshToken(user.id);
+      return {
+        token,
+        refreshToken: newRefresh,
+        user: { id: user.id, email: user.email },
+      };
     },
     resetPassword: async (_: unknown, { email }: { email: string }) => {
       // placeholder for password reset logic
