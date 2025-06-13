@@ -20,7 +20,7 @@
       <v-navigation-drawer v-model="drawer" location="left" :elevation="2">
         <v-list density="compact">
           <template v-for="(item, i) in navigationItems" :key="i">
-            <v-divider v-if="item.separator" />
+            <v-divider v-if="item.separator" :thickness="3"  />
             <v-list-item
               v-else
               link
@@ -72,6 +72,7 @@
    */
   const navigationItems = [
     { icon: 'mdi-home', title: 'Home', subtitle: 'Return to home page', to: '/' },
+    { separator: true },
     { icon: 'mdi-account-group', title: 'People', subtitle: 'Manage team members', to: '/people' },
     { icon: 'mdi-account-multiple-outline', title: 'Teams', subtitle: 'Manage teams', to: '/teams' },
     { icon: 'mdi-clipboard-check-outline', title: 'Tasks', subtitle: 'Manage tasks', to: '/tasks' },
