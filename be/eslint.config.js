@@ -1,11 +1,12 @@
 module.exports = [
   {
-    files: ['**/*.js'],
+    files: ['**/*.ts'],
     languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'commonjs',
+      parser: require('@typescript-eslint/parser'),
+      parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
     },
     plugins: {
+      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
       prettier: require('eslint-plugin-prettier'),
     },
     rules: {

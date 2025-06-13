@@ -14,3 +14,8 @@
 - Added dedicated pages for all navigation drawer items and updated the drawer links.
 - Introduced Home item leading to the main page.
 - Updated README examples section and ran pnpm lint and type-check.
+2025-06-13
+- Migrated backend to TypeScript and upgraded to @apollo/server.
+- Updated eslint to handle TS and added ts-jest configuration.
+- Adjusted README with TypeScript instructions.
+- Ran npm run lint and npm test to ensure code quality.

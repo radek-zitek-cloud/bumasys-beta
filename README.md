@@ -1,7 +1,7 @@
 # Bumasys Alfa
 
 ## Project Overview
-Bumasys Alfa is a full-stack scaffold featuring a Vuetify powered Vue front end and an Express/Apollo GraphQL back end. It provides a minimal setup to experiment with Vuetify 3 and GraphQL based authentication.
+Bumasys Alfa is a full-stack scaffold featuring a Vuetify powered Vue front end and a TypeScript powered Express/Apollo GraphQL back end. It provides a minimal setup to experiment with Vuetify 3 and GraphQL based authentication.
 
 ## Installation Instructions
 Use [pnpm](https://pnpm.io/) to install dependencies for the front end and npm for the back end:
@@ -25,14 +25,21 @@ Start a development server with hot reloading:
 pnpm dev
 ```
 
-Run the GraphQL API in development mode:
+Run the GraphQL API in development mode (uses ts-node):
 
 ```bash
 cd ../be
 npm run dev
 ```
 
-Build the project for production:
+Build the back end for production:
+
+```bash
+cd ../be
+npm run build
+```
+
+Build the front end for production:
 
 ```bash
 pnpm build
