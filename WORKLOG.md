@@ -6,7 +6,10 @@
 2025-06-13
 - Implemented mock navigation items with icons and descriptions in the navigation drawer.
 - Ran pnpm lint and type-check to ensure code quality.
-
+2025-06-13
+- Added Express/Apollo backend with JWT auth skeleton and tests.
+- Integrated ESLint, Prettier, Jest and Supertest.
+- Updated README with backend instructions.
 2025-06-13
 - Added dedicated pages for all navigation drawer items and updated the drawer links.
 - Introduced Home item leading to the main page.
