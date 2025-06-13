@@ -29,17 +29,19 @@ function loadConfig() {
       dbFile: configLib.get<string>('dbFile'),
     });
   } catch (error) {
-    if (error instanceof Error) {
-      console.error('Failed to load configuration:', error.message);
+    if (error instanceof z.ZodError) {
+      console.error('Configuration validation failed:', error.errors);
+    } else if (error instanceof Error) {
+      console.error('Failed to load configuration:', error.message, error.stack);
     } else {
       console.error('Failed to load configuration:', error);
     }
-    process.exit(1); // Exit process with an error code
   }
 }
 
 /** Parsed configuration object */
-const config = loadConfig();
+type ConfigType = z.infer<typeof configSchema>;
+const config: ConfigType = loadConfig();
 
 if (process.env.NODE_ENV) {
   console.info(`Loaded configuration for environment: ${process.env.NODE_ENV}`);
