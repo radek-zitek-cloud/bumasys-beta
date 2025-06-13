@@ -26,6 +26,7 @@ export const typeDefs = gql`
 
   type Query {
     me: User
+    health: Boolean!
   }
 
   type Mutation {
@@ -46,6 +47,7 @@ export const resolvers = {
       __: unknown,
       { user }: { user?: { id: string; email: string } },
     ) => user || null,
+    health: () => Boolean(db),
   },
   Mutation: {
     async register(
@@ -114,7 +116,10 @@ export const resolvers = {
   },
 };
 
-/** Assign database instance to resolvers */
+/**
+ * Assign the active database instance used by resolvers.
+ * The health query relies on this value to determine readiness.
+ */
 export function setDb(database: Database) {
   db = database;
 }

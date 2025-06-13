@@ -65,6 +65,14 @@ query {
 }
 ```
 
+To verify the API server is ready, send the health query:
+
+```graphql
+query {
+  health
+}
+```
+
 Authentication mutations return both a short-lived access token and a long-lived
 `refreshToken`. Use the `refreshToken` mutation with the provided refresh token
 to obtain a new access token. Call `logout` with the refresh token to invalidate

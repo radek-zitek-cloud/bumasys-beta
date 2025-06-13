@@ -34,3 +34,7 @@
 - Added environment variable override mapping and related tests.
 - Updated README with override instructions.
 - Ran npm run lint and npm test.
+2025-06-13
+- Added health GraphQL query and resolver returning readiness state.
+- Documented usage in README and added health tests.
+- Ran npm install, lint and tests.
