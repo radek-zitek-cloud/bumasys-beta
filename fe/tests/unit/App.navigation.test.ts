@@ -1,5 +1,5 @@
-import { describe, expect, it, beforeEach } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { useAuthStore } from '../../src/stores/auth'
 
 describe('Navigation Item Access Control', () => {
@@ -40,7 +40,7 @@ describe('Navigation Item Access Control', () => {
     ]
 
     // Test the logic that would be in isNavigationItemDisabled function
-    function isNavigationItemDisabled(item: any) {
+    function isNavigationItemDisabled (item: any) {
       // Skip separator items (they don't have disable property)
       if (item.separator) {
         return false
@@ -54,7 +54,7 @@ describe('Navigation Item Access Control', () => {
     }
 
     // Test each navigation item
-    navigationItems.forEach(item => {
+    for (const item of navigationItems) {
       if (item.separator) {
         // Separators are not disabled
         expect(isNavigationItemDisabled(item)).toBe(false)
@@ -65,7 +65,7 @@ describe('Navigation Item Access Control', () => {
         // Other items should be disabled when not authenticated
         expect(isNavigationItemDisabled(item)).toBe(true)
       }
-    })
+    }
   })
 
   it('should enable all navigation items when user is authenticated', () => {
@@ -101,7 +101,7 @@ describe('Navigation Item Access Control', () => {
     ]
 
     // Test the logic that would be in isNavigationItemDisabled function
-    function isNavigationItemDisabled(item: any) {
+    function isNavigationItemDisabled (item: any) {
       // Skip separator items (they don't have disable property)
       if (item.separator) {
         return false
@@ -115,8 +115,8 @@ describe('Navigation Item Access Control', () => {
     }
 
     // Test each navigation item - all should be enabled when authenticated
-    navigationItems.forEach(item => {
+    for (const item of navigationItems) {
       expect(isNavigationItemDisabled(item)).toBe(false)
-    })
+    }
   })
 })
