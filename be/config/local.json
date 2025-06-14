@@ -1,1 +1,10 @@
-{}
+{
+  "newFeature": {
+    "enabled": true,
+    "options": {
+      "maxRetries": 3,
+      "timeout": 5000
+    }
+  },
+  "customSetting": "dynamicValue"
+}
