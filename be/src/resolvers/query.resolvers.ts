@@ -122,21 +122,25 @@ export const queryResolvers = {
    */
   config: () => {
     // Return a shallow copy of config with sensitive values redacted
-    const redactKeys = ['sourceToken', 'password', 'secret', 'token'];
-    function redact(obj: any): any {
+    const redactKeys = ['sourcetoken', 'password', 'jwtsecret'];
+    function redact(obj: any, key?: string): any {
       if (Array.isArray(obj)) {
-      return obj.map(redact);
+      return obj.map((item) => redact(item));
       }
       if (obj && typeof obj === 'object') {
       const result: Record<string, any> = {};
-      for (const key of Object.keys(obj)) {
-        if (redactKeys.some((rk) => key.toLowerCase().includes(rk))) {
-        result[key] = '[REDACTED]';
+      for (const objKey of Object.keys(obj)) {
+        if (redactKeys.some((rk) => objKey.toLowerCase() === rk)) {
+        result[objKey] = '[REDACTED]';
         } else {
-        result[key] = redact(obj[key]);
+        result[objKey] = redact(obj[objKey], objKey);
         }
       }
       return result;
+      }
+      // For dbFile, return only the filename for security
+      if (key === 'dbFile' && typeof obj === 'string') {
+        return obj.split(/[/\\]/).pop() || obj;
       }
       return obj;
     }

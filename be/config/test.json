@@ -1,1 +1,9 @@
-{}
+{
+  "logging": {
+    "betterStack": {
+      "enabled": false,
+      "sourceToken": "",
+      "endpoint": ""
+    }
+  }
+}
