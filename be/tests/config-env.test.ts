@@ -9,7 +9,7 @@ test('env overrides config values', () => {
   process.env.JWT_SECRET = 'envsecret123';
   process.env.DB_FILE = path.join(__dirname, 'env-db.json');
   jest.resetModules();
-  const config = require('../src/config').default;
+  const config = require('../src/utils/config').default;
   expect(config.port).toBe(5005);
   expect(config.jwtSecret).toBe('envsecret123');
   expect(config.dbFile).toBe(process.env.DB_FILE);

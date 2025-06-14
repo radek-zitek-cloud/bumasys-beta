@@ -8,7 +8,7 @@
 import type { Request } from 'express';
 import type { GraphQLContext } from '../types';
 import { AuthService, UserService } from '../services';
-import logger from '../logger';
+import logger from '../utils/logger';
 
 /**
  * Service instances for authentication operations
