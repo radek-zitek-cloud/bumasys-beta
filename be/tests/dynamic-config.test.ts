@@ -35,6 +35,27 @@ describe('Dynamic Configuration', () => {
     expect(config.logging.level).toBe('debug');
   });
 
+  test('demonstrates the core issue solution: adding config without code changes', () => {
+    process.env.JWT_SECRET = 'testsecret1234567890';
+    process.env.DB_FILE = path.join(__dirname, 'test-db.json');
+    
+    const config = require('../src/utils/config').default;
+    
+    // These new fields were added to local.json without any code changes
+    // This demonstrates the solution to the original issue
+    expect(config.newFeature).toBeDefined();
+    expect(config.newFeature.enabled).toBe(true);
+    expect(config.newFeature.options.maxRetries).toBe(3);
+    expect(config.newFeature.options.timeout).toBe(5000);
+    expect(config.customSetting).toBe('dynamicValue');
+    
+    // Nested access also works
+    expect(config.newFeature.options).toEqual({
+      maxRetries: 3,
+      timeout: 5000
+    });
+  });
+
   test('can access any new field added to JSON without code changes', () => {
     process.env.JWT_SECRET = 'testsecret1234567890';
     process.env.DB_FILE = path.join(__dirname, 'test-db.json');

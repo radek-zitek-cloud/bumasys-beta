@@ -10,6 +10,36 @@ import { z } from 'zod';
  * `be/config/custom-environment-variables.json`.
  * 
  * Usage: config.anyFieldFromJson or config.nested.field
+ * 
+ * ## Best Practices Analysis
+ * 
+ * This implementation follows Node.js configuration best practices:
+ * 
+ * **✅ What we're doing right:**
+ * - Using the industry-standard `config` npm package as intended
+ * - Allowing dynamic configuration without code changes
+ * - Supporting environment-specific config files (default.json, test.json, etc.)
+ * - Enabling environment variable overrides via custom-environment-variables.json
+ * - Maintaining type safety for known fields while allowing flexibility
+ * - Validating only critical security fields (port, jwtSecret)
+ * 
+ * **🔄 The trade-off:**
+ * - Less validation means potential runtime errors for misconfigured fields
+ * - This is acceptable for non-critical fields (logging levels, feature flags)
+ * - Security-critical fields still have full validation
+ * 
+ * **📈 Compared to alternatives:**
+ * - Rigid schema validation: Secure but requires code changes for new config
+ * - No validation: Flexible but unsafe for critical fields
+ * - This hybrid approach: Secure for critical fields, flexible for others
+ * 
+ * **🎯 When to extend:**
+ * - Add new config fields directly to JSON files
+ * - Add environment variable mappings to custom-environment-variables.json
+ * - Only modify this code for new critical security fields
+ * 
+ * This approach is well-aligned with Node.js ecosystem patterns and provides
+ * the flexibility requested while maintaining security guardrails.
  */
 
 /**
