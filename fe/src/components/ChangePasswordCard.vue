@@ -45,29 +45,29 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+  import { computed, ref } from 'vue'
 
-/** Username field for accessibility (hidden). */
-const username = ref("");
-/** Current password. */
-const oldPass = ref("");
-/** New password to set. */
-const newPass = ref("");
-/** Confirmation field for the new password. */
-const confirm = ref("");
+  /** Username field for accessibility (hidden). */
+  const username = ref('')
+  /** Current password. */
+  const oldPass = ref('')
+  /** New password to set. */
+  const newPass = ref('')
+  /** Confirmation field for the new password. */
+  const confirm = ref('')
 
-/** True when the new password and confirmation match. */
-const match = computed(
-  () => newPass.value !== "" && newPass.value === confirm.value,
-);
+  /** True when the new password and confirmation match. */
+  const match = computed(
+    () => newPass.value !== '' && newPass.value === confirm.value,
+  )
 
-const emit = defineEmits<{
-  (e: "change", payload: { oldPassword: string; newPassword: string }): void;
-  (e: "cancel"): void;
-}>();
+  const emit = defineEmits<{
+    (e: 'change', payload: { oldPassword: string, newPassword: string }): void
+    (e: 'cancel'): void
+  }>()
 
-/** Emit the change event with the old and new password. */
-function onChange() {
-  emit("change", { oldPassword: oldPass.value, newPassword: newPass.value });
-}
+  /** Emit the change event with the old and new password. */
+  function onChange () {
+    emit('change', { oldPassword: oldPass.value, newPassword: newPass.value })
+  }
 </script>

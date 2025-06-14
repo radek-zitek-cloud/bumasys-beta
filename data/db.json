@@ -11,7 +11,10 @@
     {
       "id": "1749839891408",
       "email": "radekzitek@gmail.com",
-      "password": "$2b$10$qC6y3iHEwd34rqB8HuIF2eGAWpWqZDUo7VYU5eW1kdRl1FzvCzZHO"
+      "password": "$2b$10$qC6y3iHEwd34rqB8HuIF2eGAWpWqZDUo7VYU5eW1kdRl1FzvCzZHO",
+      "firstName": "Radek",
+      "lastName": "Zítek",
+      "note": "The second one."
     }
   ]
 }

@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 /** Emits logout or cancel actions. */
-defineEmits<{
-  (e: "logout" | "cancel"): void;
-}>();
+  defineEmits<{
+    (e: 'logout' | 'cancel'): void
+  }>()
 </script>

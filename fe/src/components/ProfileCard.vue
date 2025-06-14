@@ -18,35 +18,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { useAuthStore } from "../stores/auth";
+  import { ref } from 'vue'
+  import { useAuthStore } from '../stores/auth'
 
-/** Auth store to prefill user information. */
-const auth = useAuthStore();
+  /** Auth store to prefill user information. */
+  const auth = useAuthStore()
 
-/** User email address. */
-const email = ref(auth.user?.email ?? "");
-/** User first name. */
-const firstName = ref(auth.user?.firstName ?? "");
-/** User last name. */
-const lastName = ref(auth.user?.lastName ?? "");
-/** Optional user note. */
-const note = ref(auth.user?.note ?? "");
+  /** User email address. */
+  const email = ref(auth.user?.email ?? '')
+  /** User first name. */
+  const firstName = ref(auth.user?.firstName ?? '')
+  /** User last name. */
+  const lastName = ref(auth.user?.lastName ?? '')
+  /** Optional user note. */
+  const note = ref(auth.user?.note ?? '')
 
-const emit = defineEmits<{
-  (
-    e: "save",
-    payload: { firstName: string; lastName: string; note: string },
-  ): void;
-  (e: "cancel"): void;
-}>();
+  const emit = defineEmits<{
+    (
+      e: 'save',
+      payload: { firstName: string, lastName: string, note: string },
+    ): void
+    (e: 'cancel'): void
+  }>()
 
-/** Emit the save event with updated profile fields. */
-function onSave() {
-  emit("save", {
-    firstName: firstName.value,
-    lastName: lastName.value,
-    note: note.value,
-  });
-}
+  /** Emit the save event with updated profile fields. */
+  function onSave () {
+    emit('save', {
+      firstName: firstName.value,
+      lastName: lastName.value,
+      note: note.value,
+    })
+  }
 </script>

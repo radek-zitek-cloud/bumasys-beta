@@ -30,20 +30,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+  import { ref } from 'vue'
 
-/** Email address provided by the user. */
-const email = ref("");
-/** Password provided by the user. */
-const password = ref("");
+  /** Email address provided by the user. */
+  const email = ref('')
+  /** Password provided by the user. */
+  const password = ref('')
 
-const emit = defineEmits<{
-  (e: "login", payload: { email: string; password: string }): void;
-  (e: "cancel"): void;
-}>();
+  const emit = defineEmits<{
+    (e: 'login', payload: { email: string, password: string }): void
+    (e: 'cancel'): void
+  }>()
 
-/** Emit the login event with the form data. */
-function onLogin() {
-  emit("login", { email: email.value, password: password.value });
-}
+  /** Emit the login event with the form data. */
+  function onLogin () {
+    emit('login', { email: email.value, password: password.value })
+  }
 </script>

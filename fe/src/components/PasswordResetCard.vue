@@ -20,18 +20,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+  import { ref } from 'vue'
 
-/** Email address for password reset. */
-const email = ref("");
+  /** Email address for password reset. */
+  const email = ref('')
 
-const emit = defineEmits<{
-  (e: "reset", email: string): void;
-  (e: "cancel"): void;
-}>();
+  const emit = defineEmits<{
+    (e: 'reset', email: string): void
+    (e: 'cancel'): void
+  }>()
 
-/** Emit the reset event with the provided email. */
-function onReset() {
-  emit("reset", email.value);
-}
+  /** Emit the reset event with the provided email. */
+  function onReset () {
+    emit('reset', email.value)
+  }
 </script>

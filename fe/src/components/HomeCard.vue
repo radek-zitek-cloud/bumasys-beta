@@ -14,10 +14,10 @@
 </template>
 
 <script setup lang="ts">
-import { useTheme } from "vuetify";
+  import { useTheme } from 'vuetify'
 
-import fulcrumBlack from "@/assets/fulcrum-black.png";
-import fulcrumWhite from "@/assets/fulcrum-white.png";
+  import fulcrumBlack from '@/assets/fulcrum-black.png'
+  import fulcrumWhite from '@/assets/fulcrum-white.png'
 
-const theme = useTheme();
+  const theme = useTheme()
 </script>
