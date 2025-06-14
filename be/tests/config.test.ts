@@ -25,17 +25,7 @@ describe('Config query', () => {
       .send({
         query: `
         query {
-          config {
-            port
-            accessTokenExpiresIn
-            refreshTokenExpiresIn
-            dbFile
-            logging {
-              betterStack {
-                enabled
-              }
-            }
-          }
+          config
         }
       `,
       });
@@ -56,17 +46,7 @@ describe('Config query', () => {
       .send({
         query: `
         query {
-          config {
-            port
-            accessTokenExpiresIn
-            refreshTokenExpiresIn
-            dbFile
-            logging {
-              betterStack {
-                enabled
-              }
-            }
-          }
+          config
         }
       `,
       });
@@ -75,5 +55,47 @@ describe('Config query', () => {
     const configStr = JSON.stringify(res.body.data.config);
     expect(configStr).not.toContain('jwtSecret');
     expect(configStr).not.toContain('sourceToken');
+  });
+
+  test('returns all dynamic configuration fields without code changes', async () => {
+    const res = await request(app)
+      .post('/graphql')
+      .send({
+        query: `
+        query {
+          config
+        }
+      `,
+      });
+
+    expect(res.body.data.config).toBeTruthy();
+    
+    // Check that all required fields from problem statement are present
+    const config = res.body.data.config;
+    
+    // Original fields should be present
+    expect(config.port).toBe(4000);
+    expect(config.accessTokenExpiresIn).toBe('60m');
+    expect(config.refreshTokenExpiresIn).toBe('7d');
+    expect(config.dbFile).toBe('config-db.json');
+    
+    // Complete logging structure should be present (was partially missing before)
+    expect(config.logging).toBeTruthy();
+    expect(config.logging.level).toBe('debug'); // This was missing before
+    expect(config.logging.betterStack).toBeTruthy();
+    expect(typeof config.logging.betterStack.enabled).toBe('boolean');
+    
+    // Dynamic fields should be present (were completely missing before)
+    expect(config.newFeature).toBeTruthy();
+    expect(config.newFeature.enabled).toBe(true);
+    expect(config.newFeature.options).toBeTruthy();
+    expect(config.newFeature.options.maxRetries).toBe(3);
+    expect(config.newFeature.options.timeout).toBe(5000);
+    
+    expect(config.customSetting).toBe('dynamicValue');
+    
+    // Sensitive fields should be completely excluded
+    expect(config.jwtSecret).toBeUndefined();
+    expect(config.logging.betterStack.sourceToken).toBeUndefined();
   });
 });

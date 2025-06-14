@@ -128,20 +128,20 @@ export const queryResolvers = {
    * @returns Configuration object without sensitive information
    */
   config: () => {
-    // Return a shallow copy of config with sensitive values redacted
+    // Return a shallow copy of config with sensitive keys completely removed
     const redactKeys = ['sourcetoken', 'password', 'jwtsecret'];
     function redact(obj: any, key?: string): any {
       if (Array.isArray(obj)) {
         return obj.map((item) => redact(item));
       }
       if (obj && typeof obj === 'object') {
-        const result: Record<string, any> = {};
-        for (const objKey of Object.keys(obj)) {
-          if (redactKeys.some((rk) => objKey.toLowerCase() === rk)) {
-            result[objKey] = '[REDACTED]';
-          } else {
-            result[objKey] = redact(obj[objKey], objKey);
-          }
+      const result: Record<string, any> = {};
+      for (const objKey of Object.keys(obj)) {
+        if (redactKeys.some((rk) => objKey.toLowerCase() === rk)) {
+        // Skip sensitive keys entirely - don't include them in the result
+        continue;
+        } else {
+        result[objKey] = redact(obj[objKey], objKey);
         }
         return result;
       }
