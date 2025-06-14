@@ -36,6 +36,7 @@ import type {
   CreateProjectStatusReportInput,
   UpdateProjectStatusReportInput,
 } from '../types';
+import logger from '../utils/logger';
 import {
   AuthService,
   UserService,
@@ -131,18 +132,27 @@ export const mutationResolvers = {
    * @returns Promise resolving to authentication payload
    */
   register: async (_: unknown, args: RegisterInput) => {
-    // Create the user
-    const user = await userService.createUser(args);
+    logger.debug({ operation: 'register', email: args.email }, 'Processing user registration');
+    
+    try {
+      // Create the user
+      const user = await userService.createUser(args);
 
-    // Generate authentication tokens
-    const accessToken = authService.signToken(user.id);
-    const refreshToken = await authService.signRefreshToken(user.id);
+      // Generate authentication tokens
+      const accessToken = authService.signToken(user.id);
+      const refreshToken = await authService.signRefreshToken(user.id);
 
-    return {
-      token: accessToken,
-      refreshToken,
-      user,
-    };
+      logger.info({ operation: 'register', userId: user.id, email: args.email }, 'User registration completed successfully');
+      
+      return {
+        token: accessToken,
+        refreshToken,
+        user,
+      };
+    } catch (error) {
+      logger.warn({ operation: 'register', email: args.email, error: error instanceof Error ? error.message : String(error) }, 'User registration failed');
+      throw error;
+    }
   },
 
   /**
@@ -152,7 +162,16 @@ export const mutationResolvers = {
    * @returns Promise resolving to authentication payload
    */
   login: async (_: unknown, args: LoginInput) => {
-    return authService.authenticateUser(args);
+    logger.debug({ operation: 'login', email: args.email }, 'Processing user login');
+    
+    try {
+      const result = await authService.authenticateUser(args);
+      logger.info({ operation: 'login', email: args.email, userId: result.user.id }, 'User login completed successfully');
+      return result;
+    } catch (error) {
+      logger.warn({ operation: 'login', email: args.email, error: error instanceof Error ? error.message : String(error) }, 'User login failed');
+      throw error;
+    }
   },
 
   /**
