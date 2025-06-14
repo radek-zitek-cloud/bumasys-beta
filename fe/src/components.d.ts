@@ -20,5 +20,9 @@ declare module 'vue' {
     RegisterCard: typeof import('./components/RegisterCard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    UserCreateDialog: typeof import('./components/UserCreateDialog.vue')['default']
+    UserDeleteDialog: typeof import('./components/UserDeleteDialog.vue')['default']
+    UserEditDialog: typeof import('./components/UserEditDialog.vue')['default']
+    UserViewDialog: typeof import('./components/UserViewDialog.vue')['default']
   }
 }
