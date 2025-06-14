@@ -144,7 +144,8 @@ export const queryResolvers = {
       }
       return obj;
     }
-    return redact(config);
+    // Return the entire loaded config object, with sensitive values redacted
+    return redact({ ...config });
   },
 
   /**
