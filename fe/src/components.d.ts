@@ -13,6 +13,7 @@ declare module 'vue' {
     ComplexityCreateDialog: typeof import('./components/ComplexityCreateDialog.vue')['default']
     ComplexityDeleteDialog: typeof import('./components/ComplexityDeleteDialog.vue')['default']
     ComplexityEditDialog: typeof import('./components/ComplexityEditDialog.vue')['default']
+    ConfigDisplayCard: typeof import('./components/ConfigDisplayCard.vue')['default']
     DebugInfoCard: typeof import('./components/DebugInfoCard.vue')['default']
     LoginCard: typeof import('./components/LoginCard.vue')['default']
     LogoutCard: typeof import('./components/LogoutCard.vue')['default']
