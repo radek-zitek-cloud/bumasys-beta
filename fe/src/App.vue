@@ -126,7 +126,7 @@ function notify(message: string, success = true) {
 /**
  * Reactive state for the navigation drawer.
  */
-const drawer = ref(false);
+const drawer = ref(true);
 
 /** Authentication store controlling login state. */
 const auth = useAuthStore();
@@ -216,11 +216,20 @@ async function handleLogin(payload: { email: string; password: string }) {
 }
 
 /** Handle register form submission via the GraphQL API. */
-async function handleRegister(payload: { email: string; password: string }) {
+async function handleRegister(payload: {
+  email: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+  note?: string;
+}) {
   try {
     const { register } = await authApi.register(
       payload.email,
       payload.password,
+      payload.firstName,
+      payload.lastName,
+      payload.note,
     );
     auth.setAuth(register);
     notify("Registration successful");

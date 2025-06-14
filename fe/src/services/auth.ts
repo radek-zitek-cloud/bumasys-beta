@@ -1,42 +1,42 @@
-import { useAuthStore } from "../stores/auth";
+import { useAuthStore } from '../stores/auth'
 
 /** GraphQL helper to perform POST requests. */
-async function graphql<T>(
+async function graphql<T> (
   query: string,
   variables?: Record<string, unknown>,
   token?: string,
 ): Promise<T> {
-  const res = await fetch("/graphql", {
-    method: "POST",
+  const res = await fetch('/graphql', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify({ query, variables }),
-  });
-  const json = await res.json();
+  })
+  const json = await res.json()
   if (json.errors) {
-    throw new Error(json.errors[0].message);
+    throw new Error(json.errors[0].message)
   }
-  return json.data as T;
+  return json.data as T
 }
 
 export interface User {
-  id: string;
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  note?: string;
+  id: string
+  email: string
+  firstName?: string
+  lastName?: string
+  note?: string
 }
 
 export interface AuthPayload {
-  token: string;
-  refreshToken: string;
-  user: User;
+  token: string
+  refreshToken: string
+  user: User
 }
 
 /** Login and obtain auth payload. */
-export function login(email: string, password: string) {
+export function login (email: string, password: string) {
   return graphql<{ login: AuthPayload }>(
     `
       mutation ($email: String!, $password: String!) {
@@ -54,15 +54,33 @@ export function login(email: string, password: string) {
       }
     `,
     { email, password },
-  );
+  )
 }
 
 /** Register a new account and return auth payload. */
-export function register(email: string, password: string) {
+export function register (
+  email: string,
+  password: string,
+  firstName?: string,
+  lastName?: string,
+  note?: string,
+) {
   return graphql<{ register: AuthPayload }>(
     `
-      mutation ($email: String!, $password: String!) {
-        register(email: $email, password: $password) {
+      mutation (
+        $email: String!
+        $password: String!
+        $firstName: String
+        $lastName: String
+        $note: String
+      ) {
+        register(
+          email: $email
+          password: $password
+          firstName: $firstName
+          lastName: $lastName
+          note: $note
+        ) {
           token
           refreshToken
           user {
@@ -75,12 +93,12 @@ export function register(email: string, password: string) {
         }
       }
     `,
-    { email, password },
-  );
+    { email, password, firstName, lastName, note },
+  )
 }
 
 /** Request password reset email. */
-export function resetPassword(email: string) {
+export function resetPassword (email: string) {
   return graphql<{ resetPassword: boolean }>(
     `
       mutation ($email: String!) {
@@ -88,12 +106,12 @@ export function resetPassword(email: string) {
       }
     `,
     { email },
-  );
+  )
 }
 
 /** Change the password for the current user. */
-export function changePassword(oldPassword: string, newPassword: string) {
-  const store = useAuthStore();
+export function changePassword (oldPassword: string, newPassword: string) {
+  const store = useAuthStore()
   return graphql<{ changePassword: boolean }>(
     `
       mutation ($old: String!, $new: String!) {
@@ -102,11 +120,11 @@ export function changePassword(oldPassword: string, newPassword: string) {
     `,
     { old: oldPassword, new: newPassword },
     store.token,
-  );
+  )
 }
 
 /** Logout using the refresh token. */
-export function logout(refreshToken: string) {
+export function logout (refreshToken: string) {
   return graphql<{ logout: boolean }>(
     `
       mutation ($token: String!) {
@@ -114,11 +132,11 @@ export function logout(refreshToken: string) {
       }
     `,
     { token: refreshToken },
-  );
+  )
 }
 
 /** Refresh the access token using a refresh token. */
-export function refresh(refreshToken: string) {
+export function refresh (refreshToken: string) {
   return graphql<{ refreshToken: AuthPayload }>(
     `
       mutation ($token: String!) {
@@ -136,17 +154,17 @@ export function refresh(refreshToken: string) {
       }
     `,
     { token: refreshToken },
-  );
+  )
 }
 
 /** Update the authenticated user's profile fields. */
-export function updateUser(
+export function updateUser (
   id: string,
   firstName: string,
   lastName: string,
   note: string,
 ) {
-  const store = useAuthStore();
+  const store = useAuthStore()
   return graphql<{ updateUser: User }>(
     `
       mutation (
@@ -171,5 +189,5 @@ export function updateUser(
     `,
     { id, firstName, lastName, note },
     store.token,
-  );
+  )
 }

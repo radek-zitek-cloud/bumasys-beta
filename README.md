@@ -59,7 +59,7 @@ The back end reads settings using the [`config`](https://www.npmjs.com/package/c
 
 After running the development server, open `http://localhost:3000` in your browser. The navigation drawer links (Home, People, Teams, Tasks, Budget, References, and Users) each lead to a dedicated page that you can further extend. Edit components in `src/` to continue customizing the application.
 
-The app bar contains a triple-dot menu that adapts based on authentication state. When logged out it offers **Login**, **Register**, and **Password Reset** actions. Once logged in the menu switches to **Profile**, **Change Password**, and **Logout**. Authentication dialogs now appear below the navigation bar on the top-right of the page and submit requests to the GraphQL API for all authentication operations. User actions in these dialogs show success or error notifications via snackbars. The **Profile** dialog lets users edit their first and last name as well as a note while the email field is read-only.
+The app bar contains a triple-dot menu that adapts based on authentication state. When logged out it offers **Login**, **Register**, and **Password Reset** actions. Once logged in the menu switches to **Profile**, **Change Password**, and **Logout**. Authentication dialogs now appear below the navigation bar on the top-right of the page and submit requests to the GraphQL API for all authentication operations. User actions in these dialogs show success or error notifications via snackbars. The **Register** dialog now collects optional first and last name and a note. The **Profile** dialog lets users edit these fields while the email is read-only.
 
 For the API you can send the following query using `curl` or a GraphQL client. You can also override configuration values on the fly:
 
@@ -93,7 +93,8 @@ authenticated user's name and email.
 Authentication mutations return both a short-lived access token and a long-lived
 `refreshToken`. Use the `refreshToken` mutation with the provided refresh token
 to obtain a new access token. Call `logout` with the refresh token to invalidate
-it.
+it. The front-end persists authentication state in `localStorage` so sessions
+survive a full page reload.
 
 Authenticated clients can manage users via the `users`, `user`, `createUser`,
 `updateUser`, and `deleteUser` operations. User records include optional

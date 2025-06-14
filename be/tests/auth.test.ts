@@ -21,9 +21,10 @@ afterAll(() => {
 describe('Auth', () => {
   test('register, login, refresh and logout', async () => {
     const registerRes = await request(app).post('/graphql').send({
-      query: `mutation { register(email: "test@example.com", password: "pass") { token refreshToken user { id email } } }`,
+      query: `mutation { register(email: "test@example.com", password: "pass", firstName: "Test", lastName: "User", note: "N") { token refreshToken user { id email firstName lastName note } } }`,
     });
     const { refreshToken } = registerRes.body.data.register;
+    expect(registerRes.body.data.register.user.firstName).toBe('Test');
     expect(refreshToken).toBeTruthy();
 
     const loginRes = await request(app).post('/graphql').send({
