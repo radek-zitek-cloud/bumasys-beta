@@ -11,9 +11,10 @@ const logger = pino({
             target: 'pino-pretty',
             options: {
               colorize: false,
+              hideObject: true,
               translateTime: 'SYS:isoDateTime',
             },
-            level: 'info',
+            level: 'debug',
           },
           ...(config.logging.betterStack.sourceToken
             ? [
@@ -22,7 +23,7 @@ const logger = pino({
                   options: {
                     sourceToken: config.logging.betterStack.sourceToken,
                   },
-                  level: 'info',
+                  level: 'debug',
                 },
               ]
             : []),
