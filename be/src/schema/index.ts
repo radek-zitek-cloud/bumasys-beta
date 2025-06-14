@@ -623,6 +623,56 @@ export const typeDefs = gql`
   }
 
   """
+  Backend configuration object (sensitive values excluded)
+  """
+  type Config {
+    """
+    Server port number
+    """
+    port: Int!
+
+    """
+    Access token expiration duration
+    """
+    accessTokenExpiresIn: String!
+
+    """
+    Refresh token expiration duration
+    """
+    refreshTokenExpiresIn: String!
+
+    """
+    Database file path (sanitized)
+    """
+    dbFile: String!
+
+    """
+    Logging configuration
+    """
+    logging: LoggingConfig!
+  }
+
+  """
+  Logging configuration object
+  """
+  type LoggingConfig {
+    """
+    BetterStack logging configuration
+    """
+    betterStack: BetterStackConfig!
+  }
+
+  """
+  BetterStack logging configuration (source token excluded)
+  """
+  type BetterStackConfig {
+    """
+    Whether BetterStack logging is enabled
+    """
+    enabled: Boolean!
+  }
+
+  """
   Query operations for reading data
   """
   type Query {
@@ -637,6 +687,11 @@ export const typeDefs = gql`
     Returns true when the server and database are ready
     """
     health: Boolean!
+
+    """
+    Get backend configuration (sensitive values excluded)
+    """
+    config: Config!
 
     """
     Get all users in the system (requires authentication)
