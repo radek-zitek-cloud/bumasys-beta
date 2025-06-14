@@ -6,5 +6,9 @@
       "timeout": 5000
     }
   },
-  "customSetting": "dynamicValue"
+  "customSetting": "dynamicValue",
+  "testField": {
+    "dynamic": "field",
+    "addedWithoutCodeChanges": true
+  }
 }

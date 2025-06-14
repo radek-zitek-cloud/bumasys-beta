@@ -167,13 +167,35 @@ function loadConfig(): KnownConfig {
       },
       
       ownKeys(target) {
-        // Return keys from the target object, which includes all the base config keys
-        return Reflect.ownKeys(target);
+        // Return keys from both the target object and all dynamic config properties
+        const targetKeys = Reflect.ownKeys(target);
+        const configKeys = Object.getOwnPropertyNames(configLib);
+        const allKeys = new Set([...targetKeys, ...configKeys]);
+        return Array.from(allKeys);
       },
       
       getOwnPropertyDescriptor(target, prop) {
-        // Use the default descriptor from the target object
-        return Reflect.getOwnPropertyDescriptor(target, prop);
+        if (typeof prop === 'symbol') {
+          return Reflect.getOwnPropertyDescriptor(target, prop);
+        }
+        
+        // If property exists in target, return its descriptor
+        const targetDescriptor = Reflect.getOwnPropertyDescriptor(target, prop);
+        if (targetDescriptor) {
+          return targetDescriptor;
+        }
+        
+        // For dynamic properties from configLib, create an enumerable descriptor
+        if (configLib.has(prop)) {
+          return {
+            value: configLib.get(prop),
+            writable: true,
+            enumerable: true,
+            configurable: true
+          };
+        }
+        
+        return undefined;
       }
     });
 

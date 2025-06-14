@@ -17,6 +17,7 @@ import { gql } from 'graphql-tag';
  * - Mutation: Write operations for authentication and user management
  */
 export const typeDefs = gql`
+  scalar JSON
   """
   User object representing a registered user in the system
   """
@@ -622,55 +623,6 @@ export const typeDefs = gql`
     user: User!
   }
 
-  """
-  Backend configuration object (sensitive values excluded)
-  """
-  type Config {
-    """
-    Server port number
-    """
-    port: Int!
-
-    """
-    Access token expiration duration
-    """
-    accessTokenExpiresIn: String!
-
-    """
-    Refresh token expiration duration
-    """
-    refreshTokenExpiresIn: String!
-
-    """
-    Database file path (sanitized)
-    """
-    dbFile: String!
-
-    """
-    Logging configuration
-    """
-    logging: LoggingConfig!
-  }
-
-  """
-  Logging configuration object
-  """
-  type LoggingConfig {
-    """
-    BetterStack logging configuration
-    """
-    betterStack: BetterStackConfig!
-  }
-
-  """
-  BetterStack logging configuration (source token excluded)
-  """
-  type BetterStackConfig {
-    """
-    Whether BetterStack logging is enabled
-    """
-    enabled: Boolean!
-  }
 
   """
   Query operations for reading data
@@ -690,8 +642,19 @@ export const typeDefs = gql`
 
     """
     Get backend configuration (sensitive values excluded)
+    This returns a dynamic configuration object that includes all fields from JSON config files.
+    
+    Known fields include:
+    - port: Int - Server port number
+    - accessTokenExpiresIn: String - Access token expiration duration  
+    - refreshTokenExpiresIn: String - Refresh token expiration duration
+    - dbFile: String - Database file path (sanitized)
+    - logging: Object - Complete logging configuration including level and betterStack
+    
+    Additional fields may be present based on configuration files without code changes.
+    Sensitive fields like jwtSecret and sourceToken are automatically redacted.
     """
-    config: Config!
+    config: JSON!
 
     """
     Get all users in the system (requires authentication)

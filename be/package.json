@@ -24,6 +24,7 @@
     "config": "^3.3.9",
     "express": "^4.21.2",
     "graphql-tag": "^2.12.6",
+    "graphql-type-json": "^0.3.2",
     "jsonwebtoken": "^9.0.2",
     "lowdb": "^7.0.1",
     "pino": "^9.7.0",

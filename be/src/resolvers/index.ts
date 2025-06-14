@@ -38,12 +38,14 @@ import {
   TaskStatusReportService,
   ProjectStatusReportService,
 } from '../services';
+import GraphQLJSON from 'graphql-type-json';
 
 /**
  * Combined GraphQL resolvers object
  * Contains all query and mutation resolvers organized by type
  */
 export const resolvers = {
+  JSON: GraphQLJSON,
   Query: queryResolvers,
   Mutation: mutationResolvers,
   Organization: organizationResolvers,
