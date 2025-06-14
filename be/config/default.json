@@ -6,8 +6,8 @@
   "dbFile": "../data/db.json",
   "logging": {
     "betterStack": {
-      "enabled": false,
-      "sourceToken": ""
+      "enabled": true,
+      "sourceToken": "XWWLqcyfPhMk6ULogXJs7fHd"
     }
   }
 }
