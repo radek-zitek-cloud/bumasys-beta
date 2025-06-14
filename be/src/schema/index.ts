@@ -48,6 +48,186 @@ export const typeDefs = gql`
   }
 
   """
+  Organization object representing a company or organization
+  """
+  type Organization {
+    """
+    Unique identifier for the organization
+    """
+    id: ID!
+
+    """
+    Organization name
+    """
+    name: String!
+
+    """
+    Optional description
+    """
+    description: String
+
+    """
+    Optional root department reference
+    """
+    rootDepartmentId: ID
+
+    """
+    Optional root staff member reference
+    """
+    rootStaffId: ID
+
+    """
+    Root department object (if set)
+    """
+    rootDepartment: Department
+
+    """
+    Root staff member object (if set)
+    """
+    rootStaff: Staff
+
+    """
+    All departments in this organization
+    """
+    departments: [Department!]!
+
+    """
+    All staff members in this organization
+    """
+    staff: [Staff!]!
+  }
+
+  """
+  Department object representing a department within an organization
+  """
+  type Department {
+    """
+    Unique identifier for the department
+    """
+    id: ID!
+
+    """
+    Department name
+    """
+    name: String!
+
+    """
+    Optional description
+    """
+    description: String
+
+    """
+    Organization this department belongs to
+    """
+    organizationId: ID!
+
+    """
+    Optional parent department ID
+    """
+    parentDepartmentId: ID
+
+    """
+    Optional manager ID
+    """
+    managerId: ID
+
+    """
+    Organization object this department belongs to
+    """
+    organization: Organization!
+
+    """
+    Parent department (if set)
+    """
+    parentDepartment: Department
+
+    """
+    Manager of this department (if set)
+    """
+    manager: Staff
+
+    """
+    Child departments
+    """
+    childDepartments: [Department!]!
+
+    """
+    Staff members in this department
+    """
+    staff: [Staff!]!
+  }
+
+  """
+  Staff object representing a staff member in the organization
+  """
+  type Staff {
+    """
+    Unique identifier for the staff member
+    """
+    id: ID!
+
+    """
+    First name
+    """
+    firstName: String!
+
+    """
+    Last name
+    """
+    lastName: String!
+
+    """
+    Email address (unique)
+    """
+    email: String!
+
+    """
+    Optional phone number
+    """
+    phone: String
+
+    """
+    Role/position
+    """
+    role: String!
+
+    """
+    Organization this staff member belongs to
+    """
+    organizationId: ID!
+
+    """
+    Department this staff member belongs to
+    """
+    departmentId: ID!
+
+    """
+    Optional supervisor ID
+    """
+    supervisorId: ID
+
+    """
+    Organization object this staff member belongs to
+    """
+    organization: Organization!
+
+    """
+    Department object this staff member belongs to
+    """
+    department: Department!
+
+    """
+    Supervisor (if set)
+    """
+    supervisor: Staff
+
+    """
+    Subordinates reporting to this staff member
+    """
+    subordinates: [Staff!]!
+  }
+
+  """
   Authentication payload returned by login and registration operations
   """
   type AuthPayload {
@@ -93,6 +273,41 @@ export const typeDefs = gql`
     Returns null if user not found
     """
     user(id: ID!): User
+
+    """
+    Get all organizations (requires authentication)
+    """
+    organizations: [Organization!]!
+
+    """
+    Get a specific organization by ID (requires authentication)
+    Returns null if organization not found
+    """
+    organization(id: ID!): Organization
+
+    """
+    Get all departments (requires authentication)
+    Optionally filter by organization
+    """
+    departments(organizationId: ID): [Department!]!
+
+    """
+    Get a specific department by ID (requires authentication)
+    Returns null if department not found
+    """
+    department(id: ID!): Department
+
+    """
+    Get all staff members (requires authentication)
+    Optionally filter by organization or department
+    """
+    staff(organizationId: ID, departmentId: ID): [Staff!]!
+
+    """
+    Get a specific staff member by ID (requires authentication)
+    Returns null if staff member not found
+    """
+    staffMember(id: ID!): Staff
   }
 
   """
@@ -162,5 +377,85 @@ export const typeDefs = gql`
     Initiate password reset process (placeholder implementation)
     """
     resetPassword(email: String!): Boolean!
+
+    """
+    Create a new organization (requires authentication)
+    """
+    createOrganization(name: String!, description: String): Organization!
+
+    """
+    Update an existing organization (requires authentication)
+    """
+    updateOrganization(
+      id: ID!
+      name: String
+      description: String
+      rootDepartmentId: ID
+      rootStaffId: ID
+    ): Organization!
+
+    """
+    Delete an organization by ID (requires authentication)
+    """
+    deleteOrganization(id: ID!): Boolean!
+
+    """
+    Create a new department (requires authentication)
+    """
+    createDepartment(
+      name: String!
+      description: String
+      organizationId: ID!
+      parentDepartmentId: ID
+    ): Department!
+
+    """
+    Update an existing department (requires authentication)
+    """
+    updateDepartment(
+      id: ID!
+      name: String
+      description: String
+      parentDepartmentId: ID
+      managerId: ID
+    ): Department!
+
+    """
+    Delete a department by ID (requires authentication)
+    """
+    deleteDepartment(id: ID!): Boolean!
+
+    """
+    Create a new staff member (requires authentication)
+    """
+    createStaff(
+      firstName: String!
+      lastName: String!
+      email: String!
+      phone: String
+      role: String!
+      organizationId: ID!
+      departmentId: ID!
+      supervisorId: ID
+    ): Staff!
+
+    """
+    Update an existing staff member (requires authentication)
+    """
+    updateStaff(
+      id: ID!
+      firstName: String
+      lastName: String
+      email: String
+      phone: String
+      role: String
+      departmentId: ID
+      supervisorId: ID
+    ): Staff!
+
+    """
+    Delete a staff member by ID (requires authentication)
+    """
+    deleteStaff(id: ID!): Boolean!
   }
 `;

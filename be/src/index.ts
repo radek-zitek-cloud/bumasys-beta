@@ -9,12 +9,20 @@
 import express from 'express';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
-import { createDb, Database } from './db';
+import { createDatabase } from './utils/database.utils';
+import type { Database } from './types';
 import config from './utils/config';
 import logger from './utils/logger';
-import { typeDefs, resolvers, setDb } from './schema';
+import { typeDefs } from './schema';
+import { resolvers, initializeResolvers } from './resolvers';
 import { createGraphQLContext, initializeAuthMiddleware } from './middleware';
-import { AuthService, UserService } from './services';
+import {
+  AuthService,
+  UserService,
+  OrganizationService,
+  DepartmentService,
+  StaffService,
+} from './services';
 import { validateDatabase } from './utils';
 
 /**
@@ -31,6 +39,12 @@ interface AppInstances {
   authService: AuthService;
   /** User service instance */
   userService: UserService;
+  /** Organization service instance */
+  organizationService: OrganizationService;
+  /** Department service instance */
+  departmentService: DepartmentService;
+  /** Staff service instance */
+  staffService: StaffService;
 }
 
 /**
@@ -53,19 +67,28 @@ export async function createApp(): Promise<AppInstances> {
 
   // Initialize database
   logger.info('Initializing database...');
-  const db = await createDb(config.dbFile);
+  const db = await createDatabase(config.dbFile);
   await validateDatabase(db);
 
   // Initialize services
   logger.info('Setting up services...');
   const authService = new AuthService(db);
   const userService = new UserService(db);
+  const organizationService = new OrganizationService(db);
+  const departmentService = new DepartmentService(db);
+  const staffService = new StaffService(db);
+
+  // Initialize resolvers with all services
+  initializeResolvers(
+    authService,
+    userService,
+    organizationService,
+    departmentService,
+    staffService,
+  );
 
   // Initialize middleware with services
   initializeAuthMiddleware(authService, userService);
-
-  // Set up database for legacy compatibility
-  setDb(db);
 
   // Initialize Apollo Server with GraphQL schema
   logger.info('Setting up GraphQL server...');
@@ -113,7 +136,16 @@ export async function createApp(): Promise<AppInstances> {
 
   logger.info('Application initialization completed');
 
-  return { app, server, db, authService, userService };
+  return {
+    app,
+    server,
+    db,
+    authService,
+    userService,
+    organizationService,
+    departmentService,
+    staffService,
+  };
 }
 
 /**

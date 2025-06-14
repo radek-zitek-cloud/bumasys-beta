@@ -63,6 +63,12 @@ export interface Database {
     users: User[];
     /** Array of active user sessions */
     sessions: Session[];
+    /** Array of all organizations in the system */
+    organizations: Organization[];
+    /** Array of all departments in the system */
+    departments: Department[];
+    /** Array of all staff members in the system */
+    staff: Staff[];
   };
   /** Write current data to persistent storage */
   write(): Promise<void>;
@@ -145,4 +151,162 @@ export interface ChangePasswordInput {
   oldPassword: string;
   /** New password to set */
   newPassword: string;
+}
+
+/**
+ * Represents an organization in the system
+ */
+export interface Organization {
+  /** Unique identifier for the organization */
+  id: string;
+  /** Organization name */
+  name: string;
+  /** Optional description */
+  description?: string;
+  /** Optional root department ID */
+  rootDepartmentId?: string;
+  /** Optional root staff ID */
+  rootStaffId?: string;
+}
+
+/**
+ * Represents a department within an organization
+ */
+export interface Department {
+  /** Unique identifier for the department */
+  id: string;
+  /** Department name */
+  name: string;
+  /** Optional description */
+  description?: string;
+  /** Organization this department belongs to */
+  organizationId: string;
+  /** Optional parent department ID */
+  parentDepartmentId?: string;
+  /** Optional manager ID */
+  managerId?: string;
+}
+
+/**
+ * Represents a staff member in the system
+ */
+export interface Staff {
+  /** Unique identifier for the staff member */
+  id: string;
+  /** First name */
+  firstName: string;
+  /** Last name */
+  lastName: string;
+  /** Email address (unique) */
+  email: string;
+  /** Optional phone number */
+  phone?: string;
+  /** Role/position */
+  role: string;
+  /** Organization this staff member belongs to */
+  organizationId: string;
+  /** Department this staff member belongs to */
+  departmentId: string;
+  /** Optional supervisor ID */
+  supervisorId?: string;
+}
+
+/**
+ * Input parameters for creating an organization
+ */
+export interface CreateOrganizationInput {
+  /** Organization name */
+  name: string;
+  /** Optional description */
+  description?: string;
+}
+
+/**
+ * Input parameters for updating an organization
+ */
+export interface UpdateOrganizationInput {
+  /** Organization ID to update */
+  id: string;
+  /** New name (optional) */
+  name?: string;
+  /** New description (optional) */
+  description?: string;
+  /** New root department ID (optional) */
+  rootDepartmentId?: string;
+  /** New root staff ID (optional) */
+  rootStaffId?: string;
+}
+
+/**
+ * Input parameters for creating a department
+ */
+export interface CreateDepartmentInput {
+  /** Department name */
+  name: string;
+  /** Optional description */
+  description?: string;
+  /** Organization this department belongs to */
+  organizationId: string;
+  /** Optional parent department ID */
+  parentDepartmentId?: string;
+}
+
+/**
+ * Input parameters for updating a department
+ */
+export interface UpdateDepartmentInput {
+  /** Department ID to update */
+  id: string;
+  /** New name (optional) */
+  name?: string;
+  /** New description (optional) */
+  description?: string;
+  /** New parent department ID (optional) */
+  parentDepartmentId?: string;
+  /** New manager ID (optional) */
+  managerId?: string;
+}
+
+/**
+ * Input parameters for creating a staff member
+ */
+export interface CreateStaffInput {
+  /** First name */
+  firstName: string;
+  /** Last name */
+  lastName: string;
+  /** Email address */
+  email: string;
+  /** Optional phone number */
+  phone?: string;
+  /** Role/position */
+  role: string;
+  /** Organization this staff member belongs to */
+  organizationId: string;
+  /** Department this staff member belongs to */
+  departmentId: string;
+  /** Optional supervisor ID */
+  supervisorId?: string;
+}
+
+/**
+ * Input parameters for updating a staff member
+ */
+export interface UpdateStaffInput {
+  /** Staff ID to update */
+  id: string;
+  /** New first name (optional) */
+  firstName?: string;
+  /** New last name (optional) */
+  lastName?: string;
+  /** New email address (optional) */
+  email?: string;
+  /** New phone number (optional) */
+  phone?: string;
+  /** New role (optional) */
+  role?: string;
+  /** New department ID (optional) */
+  departmentId?: string;
+  /** New supervisor ID (optional) */
+  supervisorId?: string;
 }

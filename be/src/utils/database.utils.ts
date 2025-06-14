@@ -23,6 +23,9 @@ export async function createDatabase(filePath: string): Promise<Database> {
     const initialData = {
       users: [],
       sessions: [],
+      organizations: [],
+      departments: [],
+      staff: [],
     };
 
     // Ensure directory exists
@@ -41,6 +44,17 @@ export async function createDatabase(filePath: string): Promise<Database> {
   // Ensure sessions array exists for backward compatibility
   if (!data.sessions) {
     data.sessions = [];
+  }
+
+  // Ensure organization arrays exist for backward compatibility
+  if (!data.organizations) {
+    data.organizations = [];
+  }
+  if (!data.departments) {
+    data.departments = [];
+  }
+  if (!data.staff) {
+    data.staff = [];
   }
 
   // Return database interface
@@ -75,6 +89,18 @@ export async function validateDatabase(database: Database): Promise<void> {
     data.sessions = [];
   }
 
+  if (!Array.isArray(data.organizations)) {
+    data.organizations = [];
+  }
+
+  if (!Array.isArray(data.departments)) {
+    data.departments = [];
+  }
+
+  if (!Array.isArray(data.staff)) {
+    data.staff = [];
+  }
+
   // Clean up expired sessions (sessions older than refresh token expiry)
   const now = new Date();
   const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
@@ -103,6 +129,9 @@ export function getDatabaseStats(database: Database) {
   return {
     userCount: data.users.length,
     sessionCount: data.sessions.length,
+    organizationCount: data.organizations.length,
+    departmentCount: data.departments.length,
+    staffCount: data.staff.length,
     activeSessions: data.sessions.filter((session) => {
       const sessionDate = new Date(session.createdAt);
       const now = new Date();

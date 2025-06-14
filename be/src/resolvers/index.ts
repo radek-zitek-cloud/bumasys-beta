@@ -5,9 +5,24 @@
  * and provides initialization functions for setting up services.
  */
 
-import { queryResolvers, setUserService } from './query.resolvers';
-import { mutationResolvers, setServices } from './mutation.resolvers';
-import { AuthService, UserService } from '../services';
+import {
+  queryResolvers,
+  organizationResolvers,
+  departmentResolvers,
+  staffResolvers,
+  setServices as setQueryServices,
+} from './query.resolvers';
+import {
+  mutationResolvers,
+  setServices as setMutationServices,
+} from './mutation.resolvers';
+import {
+  AuthService,
+  UserService,
+  OrganizationService,
+  DepartmentService,
+  StaffService,
+} from '../services';
 
 /**
  * Combined GraphQL resolvers object
@@ -16,6 +31,9 @@ import { AuthService, UserService } from '../services';
 export const resolvers = {
   Query: queryResolvers,
   Mutation: mutationResolvers,
+  Organization: organizationResolvers,
+  Department: departmentResolvers,
+  Staff: staffResolvers,
 };
 
 /**
@@ -23,11 +41,28 @@ export const resolvers = {
  * Must be called during application startup after database initialization
  * @param authService - AuthService instance for authentication operations
  * @param userService - UserService instance for user operations
+ * @param organizationService - OrganizationService instance for organization operations
+ * @param departmentService - DepartmentService instance for department operations
+ * @param staffService - StaffService instance for staff operations
  */
 export function initializeResolvers(
   authService: AuthService,
   userService: UserService,
+  organizationService: OrganizationService,
+  departmentService: DepartmentService,
+  staffService: StaffService,
 ): void {
-  setUserService(userService);
-  setServices(authService, userService);
+  setQueryServices(
+    userService,
+    organizationService,
+    departmentService,
+    staffService,
+  );
+  setMutationServices(
+    authService,
+    userService,
+    organizationService,
+    departmentService,
+    staffService,
+  );
 }

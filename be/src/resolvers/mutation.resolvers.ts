@@ -11,23 +11,50 @@ import type {
   LoginInput,
   UpdateUserInput,
   ChangePasswordInput,
+  CreateOrganizationInput,
+  UpdateOrganizationInput,
+  CreateDepartmentInput,
+  UpdateDepartmentInput,
+  CreateStaffInput,
+  UpdateStaffInput,
 } from '../types';
-import { AuthService, UserService } from '../services';
+import {
+  AuthService,
+  UserService,
+  OrganizationService,
+  DepartmentService,
+  StaffService,
+} from '../services';
 
 /**
  * Service instances - will be set during application initialization
  */
 let authService: AuthService;
 let userService: UserService;
+let organizationService: OrganizationService;
+let departmentService: DepartmentService;
+let staffService: StaffService;
 
 /**
  * Set the service instances for resolvers to use
  * @param auth - AuthService instance
  * @param user - UserService instance
+ * @param organization - OrganizationService instance
+ * @param department - DepartmentService instance
+ * @param staff - StaffService instance
  */
-export function setServices(auth: AuthService, user: UserService): void {
+export function setServices(
+  auth: AuthService,
+  user: UserService,
+  organization: OrganizationService,
+  department: DepartmentService,
+  staff: StaffService,
+): void {
   authService = auth;
   userService = user;
+  organizationService = organization;
+  departmentService = department;
+  staffService = staff;
 }
 
 /**
@@ -193,5 +220,176 @@ export const mutationResolvers = {
     // 3. Send an email with reset instructions
     // 4. Store the token temporarily for verification
     return true;
+  },
+
+  /**
+   * Create a new organization
+   * @param _ - Parent object (unused)
+   * @param args - Organization creation data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the created organization
+   * @throws Error if user is not authenticated
+   */
+  createOrganization: async (
+    _: unknown,
+    args: CreateOrganizationInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return organizationService.createOrganization(args);
+  },
+
+  /**
+   * Update an existing organization
+   * @param _ - Parent object (unused)
+   * @param args - Organization update data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the updated organization
+   * @throws Error if user is not authenticated
+   */
+  updateOrganization: async (
+    _: unknown,
+    args: UpdateOrganizationInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return organizationService.updateOrganization(args);
+  },
+
+  /**
+   * Delete an organization
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing organization ID
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if deleted successfully
+   * @throws Error if user is not authenticated
+   */
+  deleteOrganization: async (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return organizationService.deleteOrganization(id);
+  },
+
+  /**
+   * Create a new department
+   * @param _ - Parent object (unused)
+   * @param args - Department creation data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the created department
+   * @throws Error if user is not authenticated
+   */
+  createDepartment: async (
+    _: unknown,
+    args: CreateDepartmentInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return departmentService.createDepartment(args);
+  },
+
+  /**
+   * Update an existing department
+   * @param _ - Parent object (unused)
+   * @param args - Department update data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the updated department
+   * @throws Error if user is not authenticated
+   */
+  updateDepartment: async (
+    _: unknown,
+    args: UpdateDepartmentInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return departmentService.updateDepartment(args);
+  },
+
+  /**
+   * Delete a department
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing department ID
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if deleted successfully
+   * @throws Error if user is not authenticated
+   */
+  deleteDepartment: async (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return departmentService.deleteDepartment(id);
+  },
+
+  /**
+   * Create a new staff member
+   * @param _ - Parent object (unused)
+   * @param args - Staff creation data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the created staff member
+   * @throws Error if user is not authenticated
+   */
+  createStaff: async (
+    _: unknown,
+    args: CreateStaffInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return staffService.createStaff(args);
+  },
+
+  /**
+   * Update an existing staff member
+   * @param _ - Parent object (unused)
+   * @param args - Staff update data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the updated staff member
+   * @throws Error if user is not authenticated
+   */
+  updateStaff: async (
+    _: unknown,
+    args: UpdateStaffInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return staffService.updateStaff(args);
+  },
+
+  /**
+   * Delete a staff member
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing staff ID
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if deleted successfully
+   * @throws Error if user is not authenticated
+   */
+  deleteStaff: async (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return staffService.deleteStaff(id);
   },
 };
