@@ -125,7 +125,7 @@ export function createUser (input: CreateUserInput): Promise<{ createUser: User 
         }
       }
     `,
-    input,
+    { ...input },
     store.token,
   )
 }
@@ -162,7 +162,7 @@ export function updateUser (input: UpdateUserInput): Promise<{ updateUser: User 
         }
       }
     `,
-    input,
+    { ...input },
     store.token,
   )
 }
