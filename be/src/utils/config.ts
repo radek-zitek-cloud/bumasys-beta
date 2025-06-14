@@ -206,21 +206,21 @@ function loadConfig(): KnownConfig {
     // Print the whole config as loaded (dynamically)
     // Use JSON.stringify with a replacer to avoid circular references
     // Only print enumerable properties
-    const configSnapshot: Record<string, unknown> = {};
-    for (const key of Object.keys(dynamicConfig)) {
-      configSnapshot[key] = dynamicConfig[key];
-    }
+    // const configSnapshot: Record<string, unknown> = {};
+    // for (const key of Object.keys(dynamicConfig)) {
+    //  configSnapshot[key] = dynamicConfig[key];
+    //
     // Add any additional dynamic keys from configLib not in baseConfig
-    for (const key of configLib.util.getConfigSources().flatMap(src => Object.keys(src.parsed || {}))) {
-      if (!(key in configSnapshot)) {
-        configSnapshot[key] = dynamicConfig[key];
-      }
-    }
-    // Mask sensitive fields before printing
-    if ('jwtSecret' in configSnapshot) {
-      configSnapshot['jwtSecret'] = '[REDACTED]';
-    }
-    console.info('Loaded config:', JSON.stringify(configSnapshot, null, 2));
+    // for (const key of configLib.util.getConfigSources().flatMap(src => Object.keys(src.parsed || {}))) {
+    //   if (!(key in configSnapshot)) {
+    //     configSnapshot[key] = dynamicConfig[key];
+    //   }
+    // }
+    //  Mask sensitive fields before printing
+    //  if ('jwtSecret' in configSnapshot) {
+    //   configSnapshot['jwtSecret'] = '[REDACTED]';
+    // }
+    // console.info('Loaded config:', JSON.stringify(configSnapshot, null, 2));
 
     return dynamicConfig;
   } catch (error) {

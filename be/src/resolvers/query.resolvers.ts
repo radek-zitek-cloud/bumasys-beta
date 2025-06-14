@@ -138,8 +138,9 @@ export const queryResolvers = {
         const result: Record<string, any> = {};
         for (const objKey of Object.keys(obj)) {
           if (redactKeys.some((rk) => objKey.toLowerCase() === rk)) {
-            // Skip sensitive keys entirely - don't include them in the result
-            continue;
+            // Redact sensitive keys by replacing their value with [REDACTED]
+            result[objKey] = '[REDACTED]';
+            // continue;
           } else {
             result[objKey] = redact(obj[objKey], objKey);
           }
