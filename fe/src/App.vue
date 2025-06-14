@@ -294,6 +294,8 @@
     } finally {
       auth.clearAuth()
       showLogout.value = false
+      // Navigate to home page after logout
+      router.push('/')
     }
   }
 
