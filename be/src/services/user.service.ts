@@ -45,12 +45,16 @@ export class UserService {
    * Find a user by email address
    * @param email - Email address to search for
    * @returns User object if found, undefined otherwise
+   * 
+   * @todo TODO: Consider implementing case-insensitive email search for better UX
+   * @todo TODO: Add email format validation
    */
   public findByEmail(email: string): User | undefined {
     logger.debug(
       { operation: 'findByEmail', email },
       'Searching for user by email',
     );
+    // TODO: Consider case-insensitive search: u.email.toLowerCase() === email.toLowerCase()
     const user = this.db.data.users.find((u) => u.email === email);
     logger.debug(
       { operation: 'findByEmail', email, found: !!user },
@@ -198,6 +202,9 @@ export class UserService {
    * Delete a user by ID
    * @param id - ID of the user to delete
    * @returns Promise resolving to true if deleted, false if not found
+   * 
+   * @todo TODO: Clean up related sessions when deleting a user
+   * @todo TODO: Consider cascading delete for user-related data (tasks, assignments, etc.)
    */
   public async deleteUser(id: string): Promise<boolean> {
     const index = this.db.data.users.findIndex((u) => u.id === id);
@@ -207,6 +214,10 @@ export class UserService {
 
     // Remove user from array
     this.db.data.users.splice(index, 1);
+    
+    // TODO: Remove related sessions to prevent orphaned sessions
+    // this.db.data.sessions = this.db.data.sessions.filter(s => s.userId !== id);
+    
     await this.db.write();
 
     return true;
