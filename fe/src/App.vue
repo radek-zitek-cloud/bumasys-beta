@@ -165,20 +165,20 @@
     { separator: true },
     {
       icon: 'mdi-account-group',
-      title: 'People',
-      subtitle: 'Manage team members',
+      title: 'Organization',
+      subtitle: 'Manage organizations, departments and staff',
       to: '/people',
     },
     {
       icon: 'mdi-account-multiple-outline',
       title: 'Teams',
-      subtitle: 'Manage teams',
+      subtitle: 'Manage teams and team members',
       to: '/teams',
     },
     {
       icon: 'mdi-clipboard-check-outline',
-      title: 'Tasks',
-      subtitle: 'Manage tasks',
+      title: 'Projects',
+      subtitle: 'Manage projects and tasks',
       to: '/tasks',
     },
     {
