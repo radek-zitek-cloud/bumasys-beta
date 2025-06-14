@@ -42,12 +42,20 @@ export async function createGraphQLContext({
   req: Request;
 }): Promise<GraphQLContext> {
   const authHeader = req.headers.authorization || '';
+  logger.debug(
+    { operation: 'createGraphQLContext', hasAuthHeader: !!authHeader },
+    'Creating GraphQL context',
+  );
 
   // Check if Authorization header contains a Bearer token
   if (authHeader.startsWith('Bearer ')) {
     try {
       // Extract token from "Bearer <token>" format
       const token = authHeader.slice(7);
+      logger.debug(
+        { operation: 'createGraphQLContext' },
+        'Extracted Bearer token from header',
+      );
 
       // Verify the token and extract user ID
       const payload = authService.verifyToken(token);
@@ -56,6 +64,10 @@ export async function createGraphQLContext({
       const user = userService.findById(payload.id);
 
       if (user) {
+        logger.debug(
+          { operation: 'createGraphQLContext', userId: user.id },
+          'User authenticated successfully',
+        );
         // Return context with user information (without password)
         return {
           user: {
@@ -63,6 +75,11 @@ export async function createGraphQLContext({
             email: user.email,
           },
         };
+      } else {
+        logger.warn(
+          { operation: 'createGraphQLContext', userId: payload.id },
+          'Token valid but user not found in database',
+        );
       }
     } catch (error) {
       // Log invalid token attempts for security monitoring
@@ -75,6 +92,10 @@ export async function createGraphQLContext({
   }
 
   // Return empty context if no valid authentication
+  logger.debug(
+    { operation: 'createGraphQLContext' },
+    'No valid authentication found, returning empty context',
+  );
   return {};
 }
 

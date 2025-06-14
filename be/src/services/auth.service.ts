@@ -9,6 +9,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import config from '../utils/config';
+import logger from '../utils/logger';
 import type { Database, AuthPayload, LoginInput, SafeUser } from '../types';
 
 /**
@@ -31,9 +32,15 @@ export class AuthService {
    * @returns Signed JWT access token
    */
   public signToken(userId: string): string {
-    return jwt.sign({ id: userId }, config.jwtSecret, {
+    logger.debug({ operation: 'signToken', userId }, 'Generating access token');
+    const token = jwt.sign({ id: userId }, config.jwtSecret, {
       expiresIn: config.accessTokenExpiresIn,
     });
+    logger.info(
+      { operation: 'signToken', userId },
+      'Access token generated successfully',
+    );
+    return token;
   }
 
   /**
@@ -42,6 +49,11 @@ export class AuthService {
    * @returns Promise resolving to signed refresh JWT
    */
   public async signRefreshToken(userId: string): Promise<string> {
+    logger.debug(
+      { operation: 'signRefreshToken', userId },
+      'Generating refresh token',
+    );
+
     const token = jwt.sign({ id: userId }, config.jwtSecret, {
       expiresIn: config.refreshTokenExpiresIn,
     });
@@ -54,6 +66,10 @@ export class AuthService {
     });
     await this.db.write();
 
+    logger.info(
+      { operation: 'signRefreshToken', userId },
+      'Refresh token generated and stored successfully',
+    );
     return token;
   }
 
@@ -64,7 +80,25 @@ export class AuthService {
    * @throws Error if token is invalid or expired
    */
   public verifyToken(token: string): jwt.JwtPayload {
-    return jwt.verify(token, config.jwtSecret) as jwt.JwtPayload;
+    logger.debug({ operation: 'verifyToken' }, 'Verifying access token');
+
+    try {
+      const payload = jwt.verify(token, config.jwtSecret) as jwt.JwtPayload;
+      logger.debug(
+        { operation: 'verifyToken', userId: payload.id },
+        'Access token verified successfully',
+      );
+      return payload;
+    } catch (error) {
+      logger.warn(
+        {
+          operation: 'verifyToken',
+          error: error instanceof Error ? error.message : String(error),
+        },
+        'Access token verification failed',
+      );
+      throw error;
+    }
   }
 
   /**
@@ -74,14 +108,39 @@ export class AuthService {
    * @throws Error if token is invalid, expired, or not found in database
    */
   public verifyRefreshToken(token: string): jwt.JwtPayload {
+    logger.debug(
+      { operation: 'verifyRefreshToken' },
+      'Verifying refresh token',
+    );
+
     // Check if token exists in our session store
     const session = this.db.data.sessions.find((s) => s.token === token);
     if (!session) {
+      logger.warn(
+        { operation: 'verifyRefreshToken' },
+        'Refresh token not found in session store',
+      );
       throw new Error('Invalid refresh token');
     }
 
-    // Verify the token signature and expiration
-    return jwt.verify(token, config.jwtSecret) as jwt.JwtPayload;
+    try {
+      // Verify the token signature and expiration
+      const payload = jwt.verify(token, config.jwtSecret) as jwt.JwtPayload;
+      logger.debug(
+        { operation: 'verifyRefreshToken', userId: payload.id },
+        'Refresh token verified successfully',
+      );
+      return payload;
+    } catch (error) {
+      logger.warn(
+        {
+          operation: 'verifyRefreshToken',
+          error: error instanceof Error ? error.message : String(error),
+        },
+        'Refresh token verification failed',
+      );
+      throw error;
+    }
   }
 
   /**
@@ -91,9 +150,18 @@ export class AuthService {
    * @throws Error if credentials are invalid
    */
   public async authenticateUser(credentials: LoginInput): Promise<AuthPayload> {
+    logger.debug(
+      { operation: 'authenticateUser', email: credentials.email },
+      'Authenticating user',
+    );
+
     // Find user by email
     const user = this.db.data.users.find((u) => u.email === credentials.email);
     if (!user) {
+      logger.warn(
+        { operation: 'authenticateUser', email: credentials.email },
+        'User not found during authentication',
+      );
       throw new Error('Invalid credentials');
     }
 
@@ -103,6 +171,14 @@ export class AuthService {
       user.password,
     );
     if (!isValidPassword) {
+      logger.warn(
+        {
+          operation: 'authenticateUser',
+          email: credentials.email,
+          userId: user.id,
+        },
+        'Invalid password during authentication',
+      );
       throw new Error('Invalid credentials');
     }
 
@@ -112,6 +188,16 @@ export class AuthService {
 
     // Return auth payload without password
     const { password, ...safeUser } = user;
+
+    logger.info(
+      {
+        operation: 'authenticateUser',
+        email: credentials.email,
+        userId: user.id,
+      },
+      'User authenticated successfully',
+    );
+
     return {
       token: accessToken,
       refreshToken,

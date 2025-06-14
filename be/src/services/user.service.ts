@@ -7,6 +7,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import logger from '../utils/logger';
 import type {
   Database,
   User,
@@ -46,7 +47,16 @@ export class UserService {
    * @returns User object if found, undefined otherwise
    */
   public findByEmail(email: string): User | undefined {
-    return this.db.data.users.find((u) => u.email === email);
+    logger.debug(
+      { operation: 'findByEmail', email },
+      'Searching for user by email',
+    );
+    const user = this.db.data.users.find((u) => u.email === email);
+    logger.debug(
+      { operation: 'findByEmail', email, found: !!user },
+      'User search by email completed',
+    );
+    return user;
   }
 
   /**
@@ -55,7 +65,16 @@ export class UserService {
    * @returns User object if found, undefined otherwise
    */
   public findById(id: string): User | undefined {
-    return this.db.data.users.find((u) => u.id === id);
+    logger.debug(
+      { operation: 'findById', userId: id },
+      'Searching for user by ID',
+    );
+    const user = this.db.data.users.find((u) => u.id === id);
+    logger.debug(
+      { operation: 'findById', userId: id, found: !!user },
+      'User search by ID completed',
+    );
+    return user;
   }
 
   /**
@@ -63,7 +82,13 @@ export class UserService {
    * @returns Array of safe user objects
    */
   public getAllUsers(): SafeUser[] {
-    return this.db.data.users.map(this.toSafeUser);
+    logger.debug({ operation: 'getAllUsers' }, 'Retrieving all users');
+    const users = this.db.data.users.map(this.toSafeUser);
+    logger.info(
+      { operation: 'getAllUsers', userCount: users.length },
+      'All users retrieved successfully',
+    );
+    return users;
   }
 
   /**
@@ -83,30 +108,55 @@ export class UserService {
    * @throws Error if email is already in use
    */
   public async createUser(userData: RegisterInput): Promise<SafeUser> {
+    logger.debug(
+      { operation: 'createUser', email: userData.email },
+      'Creating new user',
+    );
+
     // Check if email is already in use
     const existingUser = this.findByEmail(userData.email);
     if (existingUser) {
+      logger.warn(
+        { operation: 'createUser', email: userData.email },
+        'Attempted to create user with existing email',
+      );
       throw new Error('Email in use');
     }
 
-    // Hash the password
-    const hashedPassword = await hashPassword(userData.password);
+    try {
+      // Hash the password
+      const hashedPassword = await hashPassword(userData.password);
 
-    // Create new user object
-    const newUser: User = {
-      id: uuidv4(), // Generate UUID for the user ID
-      email: userData.email,
-      password: hashedPassword,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      note: userData.note,
-    };
+      // Create new user object
+      const newUser: User = {
+        id: uuidv4(), // Generate UUID for the user ID
+        email: userData.email,
+        password: hashedPassword,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        note: userData.note,
+      };
 
-    // Add to database
-    this.db.data.users.push(newUser);
-    await this.db.write();
+      // Add to database
+      this.db.data.users.push(newUser);
+      await this.db.write();
 
-    return this.toSafeUser(newUser);
+      logger.info(
+        { operation: 'createUser', email: userData.email, userId: newUser.id },
+        'User created successfully',
+      );
+      return this.toSafeUser(newUser);
+    } catch (error) {
+      logger.warn(
+        {
+          operation: 'createUser',
+          email: userData.email,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        'User creation failed',
+      );
+      throw error;
+    }
   }
 
   /**

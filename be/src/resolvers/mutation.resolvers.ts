@@ -36,6 +36,7 @@ import type {
   CreateProjectStatusReportInput,
   UpdateProjectStatusReportInput,
 } from '../types';
+import logger from '../utils/logger';
 import {
   AuthService,
   UserService,
@@ -131,18 +132,40 @@ export const mutationResolvers = {
    * @returns Promise resolving to authentication payload
    */
   register: async (_: unknown, args: RegisterInput) => {
-    // Create the user
-    const user = await userService.createUser(args);
+    logger.debug(
+      { operation: 'register', email: args.email },
+      'Processing user registration',
+    );
 
-    // Generate authentication tokens
-    const accessToken = authService.signToken(user.id);
-    const refreshToken = await authService.signRefreshToken(user.id);
+    try {
+      // Create the user
+      const user = await userService.createUser(args);
 
-    return {
-      token: accessToken,
-      refreshToken,
-      user,
-    };
+      // Generate authentication tokens
+      const accessToken = authService.signToken(user.id);
+      const refreshToken = await authService.signRefreshToken(user.id);
+
+      logger.info(
+        { operation: 'register', userId: user.id, email: args.email },
+        'User registration completed successfully',
+      );
+
+      return {
+        token: accessToken,
+        refreshToken,
+        user,
+      };
+    } catch (error) {
+      logger.warn(
+        {
+          operation: 'register',
+          email: args.email,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        'User registration failed',
+      );
+      throw error;
+    }
   },
 
   /**
@@ -152,7 +175,29 @@ export const mutationResolvers = {
    * @returns Promise resolving to authentication payload
    */
   login: async (_: unknown, args: LoginInput) => {
-    return authService.authenticateUser(args);
+    logger.debug(
+      { operation: 'login', email: args.email },
+      'Processing user login',
+    );
+
+    try {
+      const result = await authService.authenticateUser(args);
+      logger.info(
+        { operation: 'login', email: args.email, userId: result.user.id },
+        'User login completed successfully',
+      );
+      return result;
+    } catch (error) {
+      logger.warn(
+        {
+          operation: 'login',
+          email: args.email,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        'User login failed',
+      );
+      throw error;
+    }
   },
 
   /**
@@ -168,15 +213,41 @@ export const mutationResolvers = {
     args: ChangePasswordInput,
     { user }: GraphQLContext,
   ): Promise<boolean> => {
+    logger.debug(
+      { operation: 'changePassword', userId: user?.id },
+      'Processing password change request',
+    );
+
     if (!user) {
+      logger.warn(
+        { operation: 'changePassword' },
+        'Unauthenticated access attempt to changePassword mutation',
+      );
       throw new Error('Not authenticated');
     }
 
-    return userService.changePassword(
-      user.id,
-      args.oldPassword,
-      args.newPassword,
-    );
+    try {
+      const result = await userService.changePassword(
+        user.id,
+        args.oldPassword,
+        args.newPassword,
+      );
+      logger.info(
+        { operation: 'changePassword', userId: user.id },
+        'Password changed successfully',
+      );
+      return result;
+    } catch (error) {
+      logger.warn(
+        {
+          operation: 'changePassword',
+          userId: user.id,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        'Password change failed',
+      );
+      throw error;
+    }
   },
 
   /**
@@ -192,11 +263,47 @@ export const mutationResolvers = {
     args: RegisterInput,
     { user }: GraphQLContext,
   ) => {
+    logger.debug(
+      {
+        operation: 'createUser',
+        email: args.email,
+        requestingUserId: user?.id,
+      },
+      'Processing admin user creation',
+    );
+
     if (!user) {
+      logger.warn(
+        { operation: 'createUser', email: args.email },
+        'Unauthenticated access attempt to createUser mutation',
+      );
       throw new Error('Unauthenticated');
     }
 
-    return userService.createUser(args);
+    try {
+      const newUser = await userService.createUser(args);
+      logger.info(
+        {
+          operation: 'createUser',
+          email: args.email,
+          newUserId: newUser.id,
+          requestingUserId: user.id,
+        },
+        'Admin user creation completed successfully',
+      );
+      return newUser;
+    } catch (error) {
+      logger.warn(
+        {
+          operation: 'createUser',
+          email: args.email,
+          requestingUserId: user.id,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        'Admin user creation failed',
+      );
+      throw error;
+    }
   },
 
   /**

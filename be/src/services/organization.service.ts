@@ -7,6 +7,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import logger from '../utils/logger';
 import type {
   Database,
   Organization,
@@ -34,7 +35,18 @@ export class OrganizationService {
    * @returns Organization object if found, undefined otherwise
    */
   public findById(id: string): Organization | undefined {
-    return this.db.data.organizations.find((org) => org.id === id);
+    logger.debug(
+      { operation: 'findById', organizationId: id },
+      'Searching for organization by ID',
+    );
+    const organization = this.db.data.organizations.find(
+      (org) => org.id === id,
+    );
+    logger.debug(
+      { operation: 'findById', organizationId: id, found: !!organization },
+      'Organization search by ID completed',
+    );
+    return organization;
   }
 
   /**
@@ -51,7 +63,19 @@ export class OrganizationService {
    * @returns Array of all organization objects
    */
   public getAllOrganizations(): Organization[] {
-    return this.db.data.organizations;
+    logger.debug(
+      { operation: 'getAllOrganizations' },
+      'Retrieving all organizations',
+    );
+    const organizations = this.db.data.organizations;
+    logger.info(
+      {
+        operation: 'getAllOrganizations',
+        organizationCount: organizations.length,
+      },
+      'All organizations retrieved successfully',
+    );
+    return organizations;
   }
 
   /**
