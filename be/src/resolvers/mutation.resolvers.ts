@@ -187,15 +187,25 @@ export const mutationResolvers = {
     args: ChangePasswordInput,
     { user }: GraphQLContext,
   ): Promise<boolean> => {
+    logger.debug({ operation: 'changePassword', userId: user?.id }, 'Processing password change request');
+    
     if (!user) {
+      logger.warn({ operation: 'changePassword' }, 'Unauthenticated access attempt to changePassword mutation');
       throw new Error('Not authenticated');
     }
 
-    return userService.changePassword(
-      user.id,
-      args.oldPassword,
-      args.newPassword,
-    );
+    try {
+      const result = await userService.changePassword(
+        user.id,
+        args.oldPassword,
+        args.newPassword,
+      );
+      logger.info({ operation: 'changePassword', userId: user.id }, 'Password changed successfully');
+      return result;
+    } catch (error) {
+      logger.warn({ operation: 'changePassword', userId: user.id, error: error instanceof Error ? error.message : String(error) }, 'Password change failed');
+      throw error;
+    }
   },
 
   /**
@@ -211,11 +221,21 @@ export const mutationResolvers = {
     args: RegisterInput,
     { user }: GraphQLContext,
   ) => {
+    logger.debug({ operation: 'createUser', email: args.email, requestingUserId: user?.id }, 'Processing admin user creation');
+    
     if (!user) {
+      logger.warn({ operation: 'createUser', email: args.email }, 'Unauthenticated access attempt to createUser mutation');
       throw new Error('Unauthenticated');
     }
 
-    return userService.createUser(args);
+    try {
+      const newUser = await userService.createUser(args);
+      logger.info({ operation: 'createUser', email: args.email, newUserId: newUser.id, requestingUserId: user.id }, 'Admin user creation completed successfully');
+      return newUser;
+    } catch (error) {
+      logger.warn({ operation: 'createUser', email: args.email, requestingUserId: user.id, error: error instanceof Error ? error.message : String(error) }, 'Admin user creation failed');
+      throw error;
+    }
   },
 
   /**

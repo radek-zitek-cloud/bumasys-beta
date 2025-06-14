@@ -7,6 +7,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import logger from '../utils/logger';
 import type {
   Database,
   Project,
@@ -25,7 +26,10 @@ export class ProjectService {
    * @returns Promise resolving to array of all projects
    */
   public async getAllProjects(): Promise<Project[]> {
-    return this.db.data.projects;
+    logger.debug({ operation: 'getAllProjects' }, 'Retrieving all projects');
+    const projects = this.db.data.projects;
+    logger.info({ operation: 'getAllProjects', projectCount: projects.length }, 'All projects retrieved successfully');
+    return projects;
   }
 
   /**
@@ -34,7 +38,9 @@ export class ProjectService {
    * @returns Promise resolving to the project object or null if not found
    */
   public async findById(id: string): Promise<Project | null> {
+    logger.debug({ operation: 'findById', projectId: id }, 'Searching for project by ID');
     const project = this.db.data.projects.find((p) => p.id === id);
+    logger.debug({ operation: 'findById', projectId: id, found: !!project }, 'Project search by ID completed');
     return project || null;
   }
 

@@ -251,10 +251,21 @@ export const queryResolvers = {
     { id }: { id: string },
     { user }: GraphQLContext,
   ) => {
+    logger.debug({ operation: 'department', departmentId: id, userId: user?.id }, 'Processing department query');
+    
     if (!user) {
+      logger.warn({ operation: 'department', departmentId: id }, 'Unauthenticated access attempt to department query');
       throw new Error('Unauthenticated');
     }
-    return departmentService.findById(id);
+    
+    const department = departmentService.findById(id);
+    logger.info({ 
+      operation: 'department', 
+      departmentId: id, 
+      userId: user.id, 
+      found: !!department 
+    }, 'Department query completed');
+    return department;
   },
 
   /**
