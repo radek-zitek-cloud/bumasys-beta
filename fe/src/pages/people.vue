@@ -347,6 +347,68 @@
       />
     </v-dialog>
 
+    <!-- Department Dialogs -->
+    <v-dialog v-model="showDepartmentCreateDialog" max-width="600" persistent>
+      <DepartmentCreateDialog
+        :organizations="organizations"
+        :departments="departments"
+        @cancel="showDepartmentCreateDialog = false"
+        @created="handleDepartmentCreated"
+      />
+    </v-dialog>
+
+    <v-dialog v-model="showDepartmentEditDialog" max-width="600" persistent>
+      <DepartmentEditDialog
+        v-if="selectedDepartment"
+        :department="selectedDepartment"
+        :departments="departments"
+        :staff="staff"
+        @cancel="showDepartmentEditDialog = false"
+        @updated="handleDepartmentUpdated"
+      />
+    </v-dialog>
+
+    <v-dialog v-model="showDepartmentDeleteDialog" max-width="500" persistent>
+      <DepartmentDeleteDialog
+        v-if="selectedDepartment"
+        :department="selectedDepartment"
+        @cancel="showDepartmentDeleteDialog = false"
+        @deleted="handleDepartmentDeleted"
+      />
+    </v-dialog>
+
+    <!-- Staff Dialogs -->
+    <v-dialog v-model="showStaffCreateDialog" max-width="700" persistent>
+      <StaffCreateDialog
+        :organizations="organizations"
+        :departments="departments"
+        :staff="staff"
+        @cancel="showStaffCreateDialog = false"
+        @created="handleStaffCreated"
+      />
+    </v-dialog>
+
+    <v-dialog v-model="showStaffEditDialog" max-width="700" persistent>
+      <StaffEditDialog
+        v-if="selectedStaff"
+        :staff="selectedStaff"
+        :organizations="organizations"
+        :departments="departments"
+        :allStaff="staff"
+        @cancel="showStaffEditDialog = false"
+        @updated="handleStaffUpdated"
+      />
+    </v-dialog>
+
+    <v-dialog v-model="showStaffDeleteDialog" max-width="500" persistent>
+      <StaffDeleteDialog
+        v-if="selectedStaff"
+        :staff="selectedStaff"
+        @cancel="showStaffDeleteDialog = false"
+        @deleted="handleStaffDeleted"
+      />
+    </v-dialog>
+
     <!-- Snackbar for notifications -->
     <v-snackbar
       v-model="snackbar.show"
@@ -366,12 +428,18 @@
   import OrganizationEditDialog from '../components/OrganizationEditDialog.vue'
   import OrganizationViewDialog from '../components/OrganizationViewDialog.vue'
   import OrganizationDeleteDialog from '../components/OrganizationDeleteDialog.vue'
+  import DepartmentCreateDialog from '../components/DepartmentCreateDialog.vue'
+  import DepartmentEditDialog from '../components/DepartmentEditDialog.vue'
+  import DepartmentDeleteDialog from '../components/DepartmentDeleteDialog.vue'
+  import StaffCreateDialog from '../components/StaffCreateDialog.vue'
+  import StaffEditDialog from '../components/StaffEditDialog.vue'
+  import StaffDeleteDialog from '../components/StaffDeleteDialog.vue'
   import * as organizationService from '../services/organizations'
   import * as departmentService from '../services/departments'
   import * as staffService from '../services/staff'
   import type { Organization, CreateOrganizationInput, UpdateOrganizationInput } from '../services/organizations'
-  import type { Department } from '../services/departments'
-  import type { Staff } from '../services/staff'
+  import type { Department, CreateDepartmentInput, UpdateDepartmentInput } from '../services/departments'
+  import type { Staff, CreateStaffInput, UpdateStaffInput } from '../services/staff'
 
   /** Data table configuration */
   type DataTableHeaders = VDataTable['$props']['headers']
@@ -403,6 +471,8 @@
   const departments = ref<Department[]>([])
   const staff = ref<Staff[]>([])
   const selectedOrganization = ref<Organization | null>(null)
+  const selectedDepartment = ref<Department | null>(null)
+  const selectedStaff = ref<Staff | null>(null)
 
   /** Search filters */
   const organizationSearch = ref('')
@@ -419,6 +489,12 @@
   const showOrganizationEditDialog = ref(false)
   const showOrganizationViewDialog = ref(false)
   const showOrganizationDeleteDialog = ref(false)
+  const showDepartmentCreateDialog = ref(false)
+  const showDepartmentEditDialog = ref(false)
+  const showDepartmentDeleteDialog = ref(false)
+  const showStaffCreateDialog = ref(false)
+  const showStaffEditDialog = ref(false)
+  const showStaffDeleteDialog = ref(false)
 
   /** Data table configuration */
   const itemsPerPage = ref(10)
@@ -552,30 +628,118 @@
     }
   }
 
-  /** Department dialog handlers - placeholder for now */
+  /** Department dialog handlers */
   function openDepartmentCreateDialog() {
-    showSnackbar('Department creation coming soon', 'info')
+    showDepartmentCreateDialog.value = true
   }
 
   function openDepartmentEditDialog(department: Department) {
-    showSnackbar('Department editing coming soon', 'info')
+    selectedDepartment.value = department
+    showDepartmentEditDialog.value = true
   }
 
   function openDepartmentDeleteDialog(department: Department) {
-    showSnackbar('Department deletion coming soon', 'info')
+    selectedDepartment.value = department
+    showDepartmentDeleteDialog.value = true
   }
 
-  /** Staff dialog handlers - placeholder for now */
+  async function handleDepartmentCreated(departmentData: CreateDepartmentInput) {
+    try {
+      const { createDepartment } = await departmentService.createDepartment(departmentData)
+      departments.value.push(createDepartment)
+      showSnackbar('Department created successfully')
+      showDepartmentCreateDialog.value = false
+    } catch (error) {
+      console.error('Error creating department:', error)
+      showSnackbar((error as Error).message, 'error')
+    }
+  }
+
+  async function handleDepartmentUpdated(departmentData: UpdateDepartmentInput) {
+    try {
+      const { updateDepartment } = await departmentService.updateDepartment(departmentData)
+      const index = departments.value.findIndex(dept => dept.id === updateDepartment.id)
+      if (index !== -1) {
+        departments.value[index] = updateDepartment
+      }
+      showSnackbar('Department updated successfully')
+      showDepartmentEditDialog.value = false
+    } catch (error) {
+      console.error('Error updating department:', error)
+      showSnackbar((error as Error).message, 'error')
+    }
+  }
+
+  async function handleDepartmentDeleted(departmentId: string) {
+    try {
+      await departmentService.deleteDepartment(departmentId)
+      const index = departments.value.findIndex(dept => dept.id === departmentId)
+      if (index !== -1) {
+        departments.value.splice(index, 1)
+      }
+      showSnackbar('Department deleted successfully')
+      showDepartmentDeleteDialog.value = false
+    } catch (error) {
+      console.error('Error deleting department:', error)
+      showSnackbar((error as Error).message, 'error')
+    }
+  }
+
+  /** Staff dialog handlers */
   function openStaffCreateDialog() {
-    showSnackbar('Staff creation coming soon', 'info')
+    showStaffCreateDialog.value = true
   }
 
   function openStaffEditDialog(staffMember: Staff) {
-    showSnackbar('Staff editing coming soon', 'info')
+    selectedStaff.value = staffMember
+    showStaffEditDialog.value = true
   }
 
   function openStaffDeleteDialog(staffMember: Staff) {
-    showSnackbar('Staff deletion coming soon', 'info')
+    selectedStaff.value = staffMember
+    showStaffDeleteDialog.value = true
+  }
+
+  async function handleStaffCreated(staffData: CreateStaffInput) {
+    try {
+      const { createStaff } = await staffService.createStaff(staffData)
+      staff.value.push(createStaff)
+      showSnackbar('Staff member created successfully')
+      showStaffCreateDialog.value = false
+    } catch (error) {
+      console.error('Error creating staff member:', error)
+      showSnackbar((error as Error).message, 'error')
+    }
+  }
+
+  async function handleStaffUpdated(staffData: UpdateStaffInput) {
+    try {
+      const { updateStaff } = await staffService.updateStaff(staffData)
+      const index = staff.value.findIndex(member => member.id === updateStaff.id)
+      if (index !== -1) {
+        staff.value[index] = updateStaff
+      }
+      showSnackbar('Staff member updated successfully')
+      showStaffEditDialog.value = false
+    } catch (error) {
+      console.error('Error updating staff member:', error)
+      showSnackbar((error as Error).message, 'error')
+    }
+  }
+
+  async function handleStaffDeleted(staffId: string) {
+    try {
+      await staffService.deleteStaff(staffId)
+      const index = staff.value.findIndex(member => member.id === staffId)
+      if (index !== -1) {
+        staff.value.splice(index, 1)
+      }
+      showSnackbar('Staff member deleted successfully')
+      showStaffDeleteDialog.value = false
+    } catch (error) {
+      console.error('Error deleting staff member:', error)
+      showSnackbar((error as Error).message, 'error')
+    }
   }
 
   /** Load all data */
