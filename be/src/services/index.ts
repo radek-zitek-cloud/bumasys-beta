@@ -15,3 +15,7 @@ export { PriorityService } from './priority.service';
 export { ComplexityService } from './complexity.service';
 export { ProjectService } from './project.service';
 export { TaskService } from './task.service';
+export { TaskProgressService } from './task-progress.service';
+export { TaskEvaluationService } from './task-evaluation.service';
+export { TaskStatusReportService } from './task-status-report.service';
+export { ProjectStatusReportService } from './project-status-report.service';

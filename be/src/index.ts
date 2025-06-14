@@ -22,6 +22,15 @@ import {
   OrganizationService,
   DepartmentService,
   StaffService,
+  StatusService,
+  PriorityService,
+  ComplexityService,
+  ProjectService,
+  TaskService,
+  TaskProgressService,
+  TaskEvaluationService,
+  TaskStatusReportService,
+  ProjectStatusReportService,
 } from './services';
 import { validateDatabase } from './utils';
 
@@ -77,6 +86,15 @@ export async function createApp(): Promise<AppInstances> {
   const organizationService = new OrganizationService(db);
   const departmentService = new DepartmentService(db);
   const staffService = new StaffService(db);
+  const statusService = new StatusService(db);
+  const priorityService = new PriorityService(db);
+  const complexityService = new ComplexityService(db);
+  const projectService = new ProjectService(db);
+  const taskService = new TaskService(db);
+  const taskProgressService = new TaskProgressService(db);
+  const taskEvaluationService = new TaskEvaluationService(db);
+  const taskStatusReportService = new TaskStatusReportService(db);
+  const projectStatusReportService = new ProjectStatusReportService(db);
 
   // Initialize resolvers with all services
   initializeResolvers(
@@ -85,6 +103,15 @@ export async function createApp(): Promise<AppInstances> {
     organizationService,
     departmentService,
     staffService,
+    statusService,
+    priorityService,
+    complexityService,
+    projectService,
+    taskService,
+    taskProgressService,
+    taskEvaluationService,
+    taskStatusReportService,
+    projectStatusReportService,
   );
 
   // Initialize middleware with services

@@ -10,6 +10,12 @@ import {
   organizationResolvers,
   departmentResolvers,
   staffResolvers,
+  projectResolvers,
+  taskResolvers,
+  taskProgressResolvers,
+  taskEvaluationResolvers,
+  taskStatusReportResolvers,
+  projectStatusReportResolvers,
   setServices as setQueryServices,
 } from './query.resolvers';
 import {
@@ -22,6 +28,15 @@ import {
   OrganizationService,
   DepartmentService,
   StaffService,
+  StatusService,
+  PriorityService,
+  ComplexityService,
+  ProjectService,
+  TaskService,
+  TaskProgressService,
+  TaskEvaluationService,
+  TaskStatusReportService,
+  ProjectStatusReportService,
 } from '../services';
 
 /**
@@ -34,6 +49,12 @@ export const resolvers = {
   Organization: organizationResolvers,
   Department: departmentResolvers,
   Staff: staffResolvers,
+  Project: projectResolvers,
+  Task: taskResolvers,
+  TaskProgress: taskProgressResolvers,
+  TaskEvaluation: taskEvaluationResolvers,
+  TaskStatusReport: taskStatusReportResolvers,
+  ProjectStatusReport: projectStatusReportResolvers,
 };
 
 /**
@@ -44,6 +65,15 @@ export const resolvers = {
  * @param organizationService - OrganizationService instance for organization operations
  * @param departmentService - DepartmentService instance for department operations
  * @param staffService - StaffService instance for staff operations
+ * @param statusService - StatusService instance for status operations
+ * @param priorityService - PriorityService instance for priority operations
+ * @param complexityService - ComplexityService instance for complexity operations
+ * @param projectService - ProjectService instance for project operations
+ * @param taskService - TaskService instance for task operations
+ * @param taskProgressService - TaskProgressService instance for task progress operations
+ * @param taskEvaluationService - TaskEvaluationService instance for task evaluation operations
+ * @param taskStatusReportService - TaskStatusReportService instance for task status report operations
+ * @param projectStatusReportService - ProjectStatusReportService instance for project status report operations
  */
 export function initializeResolvers(
   authService: AuthService,
@@ -51,12 +81,30 @@ export function initializeResolvers(
   organizationService: OrganizationService,
   departmentService: DepartmentService,
   staffService: StaffService,
+  statusService: StatusService,
+  priorityService: PriorityService,
+  complexityService: ComplexityService,
+  projectService: ProjectService,
+  taskService: TaskService,
+  taskProgressService: TaskProgressService,
+  taskEvaluationService: TaskEvaluationService,
+  taskStatusReportService: TaskStatusReportService,
+  projectStatusReportService: ProjectStatusReportService,
 ): void {
   setQueryServices(
     userService,
     organizationService,
     departmentService,
     staffService,
+    statusService,
+    priorityService,
+    complexityService,
+    projectService,
+    taskService,
+    taskProgressService,
+    taskEvaluationService,
+    taskStatusReportService,
+    projectStatusReportService,
   );
   setMutationServices(
     authService,
