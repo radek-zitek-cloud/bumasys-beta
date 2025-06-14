@@ -14,7 +14,7 @@ const logger = pino({
               hideObject: true,
               translateTime: 'SYS:isoDateTime',
             },
-            level: 'debug',
+            level: config.logging.level || 'info',
           },
           ...(config.logging.betterStack.sourceToken
             ? [
@@ -26,7 +26,7 @@ const logger = pino({
                       endpoint: config.logging.betterStack.endpoint,
                     }
                   },
-                  level: 'debug',
+                  level: config.logging.level || 'info',
                 },
               ]
             : []),

@@ -5,6 +5,7 @@
   "refreshTokenExpiresIn": "7d",
   "dbFile": "../data/db.json",
   "logging": {
+    "level": "debug",
     "betterStack": {
       "enabled": true,
       "sourceToken": "XWWLqcyfPhMk6ULogXJs7fHd",

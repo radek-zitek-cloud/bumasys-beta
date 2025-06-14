@@ -121,18 +121,26 @@ export const queryResolvers = {
    * @returns Configuration object without sensitive information
    */
   config: () => {
-    return {
-      port: config.port,
-      accessTokenExpiresIn: config.accessTokenExpiresIn,
-      refreshTokenExpiresIn: config.refreshTokenExpiresIn,
-      dbFile: config.dbFile.replace(/^.*[/\\]/, ''), // Remove path, keep only filename for security
-      logging: {
-        betterStack: {
-          enabled: config.logging.betterStack.enabled,
-          // sourceToken excluded for security
-        },
-      },
-    };
+    // Return a shallow copy of config with sensitive values redacted
+    const redactKeys = ['sourceToken', 'password', 'secret', 'token'];
+    function redact(obj: any): any {
+      if (Array.isArray(obj)) {
+      return obj.map(redact);
+      }
+      if (obj && typeof obj === 'object') {
+      const result: Record<string, any> = {};
+      for (const key of Object.keys(obj)) {
+        if (redactKeys.some((rk) => key.toLowerCase().includes(rk))) {
+        result[key] = '[REDACTED]';
+        } else {
+        result[key] = redact(obj[key]);
+        }
+      }
+      return result;
+      }
+      return obj;
+    }
+    return redact(config);
   },
 
   /**
