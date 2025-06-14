@@ -100,8 +100,15 @@ export const queryResolvers = {
    */
   me: (_: unknown, __: unknown, { user }: GraphQLContext) => {
     logger.debug({ operation: 'me', hasUser: !!user }, 'Processing me query');
-    const result = user || null;
-    logger.info({ operation: 'me', userId: user?.id }, 'Me query completed');
+    if (!user) {
+      logger.info({ operation: 'me' }, 'Me query completed - no user');
+      return null;
+    }
+    const result = userService.getSafeUserById(user.id);
+    logger.info(
+      { operation: 'me', userId: user.id, found: !!result },
+      'Me query completed',
+    );
     return result;
   },
 
@@ -125,7 +132,7 @@ export const queryResolvers = {
     const redactKeys = ['sourcetoken', 'password', 'jwtsecret'];
     function redact(obj: any, key?: string): any {
       if (Array.isArray(obj)) {
-      return obj.map((item) => redact(item));
+        return obj.map((item) => redact(item));
       }
       if (obj && typeof obj === 'object') {
       const result: Record<string, any> = {};
@@ -136,8 +143,7 @@ export const queryResolvers = {
         } else {
         result[objKey] = redact(obj[objKey], objKey);
         }
-      }
-      return result;
+        return result;
       }
       // For dbFile, return only the filename for security
       if (key === 'dbFile' && typeof obj === 'string') {
@@ -145,7 +151,8 @@ export const queryResolvers = {
       }
       return obj;
     }
-    return redact(config);
+    // Return the entire loaded config object, with sensitive values redacted
+    return redact({ ...config });
   },
 
   /**
