@@ -84,3 +84,10 @@
 - Defaulted side navigation drawer to open.
 - Updated backend auth tests and README.
 - Ran npm install, lint and tests.
+2025-06-14
+
+- Added Vitest unit tests and Playwright e2e tests for the front end.
+- Added additional unit tests for backend database and config validation.
+- Updated README with testing instructions.
+- Installed new dev dependencies and created configuration files.
+- Ran pnpm lint & test in fe and npm lint & test in be to verify.

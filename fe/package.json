@@ -10,7 +10,9 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
     "format": "prettier --write .",
-    "lint": "eslint . --fix"
+    "lint": "eslint . --fix",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@fontsource/roboto": "5.2.5",
@@ -41,7 +43,12 @@
     "vite-plugin-vue-layouts-next": "^0.0.8",
     "vite-plugin-vuetify": "^2.1.1",
     "vue-router": "^4.5.0",
-    "vue-tsc": "^2.2.8"
+    "vue-tsc": "^2.2.8",
+    "vitest": "^1.4.0",
+    "@vue/test-utils": "^2.4.4",
+    "@testing-library/vue": "^8.1.0",
+    "jsdom": "^24.0.0",
+    "@playwright/test": "^1.42.0"
   },
   "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
 }

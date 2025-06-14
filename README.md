@@ -51,6 +51,20 @@ Build the front end for production:
 pnpm build
 ```
 
+## Testing
+
+Run linting and unit tests for both projects:
+
+```bash
+cd fe
+pnpm lint
+pnpm test
+pnpm test:e2e
+cd ../be
+npm run lint
+npm test
+```
+
 ## Configuration
 
 The back end reads settings using the [`config`](https://www.npmjs.com/package/config) library. Default values live in `be/config/default.json`. Create additional JSON files in that directory or use environment variables to override the defaults. The environment variable mapping is defined in `be/config/custom-environment-variables.json` and supports `PORT`, `JWT_SECRET`, and `DB_FILE`.
