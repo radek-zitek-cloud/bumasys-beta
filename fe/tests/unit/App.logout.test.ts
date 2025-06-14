@@ -20,7 +20,7 @@ describe('App Logout Navigation Logic', () => {
     expect(functionStartIndex).toBeGreaterThan(-1)
     expect(nextFunctionIndex).toBeGreaterThan(functionStartIndex)
 
-    const handleLogoutFunction = appVueContent.substring(functionStartIndex, nextFunctionIndex)
+    const handleLogoutFunction = appVueContent.slice(functionStartIndex, nextFunctionIndex)
 
     // Verify the logout function specifically contains both auth.clearAuth() and router.push('/')
     expect(handleLogoutFunction).toContain('auth.clearAuth()')
