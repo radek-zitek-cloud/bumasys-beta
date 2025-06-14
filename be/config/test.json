@@ -1,4 +1,5 @@
 {
+  "jwtSecret": "test-secret-key-12345",
   "logging": {
     "betterStack": {
       "enabled": false,

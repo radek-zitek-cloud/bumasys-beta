@@ -100,8 +100,15 @@ export const queryResolvers = {
    */
   me: (_: unknown, __: unknown, { user }: GraphQLContext) => {
     logger.debug({ operation: 'me', hasUser: !!user }, 'Processing me query');
-    const result = user || null;
-    logger.info({ operation: 'me', userId: user?.id }, 'Me query completed');
+    if (!user) {
+      logger.info({ operation: 'me' }, 'Me query completed - no user');
+      return null;
+    }
+    const result = userService.getSafeUserById(user.id);
+    logger.info(
+      { operation: 'me', userId: user.id, found: !!result },
+      'Me query completed',
+    );
     return result;
   },
 
@@ -125,18 +132,18 @@ export const queryResolvers = {
     const redactKeys = ['sourcetoken', 'password', 'jwtsecret'];
     function redact(obj: any, key?: string): any {
       if (Array.isArray(obj)) {
-      return obj.map((item) => redact(item));
+        return obj.map((item) => redact(item));
       }
       if (obj && typeof obj === 'object') {
-      const result: Record<string, any> = {};
-      for (const objKey of Object.keys(obj)) {
-        if (redactKeys.some((rk) => objKey.toLowerCase() === rk)) {
-        result[objKey] = '[REDACTED]';
-        } else {
-        result[objKey] = redact(obj[objKey], objKey);
+        const result: Record<string, any> = {};
+        for (const objKey of Object.keys(obj)) {
+          if (redactKeys.some((rk) => objKey.toLowerCase() === rk)) {
+            result[objKey] = '[REDACTED]';
+          } else {
+            result[objKey] = redact(obj[objKey], objKey);
+          }
         }
-      }
-      return result;
+        return result;
       }
       // For dbFile, return only the filename for security
       if (key === 'dbFile' && typeof obj === 'string') {
