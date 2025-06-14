@@ -7,3 +7,6 @@
 
 export { AuthService, hashPassword, comparePassword } from './auth.service';
 export { UserService } from './user.service';
+export { OrganizationService } from './organization.service';
+export { DepartmentService } from './department.service';
+export { StaffService } from './staff.service';
