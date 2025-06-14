@@ -35,9 +35,15 @@ export class DepartmentService {
    * @returns Department object if found, undefined otherwise
    */
   public findById(id: string): Department | undefined {
-    logger.debug({ operation: 'findById', departmentId: id }, 'Searching for department by ID');
+    logger.debug(
+      { operation: 'findById', departmentId: id },
+      'Searching for department by ID',
+    );
     const department = this.db.data.departments.find((dept) => dept.id === id);
-    logger.debug({ operation: 'findById', departmentId: id, found: !!department }, 'Department search by ID completed');
+    logger.debug(
+      { operation: 'findById', departmentId: id, found: !!department },
+      'Department search by ID completed',
+    );
     return department;
   }
 
@@ -80,14 +86,27 @@ export class DepartmentService {
   public async createDepartment(
     deptData: CreateDepartmentInput,
   ): Promise<Department> {
-    logger.debug({ operation: 'createDepartment', name: deptData.name, organizationId: deptData.organizationId }, 'Creating new department');
-    
+    logger.debug(
+      {
+        operation: 'createDepartment',
+        name: deptData.name,
+        organizationId: deptData.organizationId,
+      },
+      'Creating new department',
+    );
+
     // Validate organization exists
     const organization = this.db.data.organizations.find(
       (org) => org.id === deptData.organizationId,
     );
     if (!organization) {
-      logger.warn({ operation: 'createDepartment', organizationId: deptData.organizationId }, 'Attempted to create department for non-existent organization');
+      logger.warn(
+        {
+          operation: 'createDepartment',
+          organizationId: deptData.organizationId,
+        },
+        'Attempted to create department for non-existent organization',
+      );
       throw new Error('Organization not found');
     }
 
@@ -95,16 +114,25 @@ export class DepartmentService {
     if (deptData.parentDepartmentId) {
       const parentDept = this.findById(deptData.parentDepartmentId);
       if (!parentDept) {
-        logger.warn({ operation: 'createDepartment', parentDepartmentId: deptData.parentDepartmentId }, 'Attempted to create department with non-existent parent department');
+        logger.warn(
+          {
+            operation: 'createDepartment',
+            parentDepartmentId: deptData.parentDepartmentId,
+          },
+          'Attempted to create department with non-existent parent department',
+        );
         throw new Error('Parent department not found');
       }
       if (parentDept.organizationId !== deptData.organizationId) {
-        logger.warn({ 
-          operation: 'createDepartment', 
-          parentDepartmentId: deptData.parentDepartmentId,
-          parentOrgId: parentDept.organizationId,
-          targetOrgId: deptData.organizationId
-        }, 'Attempted to create department with parent from different organization');
+        logger.warn(
+          {
+            operation: 'createDepartment',
+            parentDepartmentId: deptData.parentDepartmentId,
+            parentOrgId: parentDept.organizationId,
+            targetOrgId: deptData.organizationId,
+          },
+          'Attempted to create department with parent from different organization',
+        );
         throw new Error(
           'Parent department must belong to the same organization',
         );
@@ -125,10 +153,26 @@ export class DepartmentService {
       this.db.data.departments.push(newDepartment);
       await this.db.write();
 
-      logger.info({ operation: 'createDepartment', departmentId: newDepartment.id, name: deptData.name, organizationId: deptData.organizationId }, 'Department created successfully');
+      logger.info(
+        {
+          operation: 'createDepartment',
+          departmentId: newDepartment.id,
+          name: deptData.name,
+          organizationId: deptData.organizationId,
+        },
+        'Department created successfully',
+      );
       return newDepartment;
     } catch (error) {
-      logger.warn({ operation: 'createDepartment', name: deptData.name, organizationId: deptData.organizationId, error: error instanceof Error ? error.message : String(error) }, 'Department creation failed');
+      logger.warn(
+        {
+          operation: 'createDepartment',
+          name: deptData.name,
+          organizationId: deptData.organizationId,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        'Department creation failed',
+      );
       throw error;
     }
   }

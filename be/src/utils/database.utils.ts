@@ -18,12 +18,18 @@ import type { Database } from '../types';
  */
 export async function createDatabase(filePath: string): Promise<Database> {
   const dbPath = path.resolve(filePath);
-  logger.debug({ operation: 'createDatabase', dbPath }, 'Creating database instance');
+  logger.debug(
+    { operation: 'createDatabase', dbPath },
+    'Creating database instance',
+  );
 
   // Create database file if it doesn't exist
   if (!fs.existsSync(dbPath)) {
-    logger.info({ operation: 'createDatabase', dbPath }, 'Database file does not exist, creating new one');
-    
+    logger.info(
+      { operation: 'createDatabase', dbPath },
+      'Database file does not exist, creating new one',
+    );
+
     const initialData = {
       users: [],
       sessions: [],
@@ -46,14 +52,23 @@ export async function createDatabase(filePath: string): Promise<Database> {
     // Ensure directory exists
     const dir = path.dirname(dbPath);
     if (!fs.existsSync(dir)) {
-      logger.debug({ operation: 'createDatabase', dir }, 'Creating database directory');
+      logger.debug(
+        { operation: 'createDatabase', dir },
+        'Creating database directory',
+      );
       fs.mkdirSync(dir, { recursive: true });
     }
 
     fs.writeFileSync(dbPath, JSON.stringify(initialData, null, 2));
-    logger.info({ operation: 'createDatabase', dbPath }, 'New database file created successfully');
+    logger.info(
+      { operation: 'createDatabase', dbPath },
+      'New database file created successfully',
+    );
   } else {
-    logger.debug({ operation: 'createDatabase', dbPath }, 'Using existing database file');
+    logger.debug(
+      { operation: 'createDatabase', dbPath },
+      'Using existing database file',
+    );
   }
 
   // Load existing data
@@ -112,18 +127,27 @@ export async function createDatabase(filePath: string): Promise<Database> {
   }
 
   // Return database interface
-  logger.info({ operation: 'createDatabase', dbPath }, 'Database instance created successfully');
+  logger.info(
+    { operation: 'createDatabase', dbPath },
+    'Database instance created successfully',
+  );
   return {
     get data() {
       return data;
     },
     async write() {
-      logger.debug({ operation: 'databaseWrite', dbPath }, 'Writing database to disk');
+      logger.debug(
+        { operation: 'databaseWrite', dbPath },
+        'Writing database to disk',
+      );
       // Write data atomically by writing to temp file first
       const tempPath = `${dbPath}.tmp`;
       fs.writeFileSync(tempPath, JSON.stringify(data, null, 2));
       fs.renameSync(tempPath, dbPath);
-      logger.debug({ operation: 'databaseWrite', dbPath }, 'Database write completed successfully');
+      logger.debug(
+        { operation: 'databaseWrite', dbPath },
+        'Database write completed successfully',
+      );
     },
   };
 }

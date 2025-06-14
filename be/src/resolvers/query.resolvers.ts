@@ -124,15 +124,24 @@ export const queryResolvers = {
    * @throws Error if user is not authenticated
    */
   users: (_: unknown, __: unknown, { user }: GraphQLContext) => {
-    logger.debug({ operation: 'users', userId: user?.id }, 'Processing users query');
-    
+    logger.debug(
+      { operation: 'users', userId: user?.id },
+      'Processing users query',
+    );
+
     if (!user) {
-      logger.warn({ operation: 'users' }, 'Unauthenticated access attempt to users query');
+      logger.warn(
+        { operation: 'users' },
+        'Unauthenticated access attempt to users query',
+      );
       throw new Error('Unauthenticated');
     }
-    
+
     const users = userService.getAllUsers();
-    logger.info({ operation: 'users', userId: user.id, userCount: users.length }, 'Users query completed successfully');
+    logger.info(
+      { operation: 'users', userId: user.id, userCount: users.length },
+      'Users query completed successfully',
+    );
     return users;
   },
 
@@ -145,20 +154,29 @@ export const queryResolvers = {
    * @throws Error if user is not authenticated
    */
   user: (_: unknown, { id }: { id: string }, { user }: GraphQLContext) => {
-    logger.debug({ operation: 'user', targetUserId: id, requestingUserId: user?.id }, 'Processing user query');
-    
+    logger.debug(
+      { operation: 'user', targetUserId: id, requestingUserId: user?.id },
+      'Processing user query',
+    );
+
     if (!user) {
-      logger.warn({ operation: 'user', targetUserId: id }, 'Unauthenticated access attempt to user query');
+      logger.warn(
+        { operation: 'user', targetUserId: id },
+        'Unauthenticated access attempt to user query',
+      );
       throw new Error('Unauthenticated');
     }
-    
+
     const targetUser = userService.getSafeUserById(id);
-    logger.info({ 
-      operation: 'user', 
-      targetUserId: id, 
-      requestingUserId: user.id, 
-      found: !!targetUser 
-    }, 'User query completed');
+    logger.info(
+      {
+        operation: 'user',
+        targetUserId: id,
+        requestingUserId: user.id,
+        found: !!targetUser,
+      },
+      'User query completed',
+    );
     return targetUser;
   },
 
@@ -171,19 +189,28 @@ export const queryResolvers = {
    * @throws Error if user is not authenticated
    */
   organizations: (_: unknown, __: unknown, { user }: GraphQLContext) => {
-    logger.debug({ operation: 'organizations', userId: user?.id }, 'Processing organizations query');
-    
+    logger.debug(
+      { operation: 'organizations', userId: user?.id },
+      'Processing organizations query',
+    );
+
     if (!user) {
-      logger.warn({ operation: 'organizations' }, 'Unauthenticated access attempt to organizations query');
+      logger.warn(
+        { operation: 'organizations' },
+        'Unauthenticated access attempt to organizations query',
+      );
       throw new Error('Unauthenticated');
     }
-    
+
     const organizations = organizationService.getAllOrganizations();
-    logger.info({ 
-      operation: 'organizations', 
-      userId: user.id, 
-      organizationCount: organizations.length 
-    }, 'Organizations query completed successfully');
+    logger.info(
+      {
+        operation: 'organizations',
+        userId: user.id,
+        organizationCount: organizations.length,
+      },
+      'Organizations query completed successfully',
+    );
     return organizations;
   },
 
@@ -200,20 +227,29 @@ export const queryResolvers = {
     { id }: { id: string },
     { user }: GraphQLContext,
   ) => {
-    logger.debug({ operation: 'organization', organizationId: id, userId: user?.id }, 'Processing organization query');
-    
+    logger.debug(
+      { operation: 'organization', organizationId: id, userId: user?.id },
+      'Processing organization query',
+    );
+
     if (!user) {
-      logger.warn({ operation: 'organization', organizationId: id }, 'Unauthenticated access attempt to organization query');
+      logger.warn(
+        { operation: 'organization', organizationId: id },
+        'Unauthenticated access attempt to organization query',
+      );
       throw new Error('Unauthenticated');
     }
-    
+
     const organization = organizationService.findById(id);
-    logger.info({ 
-      operation: 'organization', 
-      organizationId: id, 
-      userId: user.id, 
-      found: !!organization 
-    }, 'Organization query completed');
+    logger.info(
+      {
+        operation: 'organization',
+        organizationId: id,
+        userId: user.id,
+        found: !!organization,
+      },
+      'Organization query completed',
+    );
     return organization;
   },
 
@@ -251,20 +287,29 @@ export const queryResolvers = {
     { id }: { id: string },
     { user }: GraphQLContext,
   ) => {
-    logger.debug({ operation: 'department', departmentId: id, userId: user?.id }, 'Processing department query');
-    
+    logger.debug(
+      { operation: 'department', departmentId: id, userId: user?.id },
+      'Processing department query',
+    );
+
     if (!user) {
-      logger.warn({ operation: 'department', departmentId: id }, 'Unauthenticated access attempt to department query');
+      logger.warn(
+        { operation: 'department', departmentId: id },
+        'Unauthenticated access attempt to department query',
+      );
       throw new Error('Unauthenticated');
     }
-    
+
     const department = departmentService.findById(id);
-    logger.info({ 
-      operation: 'department', 
-      departmentId: id, 
-      userId: user.id, 
-      found: !!department 
-    }, 'Department query completed');
+    logger.info(
+      {
+        operation: 'department',
+        departmentId: id,
+        userId: user.id,
+        found: !!department,
+      },
+      'Department query completed',
+    );
     return department;
   },
 
