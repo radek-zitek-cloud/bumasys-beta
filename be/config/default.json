@@ -1,6 +1,6 @@
 {
   "port": 4000,
-  "jwtSecret": "ThM/VvmMNkqf5UTFQjfokPw+oHzIKhkTiugaCo9Za5exUVoqQr2+76IFJ8FFQF5F9A30XyWE3u2VCxtWUvxxvQ==",
+  "jwtSecret": "secret",
   "accessTokenExpiresIn": "60m",
   "refreshTokenExpiresIn": "7d",
   "dbFile": "../data/db.json",
@@ -8,7 +8,7 @@
     "level": "debug",
     "betterStack": {
       "enabled": true,
-      "sourceToken": "XWWLqcyfPhMk6ULogXJs7fHd",
+      "sourceToken": "token",
       "endpoint": "https://s1340335.eu-nbg-2.betterstackdata.com"
     }
   }

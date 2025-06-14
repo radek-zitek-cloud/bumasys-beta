@@ -1,5 +1,7 @@
-# Data
+# Environment
+.env*
 
+# Data
 data/
 
 # Logs
