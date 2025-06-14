@@ -2,8 +2,8 @@
  * @fileoverview Tests for the centralized GraphQL client
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { graphqlClient } from '../../../src/services/graphql-client'
 import { useAuthStore } from '../../../src/stores/auth'
 
@@ -33,11 +33,11 @@ describe('graphqlClient', () => {
 
   it('should make a successful GraphQL request without authentication', async () => {
     const mockResponse = {
-      data: { test: 'success' }
+      data: { test: 'success' },
     }
 
     mockFetch.mockResolvedValueOnce({
-      json: () => Promise.resolve(mockResponse)
+      json: () => Promise.resolve(mockResponse),
     })
 
     const query = 'query { test }'
@@ -57,15 +57,15 @@ describe('graphqlClient', () => {
     authStore.setAuth({
       token: 'test-token',
       refreshToken: 'test-refresh-token',
-      user: { id: '1', email: 'test@example.com' }
+      user: { id: '1', email: 'test@example.com' },
     })
 
     const mockResponse = {
-      data: { test: 'success' }
+      data: { test: 'success' },
     }
 
     mockFetch.mockResolvedValueOnce({
-      json: () => Promise.resolve(mockResponse)
+      json: () => Promise.resolve(mockResponse),
     })
 
     const query = 'query { test }'
@@ -83,15 +83,15 @@ describe('graphqlClient', () => {
 
   it('should throw error for GraphQL errors that are not authentication related', async () => {
     const mockResponse = {
-      errors: [{ message: 'Some other error' }]
+      errors: [{ message: 'Some other error' }],
     }
 
     mockFetch.mockResolvedValueOnce({
-      json: () => Promise.resolve(mockResponse)
+      json: () => Promise.resolve(mockResponse),
     })
 
     const query = 'query { test }'
-    
+
     await expect(graphqlClient<{ test: string }>(query))
       .rejects.toThrow('Some other error')
   })
@@ -100,12 +100,12 @@ describe('graphqlClient', () => {
     authStore.setAuth({
       token: 'expired-token',
       refreshToken: 'valid-refresh-token',
-      user: { id: '1', email: 'test@example.com' }
+      user: { id: '1', email: 'test@example.com' },
     })
 
     // First call fails with auth error
     const mockAuthErrorResponse = {
-      errors: [{ message: 'Unauthenticated' }]
+      errors: [{ message: 'Unauthenticated' }],
     }
 
     // Second call (refresh) succeeds
@@ -114,25 +114,25 @@ describe('graphqlClient', () => {
         refreshToken: {
           token: 'new-token',
           refreshToken: 'new-refresh-token',
-          user: { id: '1', email: 'test@example.com' }
-        }
-      }
+          user: { id: '1', email: 'test@example.com' },
+        },
+      },
     }
 
     // Third call (retry with new token) succeeds
     const mockSuccessResponse = {
-      data: { test: 'success' }
+      data: { test: 'success' },
     }
 
     mockFetch
       .mockResolvedValueOnce({
-        json: () => Promise.resolve(mockAuthErrorResponse)
+        json: () => Promise.resolve(mockAuthErrorResponse),
       })
       .mockResolvedValueOnce({
-        json: () => Promise.resolve(mockRefreshResponse)
+        json: () => Promise.resolve(mockRefreshResponse),
       })
       .mockResolvedValueOnce({
-        json: () => Promise.resolve(mockSuccessResponse)
+        json: () => Promise.resolve(mockSuccessResponse),
       })
 
     const query = 'query { test }'
@@ -148,29 +148,29 @@ describe('graphqlClient', () => {
     authStore.setAuth({
       token: 'expired-token',
       refreshToken: 'invalid-refresh-token',
-      user: { id: '1', email: 'test@example.com' }
+      user: { id: '1', email: 'test@example.com' },
     })
 
     // First call fails with auth error
     const mockAuthErrorResponse = {
-      errors: [{ message: 'Unauthenticated' }]
+      errors: [{ message: 'Unauthenticated' }],
     }
 
     // Refresh call fails
     const mockRefreshErrorResponse = {
-      errors: [{ message: 'Invalid refresh token' }]
+      errors: [{ message: 'Invalid refresh token' }],
     }
 
     mockFetch
       .mockResolvedValueOnce({
-        json: () => Promise.resolve(mockAuthErrorResponse)
+        json: () => Promise.resolve(mockAuthErrorResponse),
       })
       .mockResolvedValueOnce({
-        json: () => Promise.resolve(mockRefreshErrorResponse)
+        json: () => Promise.resolve(mockRefreshErrorResponse),
       })
 
     const query = 'query { test }'
-    
+
     await expect(graphqlClient<{ test: string }>(query))
       .rejects.toThrow('Authentication failed. Please log in again.')
 
@@ -183,20 +183,20 @@ describe('graphqlClient', () => {
     authStore.setAuth({
       token: 'store-token',
       refreshToken: 'store-refresh-token',
-      user: { id: '1', email: 'test@example.com' }
+      user: { id: '1', email: 'test@example.com' },
     })
 
     const mockAuthErrorResponse = {
-      errors: [{ message: 'Unauthenticated' }]
+      errors: [{ message: 'Unauthenticated' }],
     }
 
     mockFetch.mockResolvedValueOnce({
-      json: () => Promise.resolve(mockAuthErrorResponse)
+      json: () => Promise.resolve(mockAuthErrorResponse),
     })
 
     const query = 'query { test }'
     const explicitToken = 'explicit-token'
-    
+
     await expect(graphqlClient<{ test: string }>(query, {}, explicitToken))
       .rejects.toThrow('Unauthenticated')
 
