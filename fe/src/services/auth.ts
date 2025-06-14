@@ -1,25 +1,5 @@
 import { useAuthStore } from '../stores/auth'
-
-/** GraphQL helper to perform POST requests. */
-async function graphql<T> (
-  query: string,
-  variables?: Record<string, unknown>,
-  token?: string,
-): Promise<T> {
-  const res = await fetch('/graphql', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({ query, variables }),
-  })
-  const json = await res.json()
-  if (json.errors) {
-    throw new Error(json.errors[0].message)
-  }
-  return json.data as T
-}
+import { graphqlClient } from './graphql-client'
 
 export interface User {
   id: string
@@ -37,7 +17,7 @@ export interface AuthPayload {
 
 /** Login and obtain auth payload. */
 export function login (email: string, password: string) {
-  return graphql<{ login: AuthPayload }>(
+  return graphqlClient<{ login: AuthPayload }>(
     `
       mutation ($email: String!, $password: String!) {
         login(email: $email, password: $password) {
@@ -65,7 +45,7 @@ export function register (
   lastName?: string,
   note?: string,
 ) {
-  return graphql<{ register: AuthPayload }>(
+  return graphqlClient<{ register: AuthPayload }>(
     `
       mutation (
         $email: String!
@@ -99,7 +79,7 @@ export function register (
 
 /** Request password reset email. */
 export function resetPassword (email: string) {
-  return graphql<{ resetPassword: boolean }>(
+  return graphqlClient<{ resetPassword: boolean }>(
     `
       mutation ($email: String!) {
         resetPassword(email: $email)
@@ -112,7 +92,7 @@ export function resetPassword (email: string) {
 /** Change the password for the current user. */
 export function changePassword (oldPassword: string, newPassword: string) {
   const store = useAuthStore()
-  return graphql<{ changePassword: boolean }>(
+  return graphqlClient<{ changePassword: boolean }>(
     `
       mutation ($old: String!, $new: String!) {
         changePassword(oldPassword: $old, newPassword: $new)
@@ -125,7 +105,7 @@ export function changePassword (oldPassword: string, newPassword: string) {
 
 /** Logout using the refresh token. */
 export function logout (refreshToken: string) {
-  return graphql<{ logout: boolean }>(
+  return graphqlClient<{ logout: boolean }>(
     `
       mutation ($token: String!) {
         logout(refreshToken: $token)
@@ -137,7 +117,7 @@ export function logout (refreshToken: string) {
 
 /** Refresh the access token using a refresh token. */
 export function refresh (refreshToken: string) {
-  return graphql<{ refreshToken: AuthPayload }>(
+  return graphqlClient<{ refreshToken: AuthPayload }>(
     `
       mutation ($token: String!) {
         refreshToken(refreshToken: $token) {
@@ -165,7 +145,7 @@ export function updateUser (
   note: string,
 ) {
   const store = useAuthStore()
-  return graphql<{ updateUser: User }>(
+  return graphqlClient<{ updateUser: User }>(
     `
       mutation (
         $id: ID!

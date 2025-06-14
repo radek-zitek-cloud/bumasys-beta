@@ -7,27 +7,7 @@
  */
 
 import { useAuthStore } from '../stores/auth'
-
-/** GraphQL helper to perform POST requests. */
-async function graphql<T> (
-  query: string,
-  variables?: Record<string, unknown>,
-  token?: string,
-): Promise<T> {
-  const res = await fetch('/graphql', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({ query, variables }),
-  })
-  const json = await res.json()
-  if (json.errors) {
-    throw new Error(json.errors[0].message)
-  }
-  return json.data as T
-}
+import { graphqlClient } from './graphql-client'
 
 /** Status interface matching the backend schema */
 export interface Status {
@@ -52,7 +32,7 @@ export interface UpdateStatusInput {
  */
 export function getStatuses (): Promise<{ statuses: Status[] }> {
   const store = useAuthStore()
-  return graphql<{ statuses: Status[] }>(
+  return graphqlClient<{ statuses: Status[] }>(
     `
       query {
         statuses {
@@ -72,7 +52,7 @@ export function getStatuses (): Promise<{ statuses: Status[] }> {
  */
 export function getStatus (id: string): Promise<{ status: Status | null }> {
   const store = useAuthStore()
-  return graphql<{ status: Status | null }>(
+  return graphqlClient<{ status: Status | null }>(
     `
       query ($id: ID!) {
         status(id: $id) {
@@ -92,7 +72,7 @@ export function getStatus (id: string): Promise<{ status: Status | null }> {
  */
 export function createStatus (input: CreateStatusInput): Promise<{ createStatus: Status }> {
   const store = useAuthStore()
-  return graphql<{ createStatus: Status }>(
+  return graphqlClient<{ createStatus: Status }>(
     `
       mutation (
         $name: String!
@@ -116,7 +96,7 @@ export function createStatus (input: CreateStatusInput): Promise<{ createStatus:
  */
 export function updateStatus (input: UpdateStatusInput): Promise<{ updateStatus: Status }> {
   const store = useAuthStore()
-  return graphql<{ updateStatus: Status }>(
+  return graphqlClient<{ updateStatus: Status }>(
     `
       mutation (
         $id: ID!
@@ -142,7 +122,7 @@ export function updateStatus (input: UpdateStatusInput): Promise<{ updateStatus:
  */
 export function deleteStatus (id: string): Promise<{ deleteStatus: boolean }> {
   const store = useAuthStore()
-  return graphql<{ deleteStatus: boolean }>(
+  return graphqlClient<{ deleteStatus: boolean }>(
     `
       mutation ($id: ID!) {
         deleteStatus(id: $id)

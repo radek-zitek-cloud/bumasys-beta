@@ -7,27 +7,7 @@
  */
 
 import { useAuthStore } from '../stores/auth'
-
-/** GraphQL helper to perform POST requests. */
-async function graphql<T> (
-  query: string,
-  variables?: Record<string, unknown>,
-  token?: string,
-): Promise<T> {
-  const res = await fetch('/graphql', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({ query, variables }),
-  })
-  const json = await res.json()
-  if (json.errors) {
-    throw new Error(json.errors[0].message)
-  }
-  return json.data as T
-}
+import { graphqlClient } from './graphql-client'
 
 /** Priority interface matching the backend schema */
 export interface Priority {
@@ -52,7 +32,7 @@ export interface UpdatePriorityInput {
  */
 export function getPriorities (): Promise<{ priorities: Priority[] }> {
   const store = useAuthStore()
-  return graphql<{ priorities: Priority[] }>(
+  return graphqlClient<{ priorities: Priority[] }>(
     `
       query {
         priorities {
@@ -72,7 +52,7 @@ export function getPriorities (): Promise<{ priorities: Priority[] }> {
  */
 export function getPriority (id: string): Promise<{ priority: Priority | null }> {
   const store = useAuthStore()
-  return graphql<{ priority: Priority | null }>(
+  return graphqlClient<{ priority: Priority | null }>(
     `
       query ($id: ID!) {
         priority(id: $id) {
@@ -92,7 +72,7 @@ export function getPriority (id: string): Promise<{ priority: Priority | null }>
  */
 export function createPriority (input: CreatePriorityInput): Promise<{ createPriority: Priority }> {
   const store = useAuthStore()
-  return graphql<{ createPriority: Priority }>(
+  return graphqlClient<{ createPriority: Priority }>(
     `
       mutation (
         $name: String!
@@ -116,7 +96,7 @@ export function createPriority (input: CreatePriorityInput): Promise<{ createPri
  */
 export function updatePriority (input: UpdatePriorityInput): Promise<{ updatePriority: Priority }> {
   const store = useAuthStore()
-  return graphql<{ updatePriority: Priority }>(
+  return graphqlClient<{ updatePriority: Priority }>(
     `
       mutation (
         $id: ID!
@@ -142,7 +122,7 @@ export function updatePriority (input: UpdatePriorityInput): Promise<{ updatePri
  */
 export function deletePriority (id: string): Promise<{ deletePriority: boolean }> {
   const store = useAuthStore()
-  return graphql<{ deletePriority: boolean }>(
+  return graphqlClient<{ deletePriority: boolean }>(
     `
       mutation ($id: ID!) {
         deletePriority(id: $id)

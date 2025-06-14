@@ -7,27 +7,7 @@
  */
 
 import { useAuthStore } from '../stores/auth'
-
-/** GraphQL helper to perform POST requests. */
-async function graphql<T> (
-  query: string,
-  variables?: Record<string, unknown>,
-  token?: string,
-): Promise<T> {
-  const res = await fetch('/graphql', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({ query, variables }),
-  })
-  const json = await res.json()
-  if (json.errors) {
-    throw new Error(json.errors[0].message)
-  }
-  return json.data as T
-}
+import { graphqlClient } from './graphql-client'
 
 /** Complexity interface matching the backend schema */
 export interface Complexity {
@@ -52,7 +32,7 @@ export interface UpdateComplexityInput {
  */
 export function getComplexities (): Promise<{ complexities: Complexity[] }> {
   const store = useAuthStore()
-  return graphql<{ complexities: Complexity[] }>(
+  return graphqlClient<{ complexities: Complexity[] }>(
     `
       query {
         complexities {
@@ -72,7 +52,7 @@ export function getComplexities (): Promise<{ complexities: Complexity[] }> {
  */
 export function getComplexity (id: string): Promise<{ complexity: Complexity | null }> {
   const store = useAuthStore()
-  return graphql<{ complexity: Complexity | null }>(
+  return graphqlClient<{ complexity: Complexity | null }>(
     `
       query ($id: ID!) {
         complexity(id: $id) {
@@ -92,7 +72,7 @@ export function getComplexity (id: string): Promise<{ complexity: Complexity | n
  */
 export function createComplexity (input: CreateComplexityInput): Promise<{ createComplexity: Complexity }> {
   const store = useAuthStore()
-  return graphql<{ createComplexity: Complexity }>(
+  return graphqlClient<{ createComplexity: Complexity }>(
     `
       mutation (
         $name: String!
@@ -116,7 +96,7 @@ export function createComplexity (input: CreateComplexityInput): Promise<{ creat
  */
 export function updateComplexity (input: UpdateComplexityInput): Promise<{ updateComplexity: Complexity }> {
   const store = useAuthStore()
-  return graphql<{ updateComplexity: Complexity }>(
+  return graphqlClient<{ updateComplexity: Complexity }>(
     `
       mutation (
         $id: ID!
@@ -142,7 +122,7 @@ export function updateComplexity (input: UpdateComplexityInput): Promise<{ updat
  */
 export function deleteComplexity (id: string): Promise<{ deleteComplexity: boolean }> {
   const store = useAuthStore()
-  return graphql<{ deleteComplexity: boolean }>(
+  return graphqlClient<{ deleteComplexity: boolean }>(
     `
       mutation ($id: ID!) {
         deleteComplexity(id: $id)
