@@ -3,5 +3,11 @@
   "jwtSecret": "ThM/VvmMNkqf5UTFQjfokPw+oHzIKhkTiugaCo9Za5exUVoqQr2+76IFJ8FFQF5F9A30XyWE3u2VCxtWUvxxvQ==",
   "accessTokenExpiresIn": "60m",
   "refreshTokenExpiresIn": "7d",
-  "dbFile": "../data/db.json"
+  "dbFile": "../data/db.json",
+  "logging": {
+    "betterStack": {
+      "enabled": false,
+      "sourceToken": ""
+    }
+  }
 }
