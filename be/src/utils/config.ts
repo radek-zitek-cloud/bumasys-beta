@@ -182,25 +182,25 @@ function loadConfig(): KnownConfig {
         if (typeof prop === 'symbol') {
           return Reflect.getOwnPropertyDescriptor(target, prop);
         }
-        
+
         // If property exists in target, return its descriptor
         const targetDescriptor = Reflect.getOwnPropertyDescriptor(target, prop);
         if (targetDescriptor) {
           return targetDescriptor;
         }
-        
+
         // For dynamic properties from configLib, create an enumerable descriptor
         if (configLib.has(prop)) {
           return {
             value: configLib.get(prop),
             writable: true,
             enumerable: true,
-            configurable: true
+            configurable: true,
           };
         }
-        
+
         return undefined;
-      }
+      },
     });
 
     // Print the whole config as loaded (dynamically)

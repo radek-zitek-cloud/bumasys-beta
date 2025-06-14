@@ -3,6 +3,21 @@
  *
  * This module provides Express middleware functions for handling authentication
  * in GraphQL context and other authentication-related middleware.
+ * 
+ * SECURITY CONSIDERATIONS:
+ * - JWT tokens are verified on every request for security
+ * - Failed authentication attempts are logged for security monitoring
+ * - User context is safely extracted and validated before use
+ * - Bearer token format is enforced to prevent token injection
+ * 
+ * PERFORMANCE CONSIDERATIONS:
+ * - JWT verification is relatively fast but scales with request volume
+ * - User lookup is done for every authenticated request
+ * - Consider implementing token caching for high-traffic scenarios
+ * 
+ * @todo TODO: Implement rate limiting for authentication attempts
+ * @todo TODO: Add support for API key authentication
+ * @todo TODO: Implement token blacklisting for logout security
  */
 
 import type { Request } from 'express';

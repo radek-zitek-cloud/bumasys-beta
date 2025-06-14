@@ -3,6 +3,23 @@
  *
  * This module provides utility functions for database operations
  * and database-related helper functions.
+ * 
+ * SECURITY CONSIDERATIONS:
+ * - File-based JSON database is suitable for development/small deployments
+ * - Production environments should consider proper database solutions
+ * - Database files should be excluded from version control
+ * - Ensure proper file permissions on database files
+ * 
+ * PERFORMANCE CONSIDERATIONS:
+ * - JSON file loading is synchronous and loads entire dataset into memory
+ * - Not suitable for large datasets or high-concurrency scenarios
+ * - Consider implementing indexing for frequently searched fields
+ * - Write operations are atomic but not optimized for frequent updates
+ * 
+ * @todo TODO: Implement database connection pooling for multi-instance deployments
+ * @todo TODO: Add data validation schema enforcement
+ * @todo TODO: Implement database migration system
+ * @todo TODO: Add backup and restore functionality
  */
 
 import fs from 'fs';

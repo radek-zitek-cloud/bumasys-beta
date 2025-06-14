@@ -16,22 +16,21 @@ const loggerOptions = {
       },
       ...(config.logging.betterStack.sourceToken
         ? [
-          {
-            target: '@logtail/pino',
-            level: config.logging.level || 'info',
-            options: {
-              sourceToken: config.logging.betterStack.sourceToken,
+            {
+              target: '@logtail/pino',
+              level: config.logging.level || 'info',
               options: {
-                endpoint: config.logging.betterStack.endpoint,
+                sourceToken: config.logging.betterStack.sourceToken,
+                options: {
+                  endpoint: config.logging.betterStack.endpoint,
+                },
               },
             },
-          },
-        ]
+          ]
         : []),
     ],
   },
 };
-
 
 const logger = pino(loggerOptions);
 
