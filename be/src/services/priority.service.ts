@@ -44,10 +44,13 @@ export class PriorityService {
    * @returns Promise resolving to the created priority object
    * @throws Error if name is already in use
    */
-  public async createPriority(priorityData: CreatePriorityInput): Promise<Priority> {
+  public async createPriority(
+    priorityData: CreatePriorityInput,
+  ): Promise<Priority> {
     // Check if name already exists
     const existingPriority = this.db.data.priorities.find(
-      (priority) => priority.name.toLowerCase() === priorityData.name.toLowerCase(),
+      (priority) =>
+        priority.name.toLowerCase() === priorityData.name.toLowerCase(),
     );
     if (existingPriority) {
       throw new Error('Priority name already exists');
@@ -72,7 +75,9 @@ export class PriorityService {
    * @returns Promise resolving to the updated priority object
    * @throws Error if priority not found or name conflict
    */
-  public async updatePriority(updateData: UpdatePriorityInput): Promise<Priority> {
+  public async updatePriority(
+    updateData: UpdatePriorityInput,
+  ): Promise<Priority> {
     // Find existing priority
     const existingPriority = this.db.data.priorities.find(
       (priority) => priority.id === updateData.id,

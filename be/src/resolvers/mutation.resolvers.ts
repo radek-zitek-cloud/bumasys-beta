@@ -17,6 +17,24 @@ import type {
   UpdateDepartmentInput,
   CreateStaffInput,
   UpdateStaffInput,
+  CreateStatusInput,
+  UpdateStatusInput,
+  CreatePriorityInput,
+  UpdatePriorityInput,
+  CreateComplexityInput,
+  UpdateComplexityInput,
+  CreateProjectInput,
+  UpdateProjectInput,
+  CreateTaskInput,
+  UpdateTaskInput,
+  CreateTaskProgressInput,
+  UpdateTaskProgressInput,
+  CreateTaskEvaluationInput,
+  UpdateTaskEvaluationInput,
+  CreateTaskStatusReportInput,
+  UpdateTaskStatusReportInput,
+  CreateProjectStatusReportInput,
+  UpdateProjectStatusReportInput,
 } from '../types';
 import {
   AuthService,
@@ -24,6 +42,15 @@ import {
   OrganizationService,
   DepartmentService,
   StaffService,
+  StatusService,
+  PriorityService,
+  ComplexityService,
+  ProjectService,
+  TaskService,
+  TaskProgressService,
+  TaskEvaluationService,
+  TaskStatusReportService,
+  ProjectStatusReportService,
 } from '../services';
 
 /**
@@ -34,6 +61,15 @@ let userService: UserService;
 let organizationService: OrganizationService;
 let departmentService: DepartmentService;
 let staffService: StaffService;
+let statusService: StatusService;
+let priorityService: PriorityService;
+let complexityService: ComplexityService;
+let projectService: ProjectService;
+let taskService: TaskService;
+let taskProgressService: TaskProgressService;
+let taskEvaluationService: TaskEvaluationService;
+let taskStatusReportService: TaskStatusReportService;
+let projectStatusReportService: ProjectStatusReportService;
 
 /**
  * Set the service instances for resolvers to use
@@ -42,6 +78,15 @@ let staffService: StaffService;
  * @param organization - OrganizationService instance
  * @param department - DepartmentService instance
  * @param staff - StaffService instance
+ * @param status - StatusService instance
+ * @param priority - PriorityService instance
+ * @param complexity - ComplexityService instance
+ * @param project - ProjectService instance
+ * @param task - TaskService instance
+ * @param taskProgress - TaskProgressService instance
+ * @param taskEvaluation - TaskEvaluationService instance
+ * @param taskStatusReport - TaskStatusReportService instance
+ * @param projectStatusReport - ProjectStatusReportService instance
  */
 export function setServices(
   auth: AuthService,
@@ -49,12 +94,30 @@ export function setServices(
   organization: OrganizationService,
   department: DepartmentService,
   staff: StaffService,
+  status: StatusService,
+  priority: PriorityService,
+  complexity: ComplexityService,
+  project: ProjectService,
+  task: TaskService,
+  taskProgress: TaskProgressService,
+  taskEvaluation: TaskEvaluationService,
+  taskStatusReport: TaskStatusReportService,
+  projectStatusReport: ProjectStatusReportService,
 ): void {
   authService = auth;
   userService = user;
   organizationService = organization;
   departmentService = department;
   staffService = staff;
+  statusService = status;
+  priorityService = priority;
+  complexityService = complexity;
+  projectService = project;
+  taskService = task;
+  taskProgressService = taskProgress;
+  taskEvaluationService = taskEvaluation;
+  taskStatusReportService = taskStatusReport;
+  projectStatusReportService = projectStatusReport;
 }
 
 /**
@@ -391,5 +454,611 @@ export const mutationResolvers = {
       throw new Error('Unauthenticated');
     }
     return staffService.deleteStaff(id);
+  },
+
+  // Status mutations
+  /**
+   * Create a new status
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing status data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the created status
+   * @throws Error if user is not authenticated
+   */
+  createStatus: async (
+    _: unknown,
+    args: CreateStatusInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return statusService.createStatus(args);
+  },
+
+  /**
+   * Update an existing status
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing status update data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the updated status
+   * @throws Error if user is not authenticated
+   */
+  updateStatus: async (
+    _: unknown,
+    args: UpdateStatusInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return statusService.updateStatus(args);
+  },
+
+  /**
+   * Delete a status by ID
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing status ID
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if deleted successfully
+   * @throws Error if user is not authenticated
+   */
+  deleteStatus: async (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return statusService.deleteStatus(id);
+  },
+
+  // Priority mutations
+  /**
+   * Create a new priority
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing priority data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the created priority
+   * @throws Error if user is not authenticated
+   */
+  createPriority: async (
+    _: unknown,
+    args: CreatePriorityInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return priorityService.createPriority(args);
+  },
+
+  /**
+   * Update an existing priority
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing priority update data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the updated priority
+   * @throws Error if user is not authenticated
+   */
+  updatePriority: async (
+    _: unknown,
+    args: UpdatePriorityInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return priorityService.updatePriority(args);
+  },
+
+  /**
+   * Delete a priority by ID
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing priority ID
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if deleted successfully
+   * @throws Error if user is not authenticated
+   */
+  deletePriority: async (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return priorityService.deletePriority(id);
+  },
+
+  // Complexity mutations
+  /**
+   * Create a new complexity
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing complexity data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the created complexity
+   * @throws Error if user is not authenticated
+   */
+  createComplexity: async (
+    _: unknown,
+    args: CreateComplexityInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return complexityService.createComplexity(args);
+  },
+
+  /**
+   * Update an existing complexity
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing complexity update data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the updated complexity
+   * @throws Error if user is not authenticated
+   */
+  updateComplexity: async (
+    _: unknown,
+    args: UpdateComplexityInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return complexityService.updateComplexity(args);
+  },
+
+  /**
+   * Delete a complexity by ID
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing complexity ID
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if deleted successfully
+   * @throws Error if user is not authenticated
+   */
+  deleteComplexity: async (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return complexityService.deleteComplexity(id);
+  },
+
+  // Project mutations
+  /**
+   * Create a new project
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing project data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the created project
+   * @throws Error if user is not authenticated
+   */
+  createProject: async (
+    _: unknown,
+    args: CreateProjectInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return projectService.createProject(args);
+  },
+
+  /**
+   * Update an existing project
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing project update data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the updated project
+   * @throws Error if user is not authenticated
+   */
+  updateProject: async (
+    _: unknown,
+    args: UpdateProjectInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return projectService.updateProject(args);
+  },
+
+  /**
+   * Delete a project by ID
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing project ID
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if deleted successfully
+   * @throws Error if user is not authenticated
+   */
+  deleteProject: async (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return projectService.deleteProject(id);
+  },
+
+  // Task mutations
+  /**
+   * Create a new task
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing task data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the created task
+   * @throws Error if user is not authenticated
+   */
+  createTask: async (
+    _: unknown,
+    args: CreateTaskInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskService.createTask(args);
+  },
+
+  /**
+   * Update an existing task
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing task update data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the updated task
+   * @throws Error if user is not authenticated
+   */
+  updateTask: async (
+    _: unknown,
+    args: UpdateTaskInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskService.updateTask(args);
+  },
+
+  /**
+   * Delete a task by ID
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing task ID
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if deleted successfully
+   * @throws Error if user is not authenticated
+   */
+  deleteTask: async (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskService.deleteTask(id);
+  },
+
+  // Task assignment mutations
+  /**
+   * Assign a staff member to a task
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing task and staff IDs
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if assigned successfully
+   * @throws Error if user is not authenticated
+   */
+  assignStaffToTask: async (
+    _: unknown,
+    { taskId, staffId }: { taskId: string; staffId: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskService.assignStaffToTask(taskId, staffId);
+  },
+
+  /**
+   * Remove a staff member from a task
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing task and staff IDs
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if removed successfully
+   * @throws Error if user is not authenticated
+   */
+  removeStaffFromTask: async (
+    _: unknown,
+    { taskId, staffId }: { taskId: string; staffId: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskService.removeStaffFromTask(taskId, staffId);
+  },
+
+  // Task predecessor mutations
+  /**
+   * Add a predecessor relationship to a task
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing task and predecessor task IDs
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if added successfully
+   * @throws Error if user is not authenticated
+   */
+  addTaskPredecessor: async (
+    _: unknown,
+    {
+      taskId,
+      predecessorTaskId,
+    }: { taskId: string; predecessorTaskId: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskService.addTaskPredecessor(taskId, predecessorTaskId);
+  },
+
+  /**
+   * Remove a predecessor relationship from a task
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing task and predecessor task IDs
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if removed successfully
+   * @throws Error if user is not authenticated
+   */
+  removeTaskPredecessor: async (
+    _: unknown,
+    {
+      taskId,
+      predecessorTaskId,
+    }: { taskId: string; predecessorTaskId: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskService.removeTaskPredecessor(taskId, predecessorTaskId);
+  },
+
+  // Task progress mutations
+  /**
+   * Create a new task progress report
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing progress data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the created progress report
+   * @throws Error if user is not authenticated
+   */
+  createTaskProgress: async (
+    _: unknown,
+    args: CreateTaskProgressInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskProgressService.createTaskProgress(args);
+  },
+
+  /**
+   * Update an existing task progress report
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing progress update data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the updated progress report
+   * @throws Error if user is not authenticated
+   */
+  updateTaskProgress: async (
+    _: unknown,
+    args: UpdateTaskProgressInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskProgressService.updateTaskProgress(args);
+  },
+
+  /**
+   * Delete a task progress report by ID
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing progress report ID
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if deleted successfully
+   * @throws Error if user is not authenticated
+   */
+  deleteTaskProgress: async (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskProgressService.deleteTaskProgress(id);
+  },
+
+  // Task evaluation mutations
+  /**
+   * Create a new task evaluation
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing evaluation data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the created evaluation
+   * @throws Error if user is not authenticated
+   */
+  createTaskEvaluation: async (
+    _: unknown,
+    args: CreateTaskEvaluationInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskEvaluationService.createTaskEvaluation(args);
+  },
+
+  /**
+   * Update an existing task evaluation
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing evaluation update data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the updated evaluation
+   * @throws Error if user is not authenticated
+   */
+  updateTaskEvaluation: async (
+    _: unknown,
+    args: UpdateTaskEvaluationInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskEvaluationService.updateTaskEvaluation(args);
+  },
+
+  /**
+   * Delete a task evaluation by ID
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing evaluation ID
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if deleted successfully
+   * @throws Error if user is not authenticated
+   */
+  deleteTaskEvaluation: async (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskEvaluationService.deleteTaskEvaluation(id);
+  },
+
+  // Task status report mutations
+  /**
+   * Create a new task status report
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing status report data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the created status report
+   * @throws Error if user is not authenticated
+   */
+  createTaskStatusReport: async (
+    _: unknown,
+    args: CreateTaskStatusReportInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskStatusReportService.createTaskStatusReport(args);
+  },
+
+  /**
+   * Update an existing task status report
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing status report update data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the updated status report
+   * @throws Error if user is not authenticated
+   */
+  updateTaskStatusReport: async (
+    _: unknown,
+    args: UpdateTaskStatusReportInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskStatusReportService.updateTaskStatusReport(args);
+  },
+
+  /**
+   * Delete a task status report by ID
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing status report ID
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if deleted successfully
+   * @throws Error if user is not authenticated
+   */
+  deleteTaskStatusReport: async (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskStatusReportService.deleteTaskStatusReport(id);
+  },
+
+  // Project status report mutations
+  /**
+   * Create a new project status report
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing status report data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the created status report
+   * @throws Error if user is not authenticated
+   */
+  createProjectStatusReport: async (
+    _: unknown,
+    args: CreateProjectStatusReportInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return projectStatusReportService.createProjectStatusReport(args);
+  },
+
+  /**
+   * Update an existing project status report
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing status report update data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the updated status report
+   * @throws Error if user is not authenticated
+   */
+  updateProjectStatusReport: async (
+    _: unknown,
+    args: UpdateProjectStatusReportInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return projectStatusReportService.updateProjectStatusReport(args);
+  },
+
+  /**
+   * Delete a project status report by ID
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing status report ID
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if deleted successfully
+   * @throws Error if user is not authenticated
+   */
+  deleteProjectStatusReport: async (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return projectStatusReportService.deleteProjectStatusReport(id);
   },
 };

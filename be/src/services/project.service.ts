@@ -44,7 +44,9 @@ export class ProjectService {
    * @returns Promise resolving to the created project object
    * @throws Error if validation fails
    */
-  public async createProject(projectData: CreateProjectInput): Promise<Project> {
+  public async createProject(
+    projectData: CreateProjectInput,
+  ): Promise<Project> {
     // Validate lead staff if provided
     if (projectData.leadStaffId) {
       const leadStaff = this.db.data.staff.find(
@@ -117,10 +119,14 @@ export class ProjectService {
     }
 
     // Get final dates for validation
-    const plannedStartDate = updateData.plannedStartDate ?? existingProject.plannedStartDate;
-    const plannedEndDate = updateData.plannedEndDate ?? existingProject.plannedEndDate;
-    const actualStartDate = updateData.actualStartDate ?? existingProject.actualStartDate;
-    const actualEndDate = updateData.actualEndDate ?? existingProject.actualEndDate;
+    const plannedStartDate =
+      updateData.plannedStartDate ?? existingProject.plannedStartDate;
+    const plannedEndDate =
+      updateData.plannedEndDate ?? existingProject.plannedEndDate;
+    const actualStartDate =
+      updateData.actualStartDate ?? existingProject.actualStartDate;
+    const actualEndDate =
+      updateData.actualEndDate ?? existingProject.actualEndDate;
 
     // Validate date logic if both dates are provided
     if (plannedStartDate && plannedEndDate) {

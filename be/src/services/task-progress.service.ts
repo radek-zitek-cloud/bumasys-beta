@@ -49,7 +49,9 @@ export class TaskProgressService {
    * @returns Promise resolving to the created progress report object
    * @throws Error if validation fails
    */
-  public async createTaskProgress(progressData: CreateTaskProgressInput): Promise<TaskProgress> {
+  public async createTaskProgress(
+    progressData: CreateTaskProgressInput,
+  ): Promise<TaskProgress> {
     // Validate task exists
     const task = this.db.data.tasks.find((t) => t.id === progressData.taskId);
     if (!task) {
@@ -57,7 +59,10 @@ export class TaskProgressService {
     }
 
     // Validate progress percentage
-    if (progressData.progressPercent < 0 || progressData.progressPercent > 100) {
+    if (
+      progressData.progressPercent < 0 ||
+      progressData.progressPercent > 100
+    ) {
       throw new Error('Progress percentage must be between 0 and 100');
     }
 
@@ -83,7 +88,9 @@ export class TaskProgressService {
    * @returns Promise resolving to the updated progress report object
    * @throws Error if progress report not found or validation fails
    */
-  public async updateTaskProgress(updateData: UpdateTaskProgressInput): Promise<TaskProgress> {
+  public async updateTaskProgress(
+    updateData: UpdateTaskProgressInput,
+  ): Promise<TaskProgress> {
     // Find existing progress report
     const existingProgress = this.db.data.taskProgress.find(
       (progress) => progress.id === updateData.id,

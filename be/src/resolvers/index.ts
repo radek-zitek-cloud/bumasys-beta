@@ -112,5 +112,14 @@ export function initializeResolvers(
     organizationService,
     departmentService,
     staffService,
+    statusService,
+    priorityService,
+    complexityService,
+    projectService,
+    taskService,
+    taskProgressService,
+    taskEvaluationService,
+    taskStatusReportService,
+    projectStatusReportService,
   );
 }

@@ -25,7 +25,9 @@ export class TaskStatusReportService {
    * @param taskId - Optional filter by task ID
    * @returns Promise resolving to array of task status reports
    */
-  public async getAllTaskStatusReports(taskId?: string): Promise<TaskStatusReport[]> {
+  public async getAllTaskStatusReports(
+    taskId?: string,
+  ): Promise<TaskStatusReport[]> {
     let reports = this.db.data.taskStatusReports;
     if (taskId) {
       reports = reports.filter((report) => report.taskId === taskId);
@@ -49,7 +51,9 @@ export class TaskStatusReportService {
    * @returns Promise resolving to the created status report object
    * @throws Error if validation fails
    */
-  public async createTaskStatusReport(reportData: CreateTaskStatusReportInput): Promise<TaskStatusReport> {
+  public async createTaskStatusReport(
+    reportData: CreateTaskStatusReportInput,
+  ): Promise<TaskStatusReport> {
     // Validate task exists
     const task = this.db.data.tasks.find((t) => t.id === reportData.taskId);
     if (!task) {
@@ -77,7 +81,9 @@ export class TaskStatusReportService {
    * @returns Promise resolving to the updated status report object
    * @throws Error if status report not found
    */
-  public async updateTaskStatusReport(updateData: UpdateTaskStatusReportInput): Promise<TaskStatusReport> {
+  public async updateTaskStatusReport(
+    updateData: UpdateTaskStatusReportInput,
+  ): Promise<TaskStatusReport> {
     // Find existing status report
     const existingReport = this.db.data.taskStatusReports.find(
       (report) => report.id === updateData.id,

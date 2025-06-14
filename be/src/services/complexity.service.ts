@@ -44,10 +44,13 @@ export class ComplexityService {
    * @returns Promise resolving to the created complexity object
    * @throws Error if name is already in use
    */
-  public async createComplexity(complexityData: CreateComplexityInput): Promise<Complexity> {
+  public async createComplexity(
+    complexityData: CreateComplexityInput,
+  ): Promise<Complexity> {
     // Check if name already exists
     const existingComplexity = this.db.data.complexities.find(
-      (complexity) => complexity.name.toLowerCase() === complexityData.name.toLowerCase(),
+      (complexity) =>
+        complexity.name.toLowerCase() === complexityData.name.toLowerCase(),
     );
     if (existingComplexity) {
       throw new Error('Complexity name already exists');
@@ -72,7 +75,9 @@ export class ComplexityService {
    * @returns Promise resolving to the updated complexity object
    * @throws Error if complexity not found or name conflict
    */
-  public async updateComplexity(updateData: UpdateComplexityInput): Promise<Complexity> {
+  public async updateComplexity(
+    updateData: UpdateComplexityInput,
+  ): Promise<Complexity> {
     // Find existing complexity
     const existingComplexity = this.db.data.complexities.find(
       (complexity) => complexity.id === updateData.id,

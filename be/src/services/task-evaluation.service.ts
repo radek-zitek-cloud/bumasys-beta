@@ -25,10 +25,14 @@ export class TaskEvaluationService {
    * @param taskId - Optional filter by task ID
    * @returns Promise resolving to array of task evaluations
    */
-  public async getAllTaskEvaluations(taskId?: string): Promise<TaskEvaluation[]> {
+  public async getAllTaskEvaluations(
+    taskId?: string,
+  ): Promise<TaskEvaluation[]> {
     let evaluations = this.db.data.taskEvaluations;
     if (taskId) {
-      evaluations = evaluations.filter((evaluation) => evaluation.taskId === taskId);
+      evaluations = evaluations.filter(
+        (evaluation) => evaluation.taskId === taskId,
+      );
     }
     return evaluations;
   }
@@ -49,7 +53,9 @@ export class TaskEvaluationService {
    * @returns Promise resolving to the evaluation object or null if not found
    */
   public async findByTaskId(taskId: string): Promise<TaskEvaluation | null> {
-    const evaluation = this.db.data.taskEvaluations.find((e) => e.taskId === taskId);
+    const evaluation = this.db.data.taskEvaluations.find(
+      (e) => e.taskId === taskId,
+    );
     return evaluation || null;
   }
 
@@ -59,7 +65,9 @@ export class TaskEvaluationService {
    * @returns Promise resolving to the created evaluation object
    * @throws Error if validation fails
    */
-  public async createTaskEvaluation(evaluationData: CreateTaskEvaluationInput): Promise<TaskEvaluation> {
+  public async createTaskEvaluation(
+    evaluationData: CreateTaskEvaluationInput,
+  ): Promise<TaskEvaluation> {
     // Validate task exists
     const task = this.db.data.tasks.find((t) => t.id === evaluationData.taskId);
     if (!task) {
@@ -67,7 +75,9 @@ export class TaskEvaluationService {
     }
 
     // Validate evaluator exists
-    const evaluator = this.db.data.staff.find((s) => s.id === evaluationData.evaluatorId);
+    const evaluator = this.db.data.staff.find(
+      (s) => s.id === evaluationData.evaluatorId,
+    );
     if (!evaluator) {
       throw new Error('Evaluator not found');
     }
@@ -103,7 +113,9 @@ export class TaskEvaluationService {
    * @returns Promise resolving to the updated evaluation object
    * @throws Error if evaluation not found or validation fails
    */
-  public async updateTaskEvaluation(updateData: UpdateTaskEvaluationInput): Promise<TaskEvaluation> {
+  public async updateTaskEvaluation(
+    updateData: UpdateTaskEvaluationInput,
+  ): Promise<TaskEvaluation> {
     // Find existing evaluation
     const existingEvaluation = this.db.data.taskEvaluations.find(
       (evaluation) => evaluation.id === updateData.id,
@@ -114,7 +126,9 @@ export class TaskEvaluationService {
 
     // Validate evaluator if provided
     if (updateData.evaluatorId) {
-      const evaluator = this.db.data.staff.find((s) => s.id === updateData.evaluatorId);
+      const evaluator = this.db.data.staff.find(
+        (s) => s.id === updateData.evaluatorId,
+      );
       if (!evaluator) {
         throw new Error('Evaluator not found');
       }

@@ -25,7 +25,9 @@ export class ProjectStatusReportService {
    * @param projectId - Optional filter by project ID
    * @returns Promise resolving to array of project status reports
    */
-  public async getAllProjectStatusReports(projectId?: string): Promise<ProjectStatusReport[]> {
+  public async getAllProjectStatusReports(
+    projectId?: string,
+  ): Promise<ProjectStatusReport[]> {
     let reports = this.db.data.projectStatusReports;
     if (projectId) {
       reports = reports.filter((report) => report.projectId === projectId);
@@ -49,9 +51,13 @@ export class ProjectStatusReportService {
    * @returns Promise resolving to the created status report object
    * @throws Error if validation fails
    */
-  public async createProjectStatusReport(reportData: CreateProjectStatusReportInput): Promise<ProjectStatusReport> {
+  public async createProjectStatusReport(
+    reportData: CreateProjectStatusReportInput,
+  ): Promise<ProjectStatusReport> {
     // Validate project exists
-    const project = this.db.data.projects.find((p) => p.id === reportData.projectId);
+    const project = this.db.data.projects.find(
+      (p) => p.id === reportData.projectId,
+    );
     if (!project) {
       throw new Error('Project not found');
     }
@@ -77,7 +83,9 @@ export class ProjectStatusReportService {
    * @returns Promise resolving to the updated status report object
    * @throws Error if status report not found
    */
-  public async updateProjectStatusReport(updateData: UpdateProjectStatusReportInput): Promise<ProjectStatusReport> {
+  public async updateProjectStatusReport(
+    updateData: UpdateProjectStatusReportInput,
+  ): Promise<ProjectStatusReport> {
     // Find existing status report
     const existingReport = this.db.data.projectStatusReports.find(
       (report) => report.id === updateData.id,

@@ -223,10 +223,14 @@ export class TaskService {
     }
 
     // Get final dates for validation
-    const plannedStartDate = updateData.plannedStartDate ?? existingTask.plannedStartDate;
-    const plannedEndDate = updateData.plannedEndDate ?? existingTask.plannedEndDate;
-    const actualStartDate = updateData.actualStartDate ?? existingTask.actualStartDate;
-    const actualEndDate = updateData.actualEndDate ?? existingTask.actualEndDate;
+    const plannedStartDate =
+      updateData.plannedStartDate ?? existingTask.plannedStartDate;
+    const plannedEndDate =
+      updateData.plannedEndDate ?? existingTask.plannedEndDate;
+    const actualStartDate =
+      updateData.actualStartDate ?? existingTask.actualStartDate;
+    const actualEndDate =
+      updateData.actualEndDate ?? existingTask.actualEndDate;
 
     // Validate date logic if both dates are provided
     if (plannedStartDate && plannedEndDate) {
@@ -313,7 +317,8 @@ export class TaskService {
 
     // Remove task predecessors (both directions)
     this.db.data.taskPredecessors = this.db.data.taskPredecessors.filter(
-      (predecessor) => predecessor.taskId !== id && predecessor.predecessorTaskId !== id,
+      (predecessor) =>
+        predecessor.taskId !== id && predecessor.predecessorTaskId !== id,
     );
 
     // Remove task progress reports
@@ -345,7 +350,10 @@ export class TaskService {
    * @returns Promise resolving to true if assigned successfully
    * @throws Error if task or staff not found, or already assigned
    */
-  public async assignStaffToTask(taskId: string, staffId: string): Promise<boolean> {
+  public async assignStaffToTask(
+    taskId: string,
+    staffId: string,
+  ): Promise<boolean> {
     // Validate task exists
     const task = this.db.data.tasks.find((t) => t.id === taskId);
     if (!task) {
@@ -385,7 +393,10 @@ export class TaskService {
    * @returns Promise resolving to true if removed successfully
    * @throws Error if assignment not found
    */
-  public async removeStaffFromTask(taskId: string, staffId: string): Promise<boolean> {
+  public async removeStaffFromTask(
+    taskId: string,
+    staffId: string,
+  ): Promise<boolean> {
     const assignmentIndex = this.db.data.taskAssignees.findIndex(
       (assignee) => assignee.taskId === taskId && assignee.staffId === staffId,
     );
@@ -407,14 +418,19 @@ export class TaskService {
    * @returns Promise resolving to true if added successfully
    * @throws Error if tasks not found, same task, or circular dependency
    */
-  public async addTaskPredecessor(taskId: string, predecessorTaskId: string): Promise<boolean> {
+  public async addTaskPredecessor(
+    taskId: string,
+    predecessorTaskId: string,
+  ): Promise<boolean> {
     // Validate tasks exist
     const task = this.db.data.tasks.find((t) => t.id === taskId);
     if (!task) {
       throw new Error('Task not found');
     }
 
-    const predecessorTask = this.db.data.tasks.find((t) => t.id === predecessorTaskId);
+    const predecessorTask = this.db.data.tasks.find(
+      (t) => t.id === predecessorTaskId,
+    );
     if (!predecessorTask) {
       throw new Error('Predecessor task not found');
     }
@@ -426,7 +442,8 @@ export class TaskService {
 
     // Check if already exists
     const existingPredecessor = this.db.data.taskPredecessors.find(
-      (pred) => pred.taskId === taskId && pred.predecessorTaskId === predecessorTaskId,
+      (pred) =>
+        pred.taskId === taskId && pred.predecessorTaskId === predecessorTaskId,
     );
     if (existingPredecessor) {
       throw new Error('Predecessor relationship already exists');
@@ -451,9 +468,13 @@ export class TaskService {
    * @returns Promise resolving to true if removed successfully
    * @throws Error if relationship not found
    */
-  public async removeTaskPredecessor(taskId: string, predecessorTaskId: string): Promise<boolean> {
+  public async removeTaskPredecessor(
+    taskId: string,
+    predecessorTaskId: string,
+  ): Promise<boolean> {
     const predecessorIndex = this.db.data.taskPredecessors.findIndex(
-      (pred) => pred.taskId === taskId && pred.predecessorTaskId === predecessorTaskId,
+      (pred) =>
+        pred.taskId === taskId && pred.predecessorTaskId === predecessorTaskId,
     );
 
     if (predecessorIndex === -1) {
@@ -489,7 +510,9 @@ export class TaskService {
       .filter((pred) => pred.taskId === taskId)
       .map((pred) => pred.predecessorTaskId);
 
-    return this.db.data.tasks.filter((task) => predecessorIds.includes(task.id));
+    return this.db.data.tasks.filter((task) =>
+      predecessorIds.includes(task.id),
+    );
   }
 
   /**

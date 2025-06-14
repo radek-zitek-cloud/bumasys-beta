@@ -343,7 +343,11 @@ export const queryResolvers = {
    * @returns Complexity object if found, null otherwise
    * @throws Error if user is not authenticated
    */
-  complexity: (_: unknown, { id }: { id: string }, { user }: GraphQLContext) => {
+  complexity: (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
     if (!user) {
       throw new Error('Unauthenticated');
     }
@@ -441,7 +445,11 @@ export const queryResolvers = {
    * @returns TaskProgress object if found, null otherwise
    * @throws Error if user is not authenticated
    */
-  taskProgressReport: (_: unknown, { id }: { id: string }, { user }: GraphQLContext) => {
+  taskProgressReport: (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
     if (!user) {
       throw new Error('Unauthenticated');
     }
@@ -475,7 +483,11 @@ export const queryResolvers = {
    * @returns TaskEvaluation object if found, null otherwise
    * @throws Error if user is not authenticated
    */
-  taskEvaluation: (_: unknown, { id }: { id: string }, { user }: GraphQLContext) => {
+  taskEvaluation: (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
     if (!user) {
       throw new Error('Unauthenticated');
     }
@@ -509,7 +521,11 @@ export const queryResolvers = {
    * @returns TaskStatusReport object if found, null otherwise
    * @throws Error if user is not authenticated
    */
-  taskStatusReport: (_: unknown, { id }: { id: string }, { user }: GraphQLContext) => {
+  taskStatusReport: (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
     if (!user) {
       throw new Error('Unauthenticated');
     }
@@ -543,7 +559,11 @@ export const queryResolvers = {
    * @returns ProjectStatusReport object if found, null otherwise
    * @throws Error if user is not authenticated
    */
-  projectStatusReport: (_: unknown, { id }: { id: string }, { user }: GraphQLContext) => {
+  projectStatusReport: (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
     if (!user) {
       throw new Error('Unauthenticated');
     }
@@ -654,9 +674,7 @@ export const taskResolvers = {
       : null;
   },
   status: (parent: { statusId?: string }) => {
-    return parent.statusId
-      ? statusService.findById(parent.statusId)
-      : null;
+    return parent.statusId ? statusService.findById(parent.statusId) : null;
   },
   priority: (parent: { priorityId?: string }) => {
     return parent.priorityId
