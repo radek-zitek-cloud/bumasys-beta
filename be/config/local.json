@@ -10,5 +10,19 @@
   "testField": {
     "dynamic": "field",
     "addedWithoutCodeChanges": true
-  }
+  },
+  "anotherNewField": {
+    "category": "database",
+    "settings": {
+      "cacheEnabled": true,
+      "maxConnections": 100,
+      "nested": {
+        "deep": {
+          "value": "works"
+        }
+      }
+    }
+  },
+  "simpleString": "I was added without touching any code!",
+  "simpleNumber": 42
 }
