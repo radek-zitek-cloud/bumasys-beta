@@ -181,7 +181,7 @@ export async function createApp(): Promise<AppInstances> {
  * @returns Promise that resolves when the server is listening
  */
 export async function start(): Promise<void> {
-  logger.info(config.logging.betterStack.sourceToken);
+  // logger.info(config.logging.betterStack.sourceToken);
   try {
     const { app } = await createApp();
 
