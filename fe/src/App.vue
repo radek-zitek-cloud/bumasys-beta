@@ -28,6 +28,7 @@
                   title="Change Password"
                   @click="showChange = true"
                 />
+                <v-list-item title="Debug Info" @click="showDebugInfo = true" />
                 <v-list-item title="Logout" @click="showLogout = true" />
               </template>
               <template v-else>
@@ -89,6 +90,9 @@
       <v-dialog v-model="showProfile" max-width="400" persistent>
         <ProfileCard @cancel="showProfile = false" @save="handleProfile" />
       </v-dialog>
+      <v-dialog v-model="showDebugInfo" max-width="600" persistent>
+        <DebugInfoCard @close="showDebugInfo = false" />
+      </v-dialog>
       <v-snackbar
         v-model="snackbar"
         :color="snackbarColor"
@@ -106,6 +110,7 @@
   import { useTheme } from 'vuetify'
   import AppFooter from './components/AppFooter.vue'
   import ChangePasswordCard from './components/ChangePasswordCard.vue'
+  import DebugInfoCard from './components/DebugInfoCard.vue'
   import LoginCard from './components/LoginCard.vue'
   import LogoutCard from './components/LogoutCard.vue'
   import PasswordResetCard from './components/PasswordResetCard.vue'
@@ -139,6 +144,7 @@
   const showChange = ref(false)
   const showLogout = ref(false)
   const showProfile = ref(false)
+  const showDebugInfo = ref(false)
 
   /**
    * Access Vuetify's theme instance so we can switch between light and dark

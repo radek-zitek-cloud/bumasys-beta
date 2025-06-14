@@ -1,6 +1,6 @@
 <!--
   @fileoverview Complexity deletion confirmation dialog component
-  
+
   This component provides a confirmation dialog for deleting complexity entries.
   It follows the design patterns used in the user management interface.
 -->

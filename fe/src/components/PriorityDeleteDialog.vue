@@ -1,6 +1,6 @@
 <!--
   @fileoverview Priority deletion confirmation dialog component
-  
+
   This component provides a confirmation dialog for deleting priority entries.
   It follows the design patterns used in the user management interface.
 -->

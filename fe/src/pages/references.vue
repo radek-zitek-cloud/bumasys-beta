@@ -1,6 +1,6 @@
 <!--
   @fileoverview Reference Data Management Page
-  
+
   This page provides a comprehensive interface for managing reference data including
   Status, Priority, and Complexity entities. It follows the design patterns
   established in the user management interface.
@@ -42,20 +42,20 @@
               v-model="statusSearch"
               clearable
               density="compact"
+              hide-details
               label="Search statuses..."
               prepend-inner-icon="mdi-magnify"
               variant="outlined"
-              hide-details
             />
           </v-card-subtitle>
 
           <v-data-table
+            density="compact"
             :headers="statusHeaders"
             :items="filteredStatuses"
             :items-per-page="itemsPerPage"
             :items-per-page-options="itemsPerPageOptions"
             :loading="statusLoading"
-            density="compact"
             no-data-text="No statuses found"
           >
             <template #item.actions="{ item }">
@@ -70,10 +70,10 @@
                   <v-tooltip activator="parent" location="top">Edit Status</v-tooltip>
                 </v-btn>
                 <v-btn
+                  color="error"
                   icon="mdi-delete"
                   size="small"
                   variant="text"
-                  color="error"
                   @click="openStatusDeleteDialog(item)"
                 >
                   <v-icon>mdi-delete</v-icon>
@@ -107,20 +107,20 @@
               v-model="prioritySearch"
               clearable
               density="compact"
+              hide-details
               label="Search priorities..."
               prepend-inner-icon="mdi-magnify"
               variant="outlined"
-              hide-details
             />
           </v-card-subtitle>
 
           <v-data-table
+            density="compact"
             :headers="priorityHeaders"
             :items="filteredPriorities"
             :items-per-page="itemsPerPage"
             :items-per-page-options="itemsPerPageOptions"
             :loading="priorityLoading"
-            density="compact"
             no-data-text="No priorities found"
           >
             <template #item.actions="{ item }">
@@ -135,10 +135,10 @@
                   <v-tooltip activator="parent" location="top">Edit Priority</v-tooltip>
                 </v-btn>
                 <v-btn
+                  color="error"
                   icon="mdi-delete"
                   size="small"
                   variant="text"
-                  color="error"
                   @click="openPriorityDeleteDialog(item)"
                 >
                   <v-icon>mdi-delete</v-icon>
@@ -172,20 +172,20 @@
               v-model="complexitySearch"
               clearable
               density="compact"
+              hide-details
               label="Search complexities..."
               prepend-inner-icon="mdi-magnify"
               variant="outlined"
-              hide-details
             />
           </v-card-subtitle>
 
           <v-data-table
+            density="compact"
             :headers="complexityHeaders"
             :items="filteredComplexities"
             :items-per-page="itemsPerPage"
             :items-per-page-options="itemsPerPageOptions"
             :loading="complexityLoading"
-            density="compact"
             no-data-text="No complexities found"
           >
             <template #item.actions="{ item }">
@@ -200,10 +200,10 @@
                   <v-tooltip activator="parent" location="top">Edit Complexity</v-tooltip>
                 </v-btn>
                 <v-btn
+                  color="error"
                   icon="mdi-delete"
                   size="small"
                   variant="text"
-                  color="error"
                   @click="openComplexityDeleteDialog(item)"
                 >
                   <v-icon>mdi-delete</v-icon>
@@ -304,29 +304,29 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, onMounted, reactive, ref } from 'vue'
   import type { VDataTable } from 'vuetify/components'
-  
-  // Status imports
-  import StatusCreateDialog from '../components/StatusCreateDialog.vue'
-  import StatusEditDialog from '../components/StatusEditDialog.vue'
-  import StatusDeleteDialog from '../components/StatusDeleteDialog.vue'
-  import * as statusService from '../services/status'
-  import type { Status, CreateStatusInput, UpdateStatusInput } from '../services/status'
-  
-  // Priority imports
-  import PriorityCreateDialog from '../components/PriorityCreateDialog.vue'
-  import PriorityEditDialog from '../components/PriorityEditDialog.vue'
-  import PriorityDeleteDialog from '../components/PriorityDeleteDialog.vue'
-  import * as priorityService from '../services/priority'
-  import type { Priority, CreatePriorityInput, UpdatePriorityInput } from '../services/priority'
-  
+  import type { Complexity, CreateComplexityInput, UpdateComplexityInput } from '../services/complexity'
+
+  import type { CreatePriorityInput, Priority, UpdatePriorityInput } from '../services/priority'
+  import type { CreateStatusInput, Status, UpdateStatusInput } from '../services/status'
+  import { computed, onMounted, reactive, ref } from 'vue'
   // Complexity imports
   import ComplexityCreateDialog from '../components/ComplexityCreateDialog.vue'
-  import ComplexityEditDialog from '../components/ComplexityEditDialog.vue'
   import ComplexityDeleteDialog from '../components/ComplexityDeleteDialog.vue'
+
+  import ComplexityEditDialog from '../components/ComplexityEditDialog.vue'
+  // Priority imports
+  import PriorityCreateDialog from '../components/PriorityCreateDialog.vue'
+  import PriorityDeleteDialog from '../components/PriorityDeleteDialog.vue'
+  import PriorityEditDialog from '../components/PriorityEditDialog.vue'
+  // Status imports
+  import StatusCreateDialog from '../components/StatusCreateDialog.vue'
+
+  import StatusDeleteDialog from '../components/StatusDeleteDialog.vue'
+  import StatusEditDialog from '../components/StatusEditDialog.vue'
   import * as complexityService from '../services/complexity'
-  import type { Complexity, CreateComplexityInput, UpdateComplexityInput } from '../services/complexity'
+  import * as priorityService from '../services/priority'
+  import * as statusService from '../services/status'
 
   /** Data table configuration */
   type DataTableHeaders = VDataTable['$props']['headers']
@@ -377,19 +377,19 @@
   const statuses = ref<Status[]>([])
   const priorities = ref<Priority[]>([])
   const complexities = ref<Complexity[]>([])
-  
+
   const selectedStatus = ref<Status | null>(null)
   const selectedPriority = ref<Priority | null>(null)
   const selectedComplexity = ref<Complexity | null>(null)
-  
+
   const statusSearch = ref('')
   const prioritySearch = ref('')
   const complexitySearch = ref('')
-  
+
   const statusLoading = ref(false)
   const priorityLoading = ref(false)
   const complexityLoading = ref(false)
-  
+
   const itemsPerPage = ref(10)
   const itemsPerPageOptions = [
     { value: 5, title: '5' },
@@ -403,11 +403,11 @@
   const showStatusCreateDialog = ref(false)
   const showStatusEditDialog = ref(false)
   const showStatusDeleteDialog = ref(false)
-  
+
   const showPriorityCreateDialog = ref(false)
   const showPriorityEditDialog = ref(false)
   const showPriorityDeleteDialog = ref(false)
-  
+
   const showComplexityCreateDialog = ref(false)
   const showComplexityEditDialog = ref(false)
   const showComplexityDeleteDialog = ref(false)
@@ -425,7 +425,7 @@
 
     const searchTerm = statusSearch.value.toLowerCase()
     return statuses.value.filter(status =>
-      status.name.toLowerCase().includes(searchTerm)
+      status.name.toLowerCase().includes(searchTerm),
     )
   })
 
@@ -434,7 +434,7 @@
 
     const searchTerm = prioritySearch.value.toLowerCase()
     return priorities.value.filter(priority =>
-      priority.name.toLowerCase().includes(searchTerm)
+      priority.name.toLowerCase().includes(searchTerm),
     )
   })
 
@@ -443,7 +443,7 @@
 
     const searchTerm = complexitySearch.value.toLowerCase()
     return complexities.value.filter(complexity =>
-      complexity.name.toLowerCase().includes(searchTerm)
+      complexity.name.toLowerCase().includes(searchTerm),
     )
   })
 
@@ -512,7 +512,7 @@
       console.error('Failed to create status:', error)
       notify(
         error instanceof Error ? error.message : 'Failed to create status',
-        'error'
+        'error',
       )
     }
   }
@@ -527,7 +527,7 @@
       console.error('Failed to update status:', error)
       notify(
         error instanceof Error ? error.message : 'Failed to update status',
-        'error'
+        'error',
       )
     }
   }
@@ -544,7 +544,7 @@
       console.error('Failed to delete status:', error)
       notify(
         error instanceof Error ? error.message : 'Failed to delete status',
-        'error'
+        'error',
       )
     }
   }
@@ -574,7 +574,7 @@
       console.error('Failed to create priority:', error)
       notify(
         error instanceof Error ? error.message : 'Failed to create priority',
-        'error'
+        'error',
       )
     }
   }
@@ -589,7 +589,7 @@
       console.error('Failed to update priority:', error)
       notify(
         error instanceof Error ? error.message : 'Failed to update priority',
-        'error'
+        'error',
       )
     }
   }
@@ -606,7 +606,7 @@
       console.error('Failed to delete priority:', error)
       notify(
         error instanceof Error ? error.message : 'Failed to delete priority',
-        'error'
+        'error',
       )
     }
   }
@@ -636,7 +636,7 @@
       console.error('Failed to create complexity:', error)
       notify(
         error instanceof Error ? error.message : 'Failed to create complexity',
-        'error'
+        'error',
       )
     }
   }
@@ -651,7 +651,7 @@
       console.error('Failed to update complexity:', error)
       notify(
         error instanceof Error ? error.message : 'Failed to update complexity',
-        'error'
+        'error',
       )
     }
   }
@@ -668,7 +668,7 @@
       console.error('Failed to delete complexity:', error)
       notify(
         error instanceof Error ? error.message : 'Failed to delete complexity',
-        'error'
+        'error',
       )
     }
   }

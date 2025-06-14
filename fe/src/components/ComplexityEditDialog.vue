@@ -1,6 +1,6 @@
 <!--
   @fileoverview Complexity edit dialog component
-  
+
   This component provides a form dialog for editing existing complexity entries.
   It follows Vuetify Material Design patterns and includes proper validation.
 -->
@@ -14,12 +14,12 @@
           <v-col cols="12">
             <v-text-field
               v-model="form.name"
+              counter="50"
               label="Complexity Name *"
+              maxlength="50"
               prepend-icon="mdi-chart-bar"
               required
               :rules="nameRules"
-              counter="50"
-              maxlength="50"
             />
           </v-col>
         </v-row>
@@ -52,13 +52,13 @@
   /** Watch for changes to the complexity prop and update form */
   watch(
     () => props.complexity,
-    (newComplexity) => {
+    newComplexity => {
       if (newComplexity) {
         form.id = newComplexity.id
         form.name = newComplexity.name
       }
     },
-    { immediate: true }
+    { immediate: true },
   )
 
   /** Name validation rules */

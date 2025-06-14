@@ -1,6 +1,6 @@
 <!--
   @fileoverview Priority edit dialog component
-  
+
   This component provides a form dialog for editing existing priority entries.
   It follows Vuetify Material Design patterns and includes proper validation.
 -->
@@ -14,12 +14,12 @@
           <v-col cols="12">
             <v-text-field
               v-model="form.name"
+              counter="50"
               label="Priority Name *"
+              maxlength="50"
               prepend-icon="mdi-priority-high"
               required
               :rules="nameRules"
-              counter="50"
-              maxlength="50"
             />
           </v-col>
         </v-row>
@@ -52,13 +52,13 @@
   /** Watch for changes to the priority prop and update form */
   watch(
     () => props.priority,
-    (newPriority) => {
+    newPriority => {
       if (newPriority) {
         form.id = newPriority.id
         form.name = newPriority.name
       }
     },
-    { immediate: true }
+    { immediate: true },
   )
 
   /** Name validation rules */
