@@ -9,6 +9,9 @@
           label="Email"
           type="email"
         />
+        <v-text-field v-model="firstName" label="First Name" />
+        <v-text-field v-model="lastName" label="Last Name" />
+        <v-text-field v-model="note" label="Note" />
         <v-text-field
           v-model="password"
           autocomplete="new-password"
@@ -36,27 +39,48 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+  import { computed, ref } from 'vue'
 
-/** Email address for the new account. */
-const email = ref("");
-/** Password for the new account. */
-const password = ref("");
-/** Second password field to ensure they match. */
-const confirm = ref("");
+  /** Email address for the new account. */
+  const email = ref('')
+  /** Optional first name for the account. */
+  const firstName = ref('')
+  /** Optional last name for the account. */
+  const lastName = ref('')
+  /** Optional user note. */
+  const note = ref('')
+  /** Password for the new account. */
+  const password = ref('')
+  /** Second password field to ensure they match. */
+  const confirm = ref('')
 
-/** True when the password and confirmation match. */
-const match = computed(
-  () => password.value !== "" && password.value === confirm.value,
-);
+  /** True when the password and confirmation match. */
+  const match = computed(
+    () => password.value !== '' && password.value === confirm.value,
+  )
 
-const emit = defineEmits<{
-  (e: "register", payload: { email: string; password: string }): void;
-  (e: "cancel"): void;
-}>();
+  const emit = defineEmits<{
+    (
+      e: 'register',
+      payload: {
+        email: string
+        password: string
+        firstName?: string
+        lastName?: string
+        note?: string
+      },
+    ): void
+    (e: 'cancel'): void
+  }>()
 
-/** Emit the register event when the user submits the form. */
-function onRegister() {
-  emit("register", { email: email.value, password: password.value });
-}
+  /** Emit the register event when the user submits the form. */
+  function onRegister () {
+    emit('register', {
+      email: email.value,
+      password: password.value,
+      firstName: firstName.value,
+      lastName: lastName.value,
+      note: note.value,
+    })
+  }
 </script>

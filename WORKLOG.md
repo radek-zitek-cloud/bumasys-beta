@@ -78,3 +78,9 @@
 - Added updateUser API call and wired it in App.vue.
 - Documented profile editing in README.
 - Ran pnpm lint and npm test to verify.
+2025-06-14
+- Added optional first/last name and note fields to Register dialog and API calls.
+- Persisted auth store using pinia-plugin-persistedstate.
+- Defaulted side navigation drawer to open.
+- Updated backend auth tests and README.
+- Ran npm install, lint and tests.
