@@ -623,7 +623,6 @@ export const typeDefs = gql`
     user: User!
   }
 
-
   """
   Query operations for reading data
   """
@@ -643,14 +642,14 @@ export const typeDefs = gql`
     """
     Get backend configuration (sensitive values excluded)
     This returns a dynamic configuration object that includes all fields from JSON config files.
-    
+
     Known fields include:
     - port: Int - Server port number
-    - accessTokenExpiresIn: String - Access token expiration duration  
+    - accessTokenExpiresIn: String - Access token expiration duration
     - refreshTokenExpiresIn: String - Refresh token expiration duration
     - dbFile: String - Database file path (sanitized)
     - logging: Object - Complete logging configuration including level and betterStack
-    
+
     Additional fields may be present based on configuration files without code changes.
     Sensitive fields like jwtSecret and sourceToken are automatically redacted.
     """
