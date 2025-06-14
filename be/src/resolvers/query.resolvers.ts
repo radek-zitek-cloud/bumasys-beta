@@ -135,13 +135,14 @@ export const queryResolvers = {
         return obj.map((item) => redact(item));
       }
       if (obj && typeof obj === 'object') {
-      const result: Record<string, any> = {};
-      for (const objKey of Object.keys(obj)) {
-        if (redactKeys.some((rk) => objKey.toLowerCase() === rk)) {
-        // Skip sensitive keys entirely - don't include them in the result
-        continue;
-        } else {
-        result[objKey] = redact(obj[objKey], objKey);
+        const result: Record<string, any> = {};
+        for (const objKey of Object.keys(obj)) {
+          if (redactKeys.some((rk) => objKey.toLowerCase() === rk)) {
+            // Skip sensitive keys entirely - don't include them in the result
+            continue;
+          } else {
+            result[objKey] = redact(obj[objKey], objKey);
+          }
         }
         return result;
       }
