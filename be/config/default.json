@@ -1,6 +1,6 @@
 {
   "port": 4000,
-  "jwtSecret": "secret",
+  "jwtSecret": "default-jwt-secret-long-enough",
   "accessTokenExpiresIn": "60m",
   "refreshTokenExpiresIn": "7d",
   "dbFile": "../data/db.json",
