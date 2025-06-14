@@ -6,6 +6,7 @@
  * It provides a service layer between GraphQL resolvers and the database.
  */
 
+import { v4 as uuidv4 } from 'uuid';
 import type {
   Database,
   User,
@@ -93,7 +94,7 @@ export class UserService {
 
     // Create new user object
     const newUser: User = {
-      id: Date.now().toString(), // Simple ID generation - consider UUID in production
+      id: uuidv4(), // Generate UUID for the user ID
       email: userData.email,
       password: hashedPassword,
       firstName: userData.firstName,
