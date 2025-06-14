@@ -47,6 +47,7 @@
             <v-divider v-if="item.separator" :thickness="3" />
             <v-list-item
               v-else
+              :disabled="isNavigationItemDisabled(item)"
               link
               :prepend-icon="item.icon"
               :subtitle="item.subtitle"
@@ -161,6 +162,23 @@
     vuetifyTheme.global.name.value = vuetifyTheme.global.current.value.dark
       ? 'light'
       : 'dark'
+  }
+
+  /**
+   * Determine if a navigation item should be disabled based on authentication state.
+   * Home is always enabled, all other items require authentication.
+   */
+  function isNavigationItemDisabled (item: any) {
+    // Skip separator items (they don't have disable property)
+    if (item.separator) {
+      return false
+    }
+    // Home is always enabled
+    if (item.title === 'Home' || item.to === '/') {
+      return false
+    }
+    // All other items require authentication
+    return !auth.loggedIn
   }
 
   /**
