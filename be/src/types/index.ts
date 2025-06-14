@@ -69,6 +69,28 @@ export interface Database {
     departments: Department[];
     /** Array of all staff members in the system */
     staff: Staff[];
+    /** Array of all status values */
+    statuses: Status[];
+    /** Array of all priority values */
+    priorities: Priority[];
+    /** Array of all complexity values */
+    complexities: Complexity[];
+    /** Array of all projects */
+    projects: Project[];
+    /** Array of all tasks */
+    tasks: Task[];
+    /** Array of all task assignee relationships */
+    taskAssignees: TaskAssignee[];
+    /** Array of all task predecessor relationships */
+    taskPredecessors: TaskPredecessor[];
+    /** Array of all task progress reports */
+    taskProgress: TaskProgress[];
+    /** Array of all task evaluations */
+    taskEvaluations: TaskEvaluation[];
+    /** Array of all task status reports */
+    taskStatusReports: TaskStatusReport[];
+    /** Array of all project status reports */
+    projectStatusReports: ProjectStatusReport[];
   };
   /** Write current data to persistent storage */
   write(): Promise<void>;
@@ -309,4 +331,434 @@ export interface UpdateStaffInput {
   departmentId?: string;
   /** New supervisor ID (optional) */
   supervisorId?: string;
+}
+
+/**
+ * Represents a status reference value
+ */
+export interface Status {
+  /** Unique identifier for the status */
+  id: string;
+  /** Status name */
+  name: string;
+}
+
+/**
+ * Represents a priority reference value
+ */
+export interface Priority {
+  /** Unique identifier for the priority */
+  id: string;
+  /** Priority name */
+  name: string;
+}
+
+/**
+ * Represents a complexity reference value
+ */
+export interface Complexity {
+  /** Unique identifier for the complexity */
+  id: string;
+  /** Complexity name */
+  name: string;
+}
+
+/**
+ * Represents a project in the system
+ */
+export interface Project {
+  /** Unique identifier for the project */
+  id: string;
+  /** Project name */
+  name: string;
+  /** Optional description */
+  description?: string;
+  /** Lead staff member ID */
+  leadStaffId?: string;
+  /** Planned start date */
+  plannedStartDate?: string;
+  /** Planned end date */
+  plannedEndDate?: string;
+  /** Actual start date */
+  actualStartDate?: string;
+  /** Actual end date */
+  actualEndDate?: string;
+}
+
+/**
+ * Represents a task in the system
+ */
+export interface Task {
+  /** Unique identifier for the task */
+  id: string;
+  /** Task name */
+  name: string;
+  /** Optional description */
+  description?: string;
+  /** Project this task belongs to */
+  projectId: string;
+  /** Parent task ID for sub-tasks */
+  parentTaskId?: string;
+  /** Evaluator staff ID */
+  evaluatorId?: string;
+  /** Status ID */
+  statusId?: string;
+  /** Priority ID */
+  priorityId?: string;
+  /** Complexity ID */
+  complexityId?: string;
+  /** Planned start date */
+  plannedStartDate?: string;
+  /** Planned end date */
+  plannedEndDate?: string;
+  /** Actual start date */
+  actualStartDate?: string;
+  /** Actual end date */
+  actualEndDate?: string;
+}
+
+/**
+ * Represents a task assignee relationship
+ */
+export interface TaskAssignee {
+  /** Task ID */
+  taskId: string;
+  /** Staff ID */
+  staffId: string;
+}
+
+/**
+ * Represents a task predecessor relationship
+ */
+export interface TaskPredecessor {
+  /** Task ID */
+  taskId: string;
+  /** Predecessor task ID */
+  predecessorTaskId: string;
+}
+
+/**
+ * Represents a task progress report
+ */
+export interface TaskProgress {
+  /** Unique identifier for the progress report */
+  id: string;
+  /** Task this progress report belongs to */
+  taskId: string;
+  /** Report date */
+  reportDate: string;
+  /** Progress percentage (0-100) */
+  progressPercent: number;
+  /** Optional notes */
+  notes?: string;
+}
+
+/**
+ * Represents a task evaluation
+ */
+export interface TaskEvaluation {
+  /** Unique identifier for the evaluation */
+  id: string;
+  /** Task this evaluation belongs to */
+  taskId: string;
+  /** Evaluator staff ID */
+  evaluatorId: string;
+  /** Evaluation date */
+  evaluationDate: string;
+  /** Optional evaluation notes */
+  evaluationNotes?: string;
+  /** Evaluation result */
+  result?: string;
+}
+
+/**
+ * Represents a task status report
+ */
+export interface TaskStatusReport {
+  /** Unique identifier for the status report */
+  id: string;
+  /** Task this status report belongs to */
+  taskId: string;
+  /** Report date */
+  reportDate: string;
+  /** Status summary */
+  statusSummary?: string;
+}
+
+/**
+ * Represents a project status report
+ */
+export interface ProjectStatusReport {
+  /** Unique identifier for the status report */
+  id: string;
+  /** Project this status report belongs to */
+  projectId: string;
+  /** Report date */
+  reportDate: string;
+  /** Status summary */
+  statusSummary?: string;
+}
+
+/**
+ * Input parameters for creating a status
+ */
+export interface CreateStatusInput {
+  /** Status name */
+  name: string;
+}
+
+/**
+ * Input parameters for updating a status
+ */
+export interface UpdateStatusInput {
+  /** Status ID to update */
+  id: string;
+  /** New name */
+  name: string;
+}
+
+/**
+ * Input parameters for creating a priority
+ */
+export interface CreatePriorityInput {
+  /** Priority name */
+  name: string;
+}
+
+/**
+ * Input parameters for updating a priority
+ */
+export interface UpdatePriorityInput {
+  /** Priority ID to update */
+  id: string;
+  /** New name */
+  name: string;
+}
+
+/**
+ * Input parameters for creating a complexity
+ */
+export interface CreateComplexityInput {
+  /** Complexity name */
+  name: string;
+}
+
+/**
+ * Input parameters for updating a complexity
+ */
+export interface UpdateComplexityInput {
+  /** Complexity ID to update */
+  id: string;
+  /** New name */
+  name: string;
+}
+
+/**
+ * Input parameters for creating a project
+ */
+export interface CreateProjectInput {
+  /** Project name */
+  name: string;
+  /** Optional description */
+  description?: string;
+  /** Lead staff member ID */
+  leadStaffId?: string;
+  /** Planned start date */
+  plannedStartDate?: string;
+  /** Planned end date */
+  plannedEndDate?: string;
+  /** Actual start date */
+  actualStartDate?: string;
+  /** Actual end date */
+  actualEndDate?: string;
+}
+
+/**
+ * Input parameters for updating a project
+ */
+export interface UpdateProjectInput {
+  /** Project ID to update */
+  id: string;
+  /** New name (optional) */
+  name?: string;
+  /** New description (optional) */
+  description?: string;
+  /** New lead staff member ID (optional) */
+  leadStaffId?: string;
+  /** New planned start date (optional) */
+  plannedStartDate?: string;
+  /** New planned end date (optional) */
+  plannedEndDate?: string;
+  /** New actual start date (optional) */
+  actualStartDate?: string;
+  /** New actual end date (optional) */
+  actualEndDate?: string;
+}
+
+/**
+ * Input parameters for creating a task
+ */
+export interface CreateTaskInput {
+  /** Task name */
+  name: string;
+  /** Optional description */
+  description?: string;
+  /** Project this task belongs to */
+  projectId: string;
+  /** Parent task ID for sub-tasks */
+  parentTaskId?: string;
+  /** Evaluator staff ID */
+  evaluatorId?: string;
+  /** Status ID */
+  statusId?: string;
+  /** Priority ID */
+  priorityId?: string;
+  /** Complexity ID */
+  complexityId?: string;
+  /** Planned start date */
+  plannedStartDate?: string;
+  /** Planned end date */
+  plannedEndDate?: string;
+  /** Actual start date */
+  actualStartDate?: string;
+  /** Actual end date */
+  actualEndDate?: string;
+}
+
+/**
+ * Input parameters for updating a task
+ */
+export interface UpdateTaskInput {
+  /** Task ID to update */
+  id: string;
+  /** New name (optional) */
+  name?: string;
+  /** New description (optional) */
+  description?: string;
+  /** New parent task ID (optional) */
+  parentTaskId?: string;
+  /** New evaluator staff ID (optional) */
+  evaluatorId?: string;
+  /** New status ID (optional) */
+  statusId?: string;
+  /** New priority ID (optional) */
+  priorityId?: string;
+  /** New complexity ID (optional) */
+  complexityId?: string;
+  /** New planned start date (optional) */
+  plannedStartDate?: string;
+  /** New planned end date (optional) */
+  plannedEndDate?: string;
+  /** New actual start date (optional) */
+  actualStartDate?: string;
+  /** New actual end date (optional) */
+  actualEndDate?: string;
+}
+
+/**
+ * Input parameters for creating a task progress report
+ */
+export interface CreateTaskProgressInput {
+  /** Task this progress report belongs to */
+  taskId: string;
+  /** Report date */
+  reportDate: string;
+  /** Progress percentage (0-100) */
+  progressPercent: number;
+  /** Optional notes */
+  notes?: string;
+}
+
+/**
+ * Input parameters for updating a task progress report
+ */
+export interface UpdateTaskProgressInput {
+  /** Progress report ID to update */
+  id: string;
+  /** New report date (optional) */
+  reportDate?: string;
+  /** New progress percentage (optional) */
+  progressPercent?: number;
+  /** New notes (optional) */
+  notes?: string;
+}
+
+/**
+ * Input parameters for creating a task evaluation
+ */
+export interface CreateTaskEvaluationInput {
+  /** Task this evaluation belongs to */
+  taskId: string;
+  /** Evaluator staff ID */
+  evaluatorId: string;
+  /** Evaluation date */
+  evaluationDate: string;
+  /** Optional evaluation notes */
+  evaluationNotes?: string;
+  /** Evaluation result */
+  result?: string;
+}
+
+/**
+ * Input parameters for updating a task evaluation
+ */
+export interface UpdateTaskEvaluationInput {
+  /** Evaluation ID to update */
+  id: string;
+  /** New evaluator staff ID (optional) */
+  evaluatorId?: string;
+  /** New evaluation date (optional) */
+  evaluationDate?: string;
+  /** New evaluation notes (optional) */
+  evaluationNotes?: string;
+  /** New evaluation result (optional) */
+  result?: string;
+}
+
+/**
+ * Input parameters for creating a task status report
+ */
+export interface CreateTaskStatusReportInput {
+  /** Task this status report belongs to */
+  taskId: string;
+  /** Report date */
+  reportDate: string;
+  /** Status summary */
+  statusSummary?: string;
+}
+
+/**
+ * Input parameters for updating a task status report
+ */
+export interface UpdateTaskStatusReportInput {
+  /** Status report ID to update */
+  id: string;
+  /** New report date (optional) */
+  reportDate?: string;
+  /** New status summary (optional) */
+  statusSummary?: string;
+}
+
+/**
+ * Input parameters for creating a project status report
+ */
+export interface CreateProjectStatusReportInput {
+  /** Project this status report belongs to */
+  projectId: string;
+  /** Report date */
+  reportDate: string;
+  /** Status summary */
+  statusSummary?: string;
+}
+
+/**
+ * Input parameters for updating a project status report
+ */
+export interface UpdateProjectStatusReportInput {
+  /** Status report ID to update */
+  id: string;
+  /** New report date (optional) */
+  reportDate?: string;
+  /** New status summary (optional) */
+  statusSummary?: string;
 }
