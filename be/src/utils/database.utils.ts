@@ -26,6 +26,17 @@ export async function createDatabase(filePath: string): Promise<Database> {
       organizations: [],
       departments: [],
       staff: [],
+      statuses: [],
+      priorities: [],
+      complexities: [],
+      projects: [],
+      tasks: [],
+      taskAssignees: [],
+      taskPredecessors: [],
+      taskProgress: [],
+      taskEvaluations: [],
+      taskStatusReports: [],
+      projectStatusReports: [],
     };
 
     // Ensure directory exists
@@ -55,6 +66,41 @@ export async function createDatabase(filePath: string): Promise<Database> {
   }
   if (!data.staff) {
     data.staff = [];
+  }
+
+  // Ensure project and task arrays exist for backward compatibility
+  if (!data.statuses) {
+    data.statuses = [];
+  }
+  if (!data.priorities) {
+    data.priorities = [];
+  }
+  if (!data.complexities) {
+    data.complexities = [];
+  }
+  if (!data.projects) {
+    data.projects = [];
+  }
+  if (!data.tasks) {
+    data.tasks = [];
+  }
+  if (!data.taskAssignees) {
+    data.taskAssignees = [];
+  }
+  if (!data.taskPredecessors) {
+    data.taskPredecessors = [];
+  }
+  if (!data.taskProgress) {
+    data.taskProgress = [];
+  }
+  if (!data.taskEvaluations) {
+    data.taskEvaluations = [];
+  }
+  if (!data.taskStatusReports) {
+    data.taskStatusReports = [];
+  }
+  if (!data.projectStatusReports) {
+    data.projectStatusReports = [];
   }
 
   // Return database interface
@@ -101,6 +147,50 @@ export async function validateDatabase(database: Database): Promise<void> {
     data.staff = [];
   }
 
+  if (!Array.isArray(data.statuses)) {
+    data.statuses = [];
+  }
+
+  if (!Array.isArray(data.priorities)) {
+    data.priorities = [];
+  }
+
+  if (!Array.isArray(data.complexities)) {
+    data.complexities = [];
+  }
+
+  if (!Array.isArray(data.projects)) {
+    data.projects = [];
+  }
+
+  if (!Array.isArray(data.tasks)) {
+    data.tasks = [];
+  }
+
+  if (!Array.isArray(data.taskAssignees)) {
+    data.taskAssignees = [];
+  }
+
+  if (!Array.isArray(data.taskPredecessors)) {
+    data.taskPredecessors = [];
+  }
+
+  if (!Array.isArray(data.taskProgress)) {
+    data.taskProgress = [];
+  }
+
+  if (!Array.isArray(data.taskEvaluations)) {
+    data.taskEvaluations = [];
+  }
+
+  if (!Array.isArray(data.taskStatusReports)) {
+    data.taskStatusReports = [];
+  }
+
+  if (!Array.isArray(data.projectStatusReports)) {
+    data.projectStatusReports = [];
+  }
+
   // Clean up expired sessions (sessions older than refresh token expiry)
   const now = new Date();
   const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
@@ -132,6 +222,17 @@ export function getDatabaseStats(database: Database) {
     organizationCount: data.organizations.length,
     departmentCount: data.departments.length,
     staffCount: data.staff.length,
+    statusCount: data.statuses.length,
+    priorityCount: data.priorities.length,
+    complexityCount: data.complexities.length,
+    projectCount: data.projects.length,
+    taskCount: data.tasks.length,
+    taskAssigneeCount: data.taskAssignees.length,
+    taskPredecessorCount: data.taskPredecessors.length,
+    taskProgressCount: data.taskProgress.length,
+    taskEvaluationCount: data.taskEvaluations.length,
+    taskStatusReportCount: data.taskStatusReports.length,
+    projectStatusReportCount: data.projectStatusReports.length,
     activeSessions: data.sessions.filter((session) => {
       const sessionDate = new Date(session.createdAt);
       const now = new Date();

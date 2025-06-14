@@ -228,6 +228,381 @@ export const typeDefs = gql`
   }
 
   """
+  Status reference object
+  """
+  type Status {
+    """
+    Unique identifier for the status
+    """
+    id: ID!
+
+    """
+    Status name
+    """
+    name: String!
+  }
+
+  """
+  Priority reference object
+  """
+  type Priority {
+    """
+    Unique identifier for the priority
+    """
+    id: ID!
+
+    """
+    Priority name
+    """
+    name: String!
+  }
+
+  """
+  Complexity reference object
+  """
+  type Complexity {
+    """
+    Unique identifier for the complexity
+    """
+    id: ID!
+
+    """
+    Complexity name
+    """
+    name: String!
+  }
+
+  """
+  Project object representing a project in the system
+  """
+  type Project {
+    """
+    Unique identifier for the project
+    """
+    id: ID!
+
+    """
+    Project name
+    """
+    name: String!
+
+    """
+    Optional description
+    """
+    description: String
+
+    """
+    Lead staff member ID
+    """
+    leadStaffId: ID
+
+    """
+    Planned start date
+    """
+    plannedStartDate: String
+
+    """
+    Planned end date
+    """
+    plannedEndDate: String
+
+    """
+    Actual start date
+    """
+    actualStartDate: String
+
+    """
+    Actual end date
+    """
+    actualEndDate: String
+
+    """
+    Lead staff member object (if set)
+    """
+    leadStaff: Staff
+
+    """
+    All tasks in this project
+    """
+    tasks: [Task!]!
+
+    """
+    All status reports for this project
+    """
+    statusReports: [ProjectStatusReport!]!
+  }
+
+  """
+  Task object representing a task in the system
+  """
+  type Task {
+    """
+    Unique identifier for the task
+    """
+    id: ID!
+
+    """
+    Task name
+    """
+    name: String!
+
+    """
+    Optional description
+    """
+    description: String
+
+    """
+    Project this task belongs to
+    """
+    projectId: ID!
+
+    """
+    Parent task ID for sub-tasks
+    """
+    parentTaskId: ID
+
+    """
+    Evaluator staff ID
+    """
+    evaluatorId: ID
+
+    """
+    Status ID
+    """
+    statusId: ID
+
+    """
+    Priority ID
+    """
+    priorityId: ID
+
+    """
+    Complexity ID
+    """
+    complexityId: ID
+
+    """
+    Planned start date
+    """
+    plannedStartDate: String
+
+    """
+    Planned end date
+    """
+    plannedEndDate: String
+
+    """
+    Actual start date
+    """
+    actualStartDate: String
+
+    """
+    Actual end date
+    """
+    actualEndDate: String
+
+    """
+    Project object this task belongs to
+    """
+    project: Project!
+
+    """
+    Parent task (if set)
+    """
+    parentTask: Task
+
+    """
+    Child tasks
+    """
+    childTasks: [Task!]!
+
+    """
+    Evaluator staff member (if set)
+    """
+    evaluator: Staff
+
+    """
+    Status object (if set)
+    """
+    status: Status
+
+    """
+    Priority object (if set)
+    """
+    priority: Priority
+
+    """
+    Complexity object (if set)
+    """
+    complexity: Complexity
+
+    """
+    Staff members assigned to this task
+    """
+    assignees: [Staff!]!
+
+    """
+    Predecessor tasks
+    """
+    predecessors: [Task!]!
+
+    """
+    Progress reports for this task
+    """
+    progressReports: [TaskProgress!]!
+
+    """
+    Evaluation for this task (if exists)
+    """
+    evaluation: TaskEvaluation
+
+    """
+    Status reports for this task
+    """
+    statusReports: [TaskStatusReport!]!
+  }
+
+  """
+  Task progress report object
+  """
+  type TaskProgress {
+    """
+    Unique identifier for the progress report
+    """
+    id: ID!
+
+    """
+    Task this progress report belongs to
+    """
+    taskId: ID!
+
+    """
+    Report date
+    """
+    reportDate: String!
+
+    """
+    Progress percentage (0-100)
+    """
+    progressPercent: Int!
+
+    """
+    Optional notes
+    """
+    notes: String
+
+    """
+    Task object this progress report belongs to
+    """
+    task: Task!
+  }
+
+  """
+  Task evaluation object
+  """
+  type TaskEvaluation {
+    """
+    Unique identifier for the evaluation
+    """
+    id: ID!
+
+    """
+    Task this evaluation belongs to
+    """
+    taskId: ID!
+
+    """
+    Evaluator staff ID
+    """
+    evaluatorId: ID!
+
+    """
+    Evaluation date
+    """
+    evaluationDate: String!
+
+    """
+    Optional evaluation notes
+    """
+    evaluationNotes: String
+
+    """
+    Evaluation result
+    """
+    result: String
+
+    """
+    Task object this evaluation belongs to
+    """
+    task: Task!
+
+    """
+    Evaluator staff member
+    """
+    evaluator: Staff!
+  }
+
+  """
+  Task status report object
+  """
+  type TaskStatusReport {
+    """
+    Unique identifier for the status report
+    """
+    id: ID!
+
+    """
+    Task this status report belongs to
+    """
+    taskId: ID!
+
+    """
+    Report date
+    """
+    reportDate: String!
+
+    """
+    Status summary
+    """
+    statusSummary: String
+
+    """
+    Task object this status report belongs to
+    """
+    task: Task!
+  }
+
+  """
+  Project status report object
+  """
+  type ProjectStatusReport {
+    """
+    Unique identifier for the status report
+    """
+    id: ID!
+
+    """
+    Project this status report belongs to
+    """
+    projectId: ID!
+
+    """
+    Report date
+    """
+    reportDate: String!
+
+    """
+    Status summary
+    """
+    statusSummary: String
+
+    """
+    Project object this status report belongs to
+    """
+    project: Project!
+  }
+
+  """
   Authentication payload returned by login and registration operations
   """
   type AuthPayload {
@@ -308,6 +683,110 @@ export const typeDefs = gql`
     Returns null if staff member not found
     """
     staffMember(id: ID!): Staff
+
+    """
+    Get all statuses (requires authentication)
+    """
+    statuses: [Status!]!
+
+    """
+    Get a specific status by ID (requires authentication)
+    Returns null if status not found
+    """
+    status(id: ID!): Status
+
+    """
+    Get all priorities (requires authentication)
+    """
+    priorities: [Priority!]!
+
+    """
+    Get a specific priority by ID (requires authentication)
+    Returns null if priority not found
+    """
+    priority(id: ID!): Priority
+
+    """
+    Get all complexities (requires authentication)
+    """
+    complexities: [Complexity!]!
+
+    """
+    Get a specific complexity by ID (requires authentication)
+    Returns null if complexity not found
+    """
+    complexity(id: ID!): Complexity
+
+    """
+    Get all projects (requires authentication)
+    """
+    projects: [Project!]!
+
+    """
+    Get a specific project by ID (requires authentication)
+    Returns null if project not found
+    """
+    project(id: ID!): Project
+
+    """
+    Get all tasks (requires authentication)
+    Optionally filter by project
+    """
+    tasks(projectId: ID): [Task!]!
+
+    """
+    Get a specific task by ID (requires authentication)
+    Returns null if task not found
+    """
+    task(id: ID!): Task
+
+    """
+    Get all task progress reports (requires authentication)
+    Optionally filter by task
+    """
+    taskProgressReports(taskId: ID): [TaskProgress!]!
+
+    """
+    Get a specific task progress report by ID (requires authentication)
+    Returns null if progress report not found
+    """
+    taskProgressReport(id: ID!): TaskProgress
+
+    """
+    Get all task evaluations (requires authentication)
+    Optionally filter by task
+    """
+    taskEvaluations(taskId: ID): [TaskEvaluation!]!
+
+    """
+    Get a specific task evaluation by ID (requires authentication)
+    Returns null if evaluation not found
+    """
+    taskEvaluation(id: ID!): TaskEvaluation
+
+    """
+    Get all task status reports (requires authentication)
+    Optionally filter by task
+    """
+    taskStatusReports(taskId: ID): [TaskStatusReport!]!
+
+    """
+    Get a specific task status report by ID (requires authentication)
+    Returns null if status report not found
+    """
+    taskStatusReport(id: ID!): TaskStatusReport
+
+    """
+    Get all project status reports (requires authentication)
+    Optionally filter by project
+    """
+    projectStatusReports(projectId: ID): [ProjectStatusReport!]!
+
+    """
+    Get a specific project status report by ID (requires authentication)
+    Returns null if status report not found
+    """
+    projectStatusReport(id: ID!): ProjectStatusReport
   }
 
   """
@@ -457,5 +936,241 @@ export const typeDefs = gql`
     Delete a staff member by ID (requires authentication)
     """
     deleteStaff(id: ID!): Boolean!
+
+    """
+    Create a new status (requires authentication)
+    """
+    createStatus(name: String!): Status!
+
+    """
+    Update an existing status (requires authentication)
+    """
+    updateStatus(id: ID!, name: String!): Status!
+
+    """
+    Delete a status by ID (requires authentication)
+    """
+    deleteStatus(id: ID!): Boolean!
+
+    """
+    Create a new priority (requires authentication)
+    """
+    createPriority(name: String!): Priority!
+
+    """
+    Update an existing priority (requires authentication)
+    """
+    updatePriority(id: ID!, name: String!): Priority!
+
+    """
+    Delete a priority by ID (requires authentication)
+    """
+    deletePriority(id: ID!): Boolean!
+
+    """
+    Create a new complexity (requires authentication)
+    """
+    createComplexity(name: String!): Complexity!
+
+    """
+    Update an existing complexity (requires authentication)
+    """
+    updateComplexity(id: ID!, name: String!): Complexity!
+
+    """
+    Delete a complexity by ID (requires authentication)
+    """
+    deleteComplexity(id: ID!): Boolean!
+
+    """
+    Create a new project (requires authentication)
+    """
+    createProject(
+      name: String!
+      description: String
+      leadStaffId: ID
+      plannedStartDate: String
+      plannedEndDate: String
+      actualStartDate: String
+      actualEndDate: String
+    ): Project!
+
+    """
+    Update an existing project (requires authentication)
+    """
+    updateProject(
+      id: ID!
+      name: String
+      description: String
+      leadStaffId: ID
+      plannedStartDate: String
+      plannedEndDate: String
+      actualStartDate: String
+      actualEndDate: String
+    ): Project!
+
+    """
+    Delete a project by ID (requires authentication)
+    """
+    deleteProject(id: ID!): Boolean!
+
+    """
+    Create a new task (requires authentication)
+    """
+    createTask(
+      name: String!
+      description: String
+      projectId: ID!
+      parentTaskId: ID
+      evaluatorId: ID
+      statusId: ID
+      priorityId: ID
+      complexityId: ID
+      plannedStartDate: String
+      plannedEndDate: String
+      actualStartDate: String
+      actualEndDate: String
+    ): Task!
+
+    """
+    Update an existing task (requires authentication)
+    """
+    updateTask(
+      id: ID!
+      name: String
+      description: String
+      parentTaskId: ID
+      evaluatorId: ID
+      statusId: ID
+      priorityId: ID
+      complexityId: ID
+      plannedStartDate: String
+      plannedEndDate: String
+      actualStartDate: String
+      actualEndDate: String
+    ): Task!
+
+    """
+    Delete a task by ID (requires authentication)
+    """
+    deleteTask(id: ID!): Boolean!
+
+    """
+    Assign a staff member to a task (requires authentication)
+    """
+    assignStaffToTask(taskId: ID!, staffId: ID!): Boolean!
+
+    """
+    Remove a staff member from a task (requires authentication)
+    """
+    removeStaffFromTask(taskId: ID!, staffId: ID!): Boolean!
+
+    """
+    Add a predecessor relationship to a task (requires authentication)
+    """
+    addTaskPredecessor(taskId: ID!, predecessorTaskId: ID!): Boolean!
+
+    """
+    Remove a predecessor relationship from a task (requires authentication)
+    """
+    removeTaskPredecessor(taskId: ID!, predecessorTaskId: ID!): Boolean!
+
+    """
+    Create a new task progress report (requires authentication)
+    """
+    createTaskProgress(
+      taskId: ID!
+      reportDate: String!
+      progressPercent: Int!
+      notes: String
+    ): TaskProgress!
+
+    """
+    Update an existing task progress report (requires authentication)
+    """
+    updateTaskProgress(
+      id: ID!
+      reportDate: String
+      progressPercent: Int
+      notes: String
+    ): TaskProgress!
+
+    """
+    Delete a task progress report by ID (requires authentication)
+    """
+    deleteTaskProgress(id: ID!): Boolean!
+
+    """
+    Create a new task evaluation (requires authentication)
+    """
+    createTaskEvaluation(
+      taskId: ID!
+      evaluatorId: ID!
+      evaluationDate: String!
+      evaluationNotes: String
+      result: String
+    ): TaskEvaluation!
+
+    """
+    Update an existing task evaluation (requires authentication)
+    """
+    updateTaskEvaluation(
+      id: ID!
+      evaluatorId: ID
+      evaluationDate: String
+      evaluationNotes: String
+      result: String
+    ): TaskEvaluation!
+
+    """
+    Delete a task evaluation by ID (requires authentication)
+    """
+    deleteTaskEvaluation(id: ID!): Boolean!
+
+    """
+    Create a new task status report (requires authentication)
+    """
+    createTaskStatusReport(
+      taskId: ID!
+      reportDate: String!
+      statusSummary: String
+    ): TaskStatusReport!
+
+    """
+    Update an existing task status report (requires authentication)
+    """
+    updateTaskStatusReport(
+      id: ID!
+      reportDate: String
+      statusSummary: String
+    ): TaskStatusReport!
+
+    """
+    Delete a task status report by ID (requires authentication)
+    """
+    deleteTaskStatusReport(id: ID!): Boolean!
+
+    """
+    Create a new project status report (requires authentication)
+    """
+    createProjectStatusReport(
+      projectId: ID!
+      reportDate: String!
+      statusSummary: String
+    ): ProjectStatusReport!
+
+    """
+    Update an existing project status report (requires authentication)
+    """
+    updateProjectStatusReport(
+      id: ID!
+      reportDate: String
+      statusSummary: String
+    ): ProjectStatusReport!
+
+    """
+    Delete a project status report by ID (requires authentication)
+    """
+    deleteProjectStatusReport(id: ID!): Boolean!
   }
 `;

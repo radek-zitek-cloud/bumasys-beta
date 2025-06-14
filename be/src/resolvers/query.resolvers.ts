@@ -11,6 +11,15 @@ import {
   OrganizationService,
   DepartmentService,
   StaffService,
+  StatusService,
+  PriorityService,
+  ComplexityService,
+  ProjectService,
+  TaskService,
+  TaskProgressService,
+  TaskEvaluationService,
+  TaskStatusReportService,
+  ProjectStatusReportService,
 } from '../services';
 
 /**
@@ -20,6 +29,15 @@ let userService: UserService;
 let organizationService: OrganizationService;
 let departmentService: DepartmentService;
 let staffService: StaffService;
+let statusService: StatusService;
+let priorityService: PriorityService;
+let complexityService: ComplexityService;
+let projectService: ProjectService;
+let taskService: TaskService;
+let taskProgressService: TaskProgressService;
+let taskEvaluationService: TaskEvaluationService;
+let taskStatusReportService: TaskStatusReportService;
+let projectStatusReportService: ProjectStatusReportService;
 
 /**
  * Set the service instances for resolvers to use
@@ -27,17 +45,44 @@ let staffService: StaffService;
  * @param organization - OrganizationService instance
  * @param department - DepartmentService instance
  * @param staff - StaffService instance
+ * @param status - StatusService instance
+ * @param priority - PriorityService instance
+ * @param complexity - ComplexityService instance
+ * @param project - ProjectService instance
+ * @param task - TaskService instance
+ * @param taskProgress - TaskProgressService instance
+ * @param taskEvaluation - TaskEvaluationService instance
+ * @param taskStatusReport - TaskStatusReportService instance
+ * @param projectStatusReport - ProjectStatusReportService instance
  */
 export function setServices(
   user: UserService,
   organization: OrganizationService,
   department: DepartmentService,
   staff: StaffService,
+  status: StatusService,
+  priority: PriorityService,
+  complexity: ComplexityService,
+  project: ProjectService,
+  task: TaskService,
+  taskProgress: TaskProgressService,
+  taskEvaluation: TaskEvaluationService,
+  taskStatusReport: TaskStatusReportService,
+  projectStatusReport: ProjectStatusReportService,
 ): void {
   userService = user;
   organizationService = organization;
   departmentService = department;
   staffService = staff;
+  statusService = status;
+  priorityService = priority;
+  complexityService = complexity;
+  projectService = project;
+  taskService = task;
+  taskProgressService = taskProgress;
+  taskEvaluationService = taskEvaluation;
+  taskStatusReportService = taskStatusReport;
+  projectStatusReportService = projectStatusReport;
 }
 
 /**
@@ -214,6 +259,316 @@ export const queryResolvers = {
     }
     return staffService.findById(id);
   },
+
+  /**
+   * Get all statuses (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param __ - Query arguments (unused)
+   * @param context - GraphQL context containing user info
+   * @returns Array of all statuses
+   * @throws Error if user is not authenticated
+   */
+  statuses: (_: unknown, __: unknown, { user }: GraphQLContext) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return statusService.getAllStatuses();
+  },
+
+  /**
+   * Get a specific status by ID (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing status ID
+   * @param context - GraphQL context containing user info
+   * @returns Status object if found, null otherwise
+   * @throws Error if user is not authenticated
+   */
+  status: (_: unknown, { id }: { id: string }, { user }: GraphQLContext) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return statusService.findById(id);
+  },
+
+  /**
+   * Get all priorities (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param __ - Query arguments (unused)
+   * @param context - GraphQL context containing user info
+   * @returns Array of all priorities
+   * @throws Error if user is not authenticated
+   */
+  priorities: (_: unknown, __: unknown, { user }: GraphQLContext) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return priorityService.getAllPriorities();
+  },
+
+  /**
+   * Get a specific priority by ID (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing priority ID
+   * @param context - GraphQL context containing user info
+   * @returns Priority object if found, null otherwise
+   * @throws Error if user is not authenticated
+   */
+  priority: (_: unknown, { id }: { id: string }, { user }: GraphQLContext) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return priorityService.findById(id);
+  },
+
+  /**
+   * Get all complexities (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param __ - Query arguments (unused)
+   * @param context - GraphQL context containing user info
+   * @returns Array of all complexities
+   * @throws Error if user is not authenticated
+   */
+  complexities: (_: unknown, __: unknown, { user }: GraphQLContext) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return complexityService.getAllComplexities();
+  },
+
+  /**
+   * Get a specific complexity by ID (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing complexity ID
+   * @param context - GraphQL context containing user info
+   * @returns Complexity object if found, null otherwise
+   * @throws Error if user is not authenticated
+   */
+  complexity: (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return complexityService.findById(id);
+  },
+
+  /**
+   * Get all projects (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param __ - Query arguments (unused)
+   * @param context - GraphQL context containing user info
+   * @returns Array of all projects
+   * @throws Error if user is not authenticated
+   */
+  projects: (_: unknown, __: unknown, { user }: GraphQLContext) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return projectService.getAllProjects();
+  },
+
+  /**
+   * Get a specific project by ID (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing project ID
+   * @param context - GraphQL context containing user info
+   * @returns Project object if found, null otherwise
+   * @throws Error if user is not authenticated
+   */
+  project: (_: unknown, { id }: { id: string }, { user }: GraphQLContext) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return projectService.findById(id);
+  },
+
+  /**
+   * Get all tasks (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing optional project filter
+   * @param context - GraphQL context containing user info
+   * @returns Array of tasks
+   * @throws Error if user is not authenticated
+   */
+  tasks: (
+    _: unknown,
+    { projectId }: { projectId?: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskService.getAllTasks(projectId);
+  },
+
+  /**
+   * Get a specific task by ID (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing task ID
+   * @param context - GraphQL context containing user info
+   * @returns Task object if found, null otherwise
+   * @throws Error if user is not authenticated
+   */
+  task: (_: unknown, { id }: { id: string }, { user }: GraphQLContext) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskService.findById(id);
+  },
+
+  /**
+   * Get all task progress reports (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing optional task filter
+   * @param context - GraphQL context containing user info
+   * @returns Array of task progress reports
+   * @throws Error if user is not authenticated
+   */
+  taskProgressReports: (
+    _: unknown,
+    { taskId }: { taskId?: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskProgressService.getAllTaskProgress(taskId);
+  },
+
+  /**
+   * Get a specific task progress report by ID (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing progress report ID
+   * @param context - GraphQL context containing user info
+   * @returns TaskProgress object if found, null otherwise
+   * @throws Error if user is not authenticated
+   */
+  taskProgressReport: (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskProgressService.findById(id);
+  },
+
+  /**
+   * Get all task evaluations (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing optional task filter
+   * @param context - GraphQL context containing user info
+   * @returns Array of task evaluations
+   * @throws Error if user is not authenticated
+   */
+  taskEvaluations: (
+    _: unknown,
+    { taskId }: { taskId?: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskEvaluationService.getAllTaskEvaluations(taskId);
+  },
+
+  /**
+   * Get a specific task evaluation by ID (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing evaluation ID
+   * @param context - GraphQL context containing user info
+   * @returns TaskEvaluation object if found, null otherwise
+   * @throws Error if user is not authenticated
+   */
+  taskEvaluation: (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskEvaluationService.findById(id);
+  },
+
+  /**
+   * Get all task status reports (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing optional task filter
+   * @param context - GraphQL context containing user info
+   * @returns Array of task status reports
+   * @throws Error if user is not authenticated
+   */
+  taskStatusReports: (
+    _: unknown,
+    { taskId }: { taskId?: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskStatusReportService.getAllTaskStatusReports(taskId);
+  },
+
+  /**
+   * Get a specific task status report by ID (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing status report ID
+   * @param context - GraphQL context containing user info
+   * @returns TaskStatusReport object if found, null otherwise
+   * @throws Error if user is not authenticated
+   */
+  taskStatusReport: (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return taskStatusReportService.findById(id);
+  },
+
+  /**
+   * Get all project status reports (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing optional project filter
+   * @param context - GraphQL context containing user info
+   * @returns Array of project status reports
+   * @throws Error if user is not authenticated
+   */
+  projectStatusReports: (
+    _: unknown,
+    { projectId }: { projectId?: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return projectStatusReportService.getAllProjectStatusReports(projectId);
+  },
+
+  /**
+   * Get a specific project status report by ID (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing status report ID
+   * @param context - GraphQL context containing user info
+   * @returns ProjectStatusReport object if found, null otherwise
+   * @throws Error if user is not authenticated
+   */
+  projectStatusReport: (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return projectStatusReportService.findById(id);
+  },
 };
 
 /**
@@ -278,5 +633,111 @@ export const staffResolvers = {
   },
   subordinates: (parent: { id: string }) => {
     return staffService.getSubordinates(parent.id);
+  },
+};
+
+/**
+ * Project field resolvers for nested data
+ */
+export const projectResolvers = {
+  leadStaff: (parent: { leadStaffId?: string }) => {
+    return parent.leadStaffId
+      ? staffService.findById(parent.leadStaffId)
+      : null;
+  },
+  tasks: (parent: { id: string }) => {
+    return projectService.getProjectTasks(parent.id);
+  },
+  statusReports: (parent: { id: string }) => {
+    return projectService.getProjectStatusReports(parent.id);
+  },
+};
+
+/**
+ * Task field resolvers for nested data
+ */
+export const taskResolvers = {
+  project: (parent: { projectId: string }) => {
+    return projectService.findById(parent.projectId);
+  },
+  parentTask: (parent: { parentTaskId?: string }) => {
+    return parent.parentTaskId
+      ? taskService.findById(parent.parentTaskId)
+      : null;
+  },
+  childTasks: (parent: { id: string }) => {
+    return taskService.getChildTasks(parent.id);
+  },
+  evaluator: (parent: { evaluatorId?: string }) => {
+    return parent.evaluatorId
+      ? staffService.findById(parent.evaluatorId)
+      : null;
+  },
+  status: (parent: { statusId?: string }) => {
+    return parent.statusId ? statusService.findById(parent.statusId) : null;
+  },
+  priority: (parent: { priorityId?: string }) => {
+    return parent.priorityId
+      ? priorityService.findById(parent.priorityId)
+      : null;
+  },
+  complexity: (parent: { complexityId?: string }) => {
+    return parent.complexityId
+      ? complexityService.findById(parent.complexityId)
+      : null;
+  },
+  assignees: (parent: { id: string }) => {
+    return taskService.getTaskAssignees(parent.id);
+  },
+  predecessors: (parent: { id: string }) => {
+    return taskService.getTaskPredecessors(parent.id);
+  },
+  progressReports: (parent: { id: string }) => {
+    return taskProgressService.getAllTaskProgress(parent.id);
+  },
+  evaluation: (parent: { id: string }) => {
+    return taskEvaluationService.findByTaskId(parent.id);
+  },
+  statusReports: (parent: { id: string }) => {
+    return taskStatusReportService.getAllTaskStatusReports(parent.id);
+  },
+};
+
+/**
+ * TaskProgress field resolvers for nested data
+ */
+export const taskProgressResolvers = {
+  task: (parent: { taskId: string }) => {
+    return taskService.findById(parent.taskId);
+  },
+};
+
+/**
+ * TaskEvaluation field resolvers for nested data
+ */
+export const taskEvaluationResolvers = {
+  task: (parent: { taskId: string }) => {
+    return taskService.findById(parent.taskId);
+  },
+  evaluator: (parent: { evaluatorId: string }) => {
+    return staffService.findById(parent.evaluatorId);
+  },
+};
+
+/**
+ * TaskStatusReport field resolvers for nested data
+ */
+export const taskStatusReportResolvers = {
+  task: (parent: { taskId: string }) => {
+    return taskService.findById(parent.taskId);
+  },
+};
+
+/**
+ * ProjectStatusReport field resolvers for nested data
+ */
+export const projectStatusReportResolvers = {
+  project: (parent: { projectId: string }) => {
+    return projectService.findById(parent.projectId);
   },
 };
