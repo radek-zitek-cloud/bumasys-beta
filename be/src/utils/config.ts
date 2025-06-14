@@ -37,6 +37,10 @@ const configSchema = z.object({
       betterStack: z.object({
         enabled: z.coerce.boolean().default(false),
         sourceToken: z.string().default(''),
+        endpoint: z
+          .string()
+          .url()
+          .default(''),
       }),
     })
     .default({

@@ -22,6 +22,9 @@ const logger = pino({
                   target: '@logtail/pino',
                   options: {
                     sourceToken: config.logging.betterStack.sourceToken,
+                    options: {
+                      endpoint: config.logging.betterStack.endpoint,
+                    }
                   },
                   level: 'debug',
                 },
