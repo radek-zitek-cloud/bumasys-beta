@@ -6,6 +6,7 @@
  */
 
 import type { GraphQLContext } from '../types';
+import config from '../utils/config';
 import {
   UserService,
   OrganizationService,
@@ -106,6 +107,25 @@ export const queryResolvers = {
    */
   health: (): boolean => {
     return Boolean(userService);
+  },
+
+  /**
+   * Get backend configuration with sensitive values excluded
+   * @returns Configuration object without sensitive information
+   */
+  config: () => {
+    return {
+      port: config.port,
+      accessTokenExpiresIn: config.accessTokenExpiresIn,
+      refreshTokenExpiresIn: config.refreshTokenExpiresIn,
+      dbFile: config.dbFile.replace(/^.*[/\\]/, ''), // Remove path, keep only filename for security
+      logging: {
+        betterStack: {
+          enabled: config.logging.betterStack.enabled,
+          // sourceToken excluded for security
+        },
+      },
+    };
   },
 
   /**
