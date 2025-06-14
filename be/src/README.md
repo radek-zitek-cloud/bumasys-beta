@@ -98,6 +98,43 @@ Legacy modules are maintained for backward compatibility but marked as deprecate
 6. **Testability**: Service layer design makes unit testing easier
 7. **Maintainability**: Modular structure makes code easier to maintain and extend
 
+## Configuration
+
+### Environment Variables
+
+The application supports configuration via environment variables:
+
+- `PORT` - Server port (default: 4000)
+- `JWT_SECRET` - JWT secret key for token signing
+- `DB_FILE` - Path to database file
+- `BETTER_STACK_ENABLED` - Enable BetterStack logging (default: false)
+- `BETTER_STACK_SOURCE_TOKEN` - BetterStack source token for log ingestion
+
+### Logging Configuration
+
+The application uses [Pino](https://getpino.io/) for structured logging with conditional transport configuration:
+
+#### Development Mode (default)
+
+- Uses `pino-pretty` transport for human-readable colored output
+- Logs to console only
+
+#### Production Mode (with BetterStack)
+
+- Uses multiple transports: console + BetterStack
+- Set `BETTER_STACK_ENABLED=true` and provide `BETTER_STACK_SOURCE_TOKEN`
+- Logs are sent to both console and BetterStack for centralized log management
+
+**Example Usage:**
+
+```bash
+# Development (default)
+npm run dev
+
+# Production with BetterStack
+BETTER_STACK_ENABLED=true BETTER_STACK_SOURCE_TOKEN=your-token npm start
+```
+
 ## Development Guidelines
 
 ### Adding New Features

@@ -32,6 +32,19 @@ const configSchema = z.object({
     .string()
     .nonempty('Database file path cannot be empty')
     .default('../data/db.json'),
+  logging: z
+    .object({
+      betterStack: z.object({
+        enabled: z.coerce.boolean().default(false),
+        sourceToken: z.string().default(''),
+      }),
+    })
+    .default({
+      betterStack: {
+        enabled: false,
+        sourceToken: '',
+      },
+    }),
 });
 
 /**
@@ -47,6 +60,7 @@ function loadConfig(): ConfigType {
         'refreshTokenExpiresIn',
       ),
       dbFile: configLib.get<string>('dbFile'),
+      logging: configLib.has('logging') ? configLib.get('logging') : undefined,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
