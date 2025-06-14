@@ -16,5 +16,12 @@
       "lastName": "Zítek",
       "note": "The second one."
     }
+  ],
+  "sessions": [
+    {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE3NDk4MjAxOTUzOTYiLCJpYXQiOjE3NDk4OTQwNDUsImV4cCI6MTc1MDQ5ODg0NX0.wMpSgvfSsPRWxws-N-HX3rkjDRubURYoiAlIAAhq2j8",
+      "userId": "1749820195396",
+      "createdAt": "2025-06-14T09:40:45.873Z"
+    }
   ]
 }
