@@ -21,6 +21,7 @@ Now you can add any configuration field by simply:
 ## Example: Adding a new feature flag
 
 ### 1. Add to config/default.json
+
 ```json
 {
   "newFeature": {
@@ -34,7 +35,9 @@ Now you can add any configuration field by simply:
 ```
 
 ### 2. Add environment variable mapping (optional)
+
 In `config/custom-environment-variables.json`:
+
 ```json
 {
   "newFeature": {
@@ -48,6 +51,7 @@ In `config/custom-environment-variables.json`:
 ```
 
 ### 3. Use in your code immediately
+
 ```typescript
 import config from './utils/config';
 
@@ -59,6 +63,7 @@ if (config.newFeature.enabled) {
 ```
 
 ### 4. Override with environment variables
+
 ```bash
 NEW_FEATURE_ENABLED=false npm start
 NEW_FEATURE_MAX_RETRIES=5 npm start
@@ -67,6 +72,7 @@ NEW_FEATURE_MAX_RETRIES=5 npm start
 ## What's Still Validated
 
 Critical security fields remain validated:
+
 - `port` (must be positive integer)
 - `jwtSecret` (must be at least 10 characters)
 
