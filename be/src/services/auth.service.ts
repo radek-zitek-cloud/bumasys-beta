@@ -8,7 +8,7 @@
 
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import config from '../config';
+import config from '../utils/config';
 import type { Database, AuthPayload, LoginInput, SafeUser } from '../types';
 
 /**

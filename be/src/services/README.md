@@ -5,10 +5,12 @@ This directory contains the service layer of the application, implementing busin
 ## Service Classes
 
 ### AuthService
+
 **File**: `auth.service.ts`
 **Purpose**: Authentication and authorization operations
 
 **Key Methods**:
+
 - `signToken(userId)` - Generate JWT access tokens
 - `signRefreshToken(userId)` - Generate and store refresh tokens
 - `verifyToken(token)` - Verify JWT tokens
@@ -16,11 +18,13 @@ This directory contains the service layer of the application, implementing busin
 - `refreshAccessToken(refreshToken)` - Refresh expired access tokens
 - `logout(refreshToken)` - Invalidate user sessions
 
-### UserService  
+### UserService
+
 **File**: `user.service.ts`
 **Purpose**: User management and CRUD operations
 
 **Key Methods**:
+
 - `createUser(userData)` - Create new user accounts
 - `updateUser(updateData)` - Update user information
 - `deleteUser(userId)` - Remove users from system
