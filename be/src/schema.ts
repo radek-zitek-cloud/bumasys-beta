@@ -4,8 +4,10 @@ import {
   signRefreshToken,
   verifyRefreshToken,
   invalidateRefreshToken,
+  invalidateAllUserTokens,
   hashPassword,
   comparePassword,
+  setDb as setAuthDb,
 } from './auth';
 import { Database } from './db';
 
@@ -122,7 +124,7 @@ export const resolvers = {
       db.data.users.push(user);
       await db.write();
       const token = signToken(user.id);
-      const refreshToken = signRefreshToken(user.id);
+      const refreshToken = await signRefreshToken(user.id);
       const { password: _p, ...rest } = user;
       return { token, refreshToken, user: rest };
     },
@@ -135,7 +137,7 @@ export const resolvers = {
       const valid = await comparePassword(password, user.password);
       if (!valid) throw new Error('Invalid credentials');
       const token = signToken(user.id);
-      const refreshToken = signRefreshToken(user.id);
+      const refreshToken = await signRefreshToken(user.id);
       const { password: _p, ...rest } = user;
       return { token, refreshToken, user: rest };
     },
@@ -232,17 +234,23 @@ export const resolvers = {
       db.data.users.splice(index, 1);
       return db.write().then(() => true);
     },
-    logout: (_: unknown, { refreshToken }: { refreshToken: string }) => {
-      invalidateRefreshToken(refreshToken);
+    logout: async (_: unknown, { refreshToken }: { refreshToken: string }) => {
+      // First verify the token to get the user ID
+      const payload = verifyRefreshToken(refreshToken);
+      // Invalidate ALL tokens for this user
+      await invalidateAllUserTokens(payload.id);
       return true;
     },
-    refreshToken: (_: unknown, { refreshToken }: { refreshToken: string }) => {
+    refreshToken: async (
+      _: unknown,
+      { refreshToken }: { refreshToken: string },
+    ) => {
       const payload = verifyRefreshToken(refreshToken);
-      invalidateRefreshToken(refreshToken);
+      await invalidateRefreshToken(refreshToken);
       const user = db.data.users.find((u) => u.id === payload.id);
       if (!user) throw new Error('Invalid refresh token');
       const token = signToken(user.id);
-      const newRefresh = signRefreshToken(user.id);
+      const newRefresh = await signRefreshToken(user.id);
       const { password: _pw, ...rest } = user;
       return {
         token,
@@ -263,4 +271,5 @@ export const resolvers = {
  */
 export function setDb(database: Database) {
   db = database;
+  setAuthDb(database);
 }
