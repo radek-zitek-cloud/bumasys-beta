@@ -1,6 +1,6 @@
 <!--
   @fileoverview Status edit dialog component
-  
+
   This component provides a form dialog for editing existing status entries.
   It follows Vuetify Material Design patterns and includes proper validation.
 -->
@@ -14,12 +14,12 @@
           <v-col cols="12">
             <v-text-field
               v-model="form.name"
+              counter="50"
               label="Status Name *"
+              maxlength="50"
               prepend-icon="mdi-flag"
               required
               :rules="nameRules"
-              counter="50"
-              maxlength="50"
             />
           </v-col>
         </v-row>
@@ -52,13 +52,13 @@
   /** Watch for changes to the status prop and update form */
   watch(
     () => props.status,
-    (newStatus) => {
+    newStatus => {
       if (newStatus) {
         form.id = newStatus.id
         form.name = newStatus.name
       }
     },
-    { immediate: true }
+    { immediate: true },
   )
 
   /** Name validation rules */

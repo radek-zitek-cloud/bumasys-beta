@@ -1,6 +1,6 @@
 <!--
   @fileoverview Priority creation dialog component
-  
+
   This component provides a form dialog for creating new priority entries.
   It follows Vuetify Material Design patterns and includes proper validation.
 -->
@@ -14,12 +14,12 @@
           <v-col cols="12">
             <v-text-field
               v-model="form.name"
+              counter="50"
               label="Priority Name *"
+              maxlength="50"
               prepend-icon="mdi-priority-high"
               required
               :rules="nameRules"
-              counter="50"
-              maxlength="50"
             />
           </v-col>
         </v-row>

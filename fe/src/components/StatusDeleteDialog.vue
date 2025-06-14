@@ -1,6 +1,6 @@
 <!--
   @fileoverview Status deletion confirmation dialog component
-  
+
   This component provides a confirmation dialog for deleting status entries.
   It follows the design patterns used in the user management interface.
 -->
