@@ -24,7 +24,7 @@ const logger = pino({
                     sourceToken: config.logging.betterStack.sourceToken,
                     options: {
                       endpoint: config.logging.betterStack.endpoint,
-                    }
+                    },
                   },
                   level: config.logging.level || 'info',
                 },
