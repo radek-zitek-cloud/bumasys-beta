@@ -62,6 +62,8 @@
         </v-container>
       </v-main>
 
+      <AppFooter />
+
       <!-- Authentication dialogs positioned under the top-right navbar -->
       <v-dialog v-model="showLogin" max-width="400" persistent>
         <LoginCard @cancel="showLogin = false" @login="handleLogin" />
@@ -102,6 +104,7 @@
 <script lang="ts" setup>
   import { ref } from 'vue'
   import { useTheme } from 'vuetify'
+  import AppFooter from './components/AppFooter.vue'
   import ChangePasswordCard from './components/ChangePasswordCard.vue'
   import LoginCard from './components/LoginCard.vue'
   import LogoutCard from './components/LogoutCard.vue'
