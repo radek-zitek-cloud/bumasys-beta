@@ -107,6 +107,7 @@
 
 <script lang="ts" setup>
   import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
   import { useTheme } from 'vuetify'
   import AppFooter from './components/AppFooter.vue'
   import ChangePasswordCard from './components/ChangePasswordCard.vue'
@@ -119,6 +120,7 @@
   import * as authApi from './services/auth'
   import { useAuthStore } from './stores/auth'
 
+  const router = useRouter()
   const snackbar = ref(false)
   const snackbarMessage = ref('')
   const snackbarColor = ref<'success' | 'error'>('success')
@@ -214,6 +216,8 @@
       const { login } = await authApi.login(payload.email, payload.password)
       auth.setAuth(login)
       notify('Login successful')
+      // Navigate to home page after successful login
+      router.push('/')
     } catch (error) {
       console.error(error)
       notify((error as Error).message, false)
@@ -240,6 +244,8 @@
       )
       auth.setAuth(register)
       notify('Registration successful')
+      // Navigate to home page after successful registration
+      router.push('/')
     } catch (error) {
       console.error(error)
       notify((error as Error).message, false)

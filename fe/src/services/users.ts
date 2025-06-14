@@ -1,25 +1,5 @@
 import { useAuthStore } from '../stores/auth'
-
-/** GraphQL helper to perform POST requests. */
-async function graphql<T> (
-  query: string,
-  variables?: Record<string, unknown>,
-  token?: string,
-): Promise<T> {
-  const res = await fetch('/graphql', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({ query, variables }),
-  })
-  const json = await res.json()
-  if (json.errors) {
-    throw new Error(json.errors[0].message)
-  }
-  return json.data as T
-}
+import { graphqlClient } from './graphql-client'
 
 /** User interface matching the backend schema */
 export interface User {
@@ -55,7 +35,7 @@ export interface UpdateUserInput {
  */
 export function getUsers (): Promise<{ users: User[] }> {
   const store = useAuthStore()
-  return graphql<{ users: User[] }>(
+  return graphqlClient<{ users: User[] }>(
     `
       query {
         users {
@@ -78,7 +58,7 @@ export function getUsers (): Promise<{ users: User[] }> {
  */
 export function getUser (id: string): Promise<{ user: User | null }> {
   const store = useAuthStore()
-  return graphql<{ user: User | null }>(
+  return graphqlClient<{ user: User | null }>(
     `
       query ($id: ID!) {
         user(id: $id) {
@@ -101,7 +81,7 @@ export function getUser (id: string): Promise<{ user: User | null }> {
  */
 export function createUser (input: CreateUserInput): Promise<{ createUser: User }> {
   const store = useAuthStore()
-  return graphql<{ createUser: User }>(
+  return graphqlClient<{ createUser: User }>(
     `
       mutation (
         $email: String!
@@ -136,7 +116,7 @@ export function createUser (input: CreateUserInput): Promise<{ createUser: User 
  */
 export function updateUser (input: UpdateUserInput): Promise<{ updateUser: User }> {
   const store = useAuthStore()
-  return graphql<{ updateUser: User }>(
+  return graphqlClient<{ updateUser: User }>(
     `
       mutation (
         $id: ID!
@@ -173,7 +153,7 @@ export function updateUser (input: UpdateUserInput): Promise<{ updateUser: User 
  */
 export function deleteUser (id: string): Promise<{ deleteUser: boolean }> {
   const store = useAuthStore()
-  return graphql<{ deleteUser: boolean }>(
+  return graphqlClient<{ deleteUser: boolean }>(
     `
       mutation ($id: ID!) {
         deleteUser(id: $id)

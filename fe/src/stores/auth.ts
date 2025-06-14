@@ -48,5 +48,50 @@ export const useAuthStore = defineStore('auth', {
       this.refreshToken = ''
       this.user = null
     },
+    /**
+     * Refresh authentication tokens using the stored refresh token.
+     * @throws Error if refresh fails or no refresh token is available
+     */
+    async refreshAuth () {
+      if (!this.refreshToken) {
+        throw new Error('No refresh token available')
+      }
+
+      // Direct fetch to avoid circular dependency with graphql-client
+      const res = await fetch('/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: `
+            mutation ($token: String!) {
+              refreshToken(refreshToken: $token) {
+                token
+                refreshToken
+                user {
+                  id
+                  email
+                  firstName
+                  lastName
+                  note
+                }
+              }
+            }
+          `,
+          variables: { token: this.refreshToken },
+        }),
+      })
+
+      const json = await res.json()
+
+      if (json.errors) {
+        // Clear auth state on refresh failure
+        this.clearAuth()
+        throw new Error(json.errors[0].message)
+      }
+
+      this.setAuth(json.data.refreshToken)
+    },
   },
 })
