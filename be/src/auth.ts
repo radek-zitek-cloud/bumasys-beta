@@ -1,113 +1,89 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import config from './config';
-import { Database } from './db';
+/**
+ * @fileoverview Authentication module
+ *
+ * This module provides authentication functionality and is kept for
+ * backward compatibility with existing code. New code should use
+ * the AuthService class from services/auth.service.ts
+ *
+ * @deprecated This module is kept for backward compatibility.
+ * New code should use AuthService from services/auth.service.ts
+ */
 
-let db: Database; // assigned during initialization
+import type { Database } from './types';
+
+// Re-export functions from the new service for backward compatibility
+export { hashPassword, comparePassword } from './services';
+
+/**
+ * Legacy authentication utilities - kept for backward compatibility
+ */
+
+let authService: import('./services').AuthService;
 
 /**
  * Assign the active database instance used by auth functions.
+ * @deprecated Use AuthService constructor instead
+ * @param database - Database instance
  */
-export function setDb(database: Database) {
-  db = database;
+export function setDb(database: Database): void {
+  const { AuthService } = require('./services');
+  authService = new AuthService(database);
 }
 
 /**
  * Generate JWT token for a user id.
+ * @deprecated Use AuthService.signToken instead
  * @param id - User identifier
  * @returns Signed JWT
  */
 export function signToken(id: string): string {
-  return jwt.sign({ id }, config.jwtSecret, {
-    expiresIn: config.accessTokenExpiresIn,
-  });
+  return authService.signToken(id);
 }
 
 /**
  * Generate long-lived refresh token and track it in database.
+ * @deprecated Use AuthService.signRefreshToken instead
  * @param id - User identifier
- * @returns Signed refresh JWT
+ * @returns Promise resolving to signed refresh JWT
  */
 export async function signRefreshToken(id: string): Promise<string> {
-  const token = jwt.sign({ id }, config.jwtSecret, {
-    expiresIn: config.refreshTokenExpiresIn,
-  });
-
-  // Store session in database
-  db.data.sessions.push({
-    token,
-    userId: id,
-    createdAt: new Date().toISOString(),
-  });
-  await db.write();
-
-  return token;
+  return authService.signRefreshToken(id);
 }
 
 /**
  * Verify JWT token and return payload.
+ * @deprecated Use AuthService.verifyToken instead
  * @param token - JWT string
  */
-export function verifyToken(token: string): jwt.JwtPayload {
-  return jwt.verify(token, config.jwtSecret) as jwt.JwtPayload;
+export function verifyToken(token: string): import('jsonwebtoken').JwtPayload {
+  return authService.verifyToken(token);
 }
 
 /**
  * Validate refresh token existence and signature.
+ * @deprecated Use AuthService.verifyRefreshToken instead
  * @param token - Refresh JWT string
  */
-export function verifyRefreshToken(token: string): jwt.JwtPayload {
-  // Check if token exists in database
-  const session = db.data.sessions.find((s) => s.token === token);
-  if (!session) {
-    throw new Error('Invalid refresh token');
-  }
-  return jwt.verify(token, config.jwtSecret) as jwt.JwtPayload;
-}
-
-/**
- * Hash password using bcrypt.
- * @param password - Plain text password
- */
-export async function hashPassword(password: string): Promise<string> {
-  const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salt);
-}
-
-/**
- * Compare password to hash.
- * @param password - Plain text password
- * @param hash - Stored password hash
- */
-export function comparePassword(
-  password: string,
-  hash: string,
-): Promise<boolean> {
-  return bcrypt.compare(password, hash);
+export function verifyRefreshToken(
+  token: string,
+): import('jsonwebtoken').JwtPayload {
+  return authService.verifyRefreshToken(token);
 }
 
 /**
  * Remove a refresh token from the active set.
+ * @deprecated Use AuthService.invalidateRefreshToken instead
  * @param token - Refresh token to invalidate
  */
 export async function invalidateRefreshToken(token: string): Promise<void> {
-  const index = db.data.sessions.findIndex((s) => s.token === token);
-  if (index !== -1) {
-    db.data.sessions.splice(index, 1);
-    await db.write();
-  }
+  return authService.invalidateRefreshToken(token);
 }
 
 /**
  * Remove all refresh tokens for a specific user.
+ * @deprecated Use AuthService.invalidateAllUserTokens instead
  * @param userId - User identifier
  */
 export async function invalidateAllUserTokens(userId: string): Promise<void> {
-  const initialLength = db.data.sessions.length;
-  db.data.sessions = db.data.sessions.filter((s) => s.userId !== userId);
-
-  // Only write to database if sessions were actually removed
-  if (db.data.sessions.length !== initialLength) {
-    await db.write();
-  }
+  return authService.invalidateAllUserTokens(userId);
 }
