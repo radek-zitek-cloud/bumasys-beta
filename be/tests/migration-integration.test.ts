@@ -51,14 +51,14 @@ async function testMigrateUserIds(dbFilePath: string): Promise<void> {
       user.id = newId;
       userIdMappings.push({ oldId, newId });
 
-      console.log(
-        `User ${index + 1}: ${oldId} -> ${newId} (${user.email})`,
-      );
+      console.log(`User ${index + 1}: ${oldId} -> ${newId} (${user.email})`);
     });
   }
 
   // Update session userIds
-  console.log(`Found ${db.sessions ? db.sessions.length : 0} sessions to update`);
+  console.log(
+    `Found ${db.sessions ? db.sessions.length : 0} sessions to update`,
+  );
 
   if (db.sessions && db.sessions.length > 0) {
     db.sessions.forEach((session: any, index: number) => {
