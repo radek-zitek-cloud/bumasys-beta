@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-import DepartmentTreeDialog from '../../../src/components/DepartmentTreeDialog.vue'
-import StaffTreeDialog from '../../../src/components/StaffTreeDialog.vue'
+import DepartmentTreeDialog from '../../../src/components/organization/DepartmentTreeDialog.vue'
+import StaffTreeDialog from '../../../src/components/organization/StaffTreeDialog.vue'
 
 // Mock vue3-d3-tree component
 vi.mock('vue3-d3-tree', () => ({

@@ -10,7 +10,7 @@
 
 import { mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import ConfigDisplayCard from '../../../src/components/ConfigDisplayCard.vue'
+import ConfigDisplayCard from '../../../src/components/debug/ConfigDisplayCard.vue'
 import * as configService from '../../../src/services/config'
 
 // Mock the config service

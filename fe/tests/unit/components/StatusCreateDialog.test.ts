@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import StatusCreateDialog from '../../../src/components/StatusCreateDialog.vue'
+import StatusCreateDialog from '../../../src/components/references/StatusCreateDialog.vue'
 
 describe('StatusCreateDialog', () => {
   it('renders create status form correctly', () => {

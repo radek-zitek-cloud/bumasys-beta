@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-import OrganizationCreateDialog from '../../../src/components/OrganizationCreateDialog.vue'
+import OrganizationCreateDialog from '../../../src/components/organization/OrganizationCreateDialog.vue'
 
 describe('OrganizationCreateDialog', () => {
   it('renders form fields correctly', () => {

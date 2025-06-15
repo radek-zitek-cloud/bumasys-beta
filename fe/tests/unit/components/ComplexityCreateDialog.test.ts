@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import ComplexityCreateDialog from '../../../src/components/ComplexityCreateDialog.vue'
+import ComplexityCreateDialog from '../../../src/components/references/ComplexityCreateDialog.vue'
 
 describe('ComplexityCreateDialog', () => {
   it('renders create complexity form correctly', () => {

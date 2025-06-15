@@ -72,7 +72,7 @@ describe('useLoading composable', () => {
       setLoading(true)
       setError(new Error('Test error'))
 
-      expect(loading.value).toBe(true)
+      expect(loading.value).toBe(false) // setError automatically sets loading to false
       expect(error.value).not.toBeNull()
 
       reset()

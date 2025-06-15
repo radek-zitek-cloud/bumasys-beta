@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import TeamViewDialog from '../../../src/components/TeamViewDialog.vue'
+import TeamViewDialog from '../../../src/components/teams/TeamViewDialog.vue'
 
 describe('TeamViewDialog', () => {
   const mockTeam = {

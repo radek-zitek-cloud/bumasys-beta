@@ -154,7 +154,18 @@ export function useValidation () {
       if (!value && value !== 0) {
         return true
       }
-      const numValue = typeof value === 'string' ? Number.parseFloat(value) : value
+      
+      // For numbers, they're already valid
+      if (typeof value === 'number') {
+        return !isNaN(value) || message
+      }
+      
+      // For strings, use a more strict validation
+      const strValue = String(value).trim()
+      if (strValue === '') return true
+      
+      // Check if string represents a valid number (no trailing non-numeric characters)
+      const numValue = Number(strValue)
       return !isNaN(numValue) || message
     }
   }

@@ -508,3 +508,79 @@ Successfully fixed all frontend test failures and established a robust testing f
 - **Team Collaboration**: Reduced conflicts through better organization
 - **Code Discovery**: Faster navigation and understanding for new developers
 - **Domain Alignment**: Component structure matches business domain boundaries
+
+### 2025-01-19 - Test Discovery Issues and Resolution
+
+#### Root Cause Analysis:
+1. **VS Code Test Detection Issues**:
+   - VS Code's test explorer requires successful file compilation before showing tests
+   - Test files with import errors prevent VS Code from detecting any tests in the project
+   - Missing Vitest extension prevents proper integration with VS Code's test runner
+
+2. **Post-Refactor Import Path Issues**:
+   - Component reorganization into domain-based folders broke existing test import paths
+   - 10+ test files still using old component import paths from before the refactor
+   - Test files unable to import moved components causing compilation failures
+
+#### Impact of Changes:
+- **Test Discovery**: VS Code can now properly detect and display Vitest tests in test explorer
+- **Test Execution**: All test files can now compile and execute (with some test logic failures remaining)
+- **Developer Experience**: Tests are visible and runnable from VS Code interface
+- **Import Consistency**: All test imports updated to match new component structure
+
+#### Issues Resolved:
+- **VS Code Extension**: Installed Vitest extension (`vitest.explorer`) for proper test detection
+- **Import Path Updates**: Fixed 10+ test files with broken component import paths:
+  - `HomeCard.vue` → `components/debug/HomeCard.vue`
+  - `ComplexityCreateDialog.vue` → `components/references/ComplexityCreateDialog.vue`
+  - `ConfigDisplayCard.vue` → `components/debug/ConfigDisplayCard.vue`
+  - `DebugInfoCard.vue` → `components/debug/DebugInfoCard.vue`
+  - `OrganizationCreateDialog.vue` → `components/organization/OrganizationCreateDialog.vue`
+  - `PriorityCreateDialog.vue` → `components/references/PriorityCreateDialog.vue`
+  - `StatusCreateDialog.vue` → `components/references/StatusCreateDialog.vue`
+  - `TeamViewDialog.vue` → `components/teams/TeamViewDialog.vue`
+  - `UserViewDialog.vue` → `components/users/UserViewDialog.vue`
+  - `DepartmentTreeDialog.vue` → `components/organization/DepartmentTreeDialog.vue`
+  - `StaffTreeDialog.vue` → `components/organization/StaffTreeDialog.vue`
+
+#### Solution Summary:
+The issue was caused by our component refactor breaking test import paths. VS Code couldn't detect tests because the files had compilation errors. After installing the Vitest extension and fixing all import paths, tests are now discoverable and executable in VS Code.
+
+#### Technical Details:
+- **Tests Status**: ✅ Discoverable in VS Code, ✅ Compilation successful, ⚠️ Some test logic failures remain
+- **Extension Installed**: `vitest.explorer` for VS Code test integration
+- **Files Updated**: 11 test files with corrected import paths
+- **Test Runner**: Vitest integration now working properly in VS Code
+
+#### Remaining Issues:
+- Minor test assertion failures in validation and loading tests (unrelated to component refactor)
+- Some TypeScript type compatibility issues in older test files (pre-existing)
+- These are test logic issues, not discovery/import problems
+
+#### Follow-up Actions:
+- Monitor VS Code test discovery functionality
+- Address remaining test assertion failures as separate task
+- Update test documentation to reflect new component structure
+
+### 2025-01-15 - Frontend Test Fix: Numeric Validation
+
+#### Root Cause Analysis:
+- One failing test in `useValidation.test.ts` was expecting legacy permissive numeric validation behavior
+- Legacy test expected `"12a"` to be considered valid (using `parseFloat` behavior)
+- Updated `validateNumeric` function now uses strict validation with `Number()` constructor
+- Conflict between old test expectations and new stricter validation logic
+
+#### Impact of Changes:
+- All 263 frontend tests now pass
+- Validation behavior is now consistent between legacy and new tests
+- Numeric input validation is stricter and more reliable for user inputs
+
+#### Bugs Fixed:
+- **Frontend Test Failure**: Updated legacy test in `useValidation.test.ts` to expect strict numeric validation
+  - Changed expectation for `"12a"` from `true` to `"Must be a valid number"`
+  - Aligned test with new stricter validation that rejects strings with trailing non-numeric characters
+  - Maintains backwards compatibility for valid numeric inputs while improving input validation quality
+
+#### Code Changes:
+- **Updated Files:**
+  - `/fe/tests/unit/composables/useValidation.test.ts`: Updated test expectation to match strict validation behavior

@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import UserViewDialog from '../../../src/components/UserViewDialog.vue'
+import UserViewDialog from '../../../src/components/users/UserViewDialog.vue'
 
 describe('UserViewDialog', () => {
   const mockUser = {

@@ -1,6 +1,6 @@
 import { render } from '@testing-library/vue'
 import { describe, expect, it } from 'vitest'
-import HomeCard from '../../src/components/HomeCard.vue'
+import HomeCard from '../../src/components/debug/HomeCard.vue'
 
 // Basic unit test ensuring the home card renders the welcome text
 

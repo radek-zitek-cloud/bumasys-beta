@@ -194,7 +194,7 @@ describe('useValidation composable', () => {
       const rule = validateNumeric()
 
       expect(rule('abc')).toBe('Must be a valid number')
-      expect(rule('12a')).toBe(true) // parseFloat('12a') = 12, which is valid
+      expect(rule('12a')).toBe('Must be a valid number') // Strict validation - trailing characters not allowed
       expect(rule('')).toBe(true) // Let required handle empty
     })
 

@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
-import DebugInfoCard from '../../../src/components/DebugInfoCard.vue'
+import DebugInfoCard from '../../../src/components/debug/DebugInfoCard.vue'
 import { useAuthStore } from '../../../src/stores/auth'
 
 describe('DebugInfoCard', () => {

@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import PriorityCreateDialog from '../../../src/components/PriorityCreateDialog.vue'
+import PriorityCreateDialog from '../../../src/components/references/PriorityCreateDialog.vue'
 
 describe('PriorityCreateDialog', () => {
   it('renders create priority form correctly', () => {
