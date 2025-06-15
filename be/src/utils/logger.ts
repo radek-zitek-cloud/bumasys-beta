@@ -35,6 +35,6 @@ const loggerOptions = {
 
 const logger = pino(loggerOptions);
 
-console.log('Pino logger config:', JSON.stringify(loggerOptions, null, 2));
+// console.log('Pino logger config:', JSON.stringify(loggerOptions, null, 2));
 
 export default logger;

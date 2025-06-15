@@ -7,12 +7,12 @@
 -->
 
 <template>
-  <v-card width="1000">
+  <v-card width="75vw" height="90vh" class="d-flex flex-column">
     <v-card-title>
       <v-icon class="mr-2">mdi-file-tree</v-icon>
       Department Structure
     </v-card-title>
-    <v-card-text>
+    <v-card-text class="flex-grow-1 pa-4">
       <div v-if="loading" class="text-center pa-4">
         <v-progress-circular color="primary" indeterminate />
         <p class="mt-2">Loading department structure...</p>
@@ -22,8 +22,8 @@
         <p class="text-error">{{ error }}</p>
       </div>
 
-      <div v-else>
-        <div id="department-tree-container" ref="treeContainer" class="tree-container" />
+      <div v-else class="d-flex flex-column flex-grow-1">
+        <div id="department-tree-container" ref="treeContainer" class="tree-container flex-grow-1" />
       </div>
     </v-card-text>
     <v-card-actions>
@@ -129,8 +129,8 @@
       // Create the d3.js tree
       createTree(treeStructure, {
         containerSelector: '#department-tree-container',
-        width: 950,
-        height: 500,
+        width: 800,
+        height: 700,
         nodeColor: '#1976D2',
         linkColor: '#1976D2',
       })
@@ -155,7 +155,7 @@
 <style scoped>
   .tree-container {
     width: 100%;
-    height: 500px;
+    min-height: 0; /* Allow flex to shrink */
     position: relative;
     overflow: auto;
     border: 1px solid #e0e0e0;

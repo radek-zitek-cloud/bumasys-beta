@@ -45,9 +45,10 @@ export function useD3Tree () {
       // Set default dimensions
       const width = config.width ?? 800
       const height = config.height ?? 600
-      const nodeWidth = config.nodeWidth ?? 140
+      const nodeWidth = config.nodeWidth ?? 120
       const nodeHeight = config.nodeHeight ?? 60
-      const levelSeparation = config.levelSeparation ?? 120
+      const levelSeparation = config.levelSeparation ?? 100
+      const siblingSeparation = config.siblingSeparation ?? 80
 
       // Create SVG container
       const svg = d3.select(config.containerSelector)
@@ -64,9 +65,9 @@ export function useD3Tree () {
 
       // Create the tree layout
       const treeLayout = d3.tree<TreeNodeData>()
-        .size([width - 100, height - 100])
+        .size([width - 10, height - 10])
         .separation((a, b) => {
-          return a.parent === b.parent ? 1 : 1.5
+          return a.parent === b.parent ? siblingSeparation : siblingSeparation * 1.5
         })
 
       // Create hierarchy from data
@@ -116,9 +117,9 @@ export function useD3Tree () {
 
       // Add node text - name
       nodes.append('text')
-        .attr('dy', '-0.2em')
+        .attr('dy', '-1.4em')
         .attr('text-anchor', 'middle')
-        .style('font-size', '12px')
+        .style('font-size', '10px')
         .style('font-weight', 'bold')
         .style('fill', '#1976D2')
         .text(d => d.data.name)
@@ -129,7 +130,7 @@ export function useD3Tree () {
         .append('text')
         .attr('dy', '1.2em')
         .attr('text-anchor', 'middle')
-        .style('font-size', '10px')
+        .style('font-size', '9px')
         .style('fill', '#666')
         .text(d => d.data.title || '')
         .call(wrapText, nodeWidth - 10)
