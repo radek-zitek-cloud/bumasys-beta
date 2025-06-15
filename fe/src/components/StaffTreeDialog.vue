@@ -21,8 +21,20 @@
         <v-icon class="mb-2" color="error" size="48">mdi-alert-circle</v-icon>
         <p class="text-error">{{ error }}</p>
       </div>
-      <div v-else>
-        <div id="staff-tree-container" ref="treeContainer" class="tree-container" />
+      <div v-else class="tree-wrapper">
+        <component 
+          :is="VueTreeComponent" 
+          v-if="vueTreeProps" 
+          v-bind="vueTreeProps"
+          class="tree-container"
+        >
+          <template #node="{ data }">
+            <div class="custom-tree-node">
+              <div class="node-name">{{ data.name }}</div>
+              <div v-if="data.title" class="node-title">{{ data.title }}</div>
+            </div>
+          </template>
+        </component>
       </div>
     </v-card-text>
     <v-card-actions>
@@ -53,10 +65,9 @@
   /** Reactive state */
   const loading = ref(true)
   const error = ref<string | null>(null)
-  const treeContainer = ref<HTMLElement>()
 
-  /** D3 tree composable */
-  const { createTree, error: treeError } = useD3Tree()
+  /** Vue D3 tree composable */
+  const { createTree, error: treeError, VueTreeComponent, vueTreeProps } = useD3Tree()
 
   /** Find the root staff member (highest in hierarchy) for the given staff member */
   function findRootStaff (allStaff: Staff[], startingStaff: Staff): Staff {
@@ -112,36 +123,23 @@
       // Build tree structure starting from the root
       const treeStructure = buildStaffTree(allStaff, rootStaff)
 
-      loading.value = false
-
-      // Wait for DOM to update and container to be available
-      await nextTick()
-
-      // Wait for the container to be available with retry logic
-      let retries = 0
-      const maxRetries = 10
-      while (retries < maxRetries && !treeContainer.value) {
-        await new Promise(resolve => setTimeout(resolve, 50))
-        retries++
-      }
-
-      if (!treeContainer.value) {
-        throw new Error('Tree container not found')
-      }
-
-      // Create the d3.js tree
+      // Create the Vue D3 tree (no DOM manipulation needed)
       createTree(treeStructure, {
-        containerSelector: '#staff-tree-container',
         width: 850,
         height: 700,
         nodeColor: '#9C27B0',
         linkColor: '#9C27B0',
+        direction: 'vertical',
+        levelSeparation: 80,
+        siblingSeparation: 60,
       })
 
       // Check for tree creation errors
       if (treeError.value) {
         throw new Error(treeError.value)
       }
+
+      loading.value = false
     } catch (error_) {
       console.error('Error initializing staff tree:', error_)
       error.value = error_ instanceof Error ? error_.message : 'Failed to load organization structure'
@@ -156,7 +154,7 @@
 </script>
 
 <style scoped>
-  .tree-container {
+  .tree-wrapper {
     width: 100%;
     height: 500px;
     position: relative;
@@ -164,16 +162,46 @@
     border: 1px solid #e0e0e0;
     border-radius: 4px;
     background: #fafafa;
-    padding: 20px;
   }
 
-  /* D3.js tree specific styles */
+  .tree-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  .custom-tree-node {
+    background: white;
+    border: 2px solid #9C27B0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    min-width: 120px;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .node-name {
+    font-size: 10px;
+    font-weight: bold;
+    color: #9C27B0;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .node-title {
+    font-size: 9px;
+    color: #666;
+    line-height: 1.2;
+  }
+
+  /* Vue D3 Tree specific styles */
   :deep(svg) {
     width: 100%;
     height: 100%;
   }
 
-  :deep(.node text) {
-    font-family: 'Roboto', sans-serif;
+  :deep(.vue-tree) {
+    width: 100%;
+    height: 100%;
   }
 </style>

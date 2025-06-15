@@ -3,30 +3,26 @@ import { describe, expect, it, vi } from 'vitest'
 import DepartmentTreeDialog from '../../../src/components/DepartmentTreeDialog.vue'
 import StaffTreeDialog from '../../../src/components/StaffTreeDialog.vue'
 
-// Mock d3.js since it's not available in test environment
-vi.mock('d3', () => ({
-  select: vi.fn().mockReturnValue({
-    selectAll: vi.fn().mockReturnValue({
-      remove: vi.fn(),
-    }),
-    append: vi.fn().mockReturnValue({
-      attr: vi.fn().mockReturnThis(),
-      style: vi.fn().mockReturnThis(),
-    }),
-  }),
-  tree: vi.fn(),
-  hierarchy: vi.fn(),
-  linkVertical: vi.fn(),
+// Mock vue3-d3-tree component
+vi.mock('vue3-d3-tree', () => ({
+  default: {
+    name: 'VueTree',
+    template: '<div class="vue-tree-mock">Vue Tree Component</div>',
+    props: ['data', 'direction', 'hierarchyMargin', 'neighborMargin', 'showKnot', 'wheelZoom', 'lineType', 'lineStyle', 'collapsedWay', 'top', 'left']
+  }
 }))
 
-// Mock the d3 tree composable
+// Mock the Vue D3 tree composable
 vi.mock('../../../src/composables/useD3Tree', () => ({
   useD3Tree: vi.fn().mockReturnValue({
     createTree: vi.fn(),
     clearTree: vi.fn(),
     error: { value: null },
+    treeData: { value: null },
+    treeConfig: { value: null },
+    vueTreeProps: { value: null },
+    VueTreeComponent: { name: 'VueTree', template: '<div>Mock Vue Tree</div>' },
   }),
-
 }))
 
 // Mock the service modules
