@@ -21,8 +21,9 @@
         <v-icon class="mb-2" color="error" size="48">mdi-alert-circle</v-icon>
         <p class="text-error">{{ error }}</p>
       </div>
+
       <div v-else>
-        <div id="department-tree-container" ref="treeContainer" class="tree-container" />
+        <div id="department-tree-container" ref="treeContainer" class="tree-container"></div>
       </div>
     </v-card-text>
     <v-card-actions>
@@ -37,7 +38,14 @@
 <script lang="ts" setup>
   import type { Department } from '../services/departments'
   import type { Staff } from '../services/staff'
-  import Tree from 'treant-js'
+  import Raphael from 'raphael'; // Import Raphael and make it globally available
+  import TreantJS from 'treant-js';
+  
+  // Make Raphael available globally for Treant.js
+  (window as any).Raphael = Raphael;
+  
+  // Extract the Treant constructor from the module
+  const { Treant } = TreantJS as any;
   import { nextTick, onMounted, ref } from 'vue'
   import * as departmentService from '../services/departments'
   import * as staffService from '../services/staff'
@@ -141,6 +149,9 @@
       // Build tree structure starting from the selected department
       const treeStructure = buildDepartmentTree(departments, staff, props.department)
 
+      // Set loading to false first so the container gets rendered
+      loading.value = false
+
       // Wait for DOM to update and container to be available
       await nextTick()
 
@@ -153,13 +164,13 @@
       }
 
       if (!treeContainer.value) {
-        throw new Error('Tree container not found')
+        throw new Error('Tree container not found');
       }
 
       // Configure Treant.js
       const config: TreeConfig = {
         chart: {
-          container: '#department-tree-container',
+          container: `#${treeContainer.value?.id}`, // Use the dynamic id
           levelSeparation: 40,
           siblingSeparation: 20,
           subTeeSeparation: 30,
@@ -179,12 +190,11 @@
         nodeStructure: treeStructure,
       }
 
-      // Create the tree
-      new Tree(config)
+      // Create the tree using the destructured Treant constructor
+      new Treant(config);
     } catch (error_) {
       console.error('Error initializing department tree:', error_)
       error.value = error_ instanceof Error ? error_.message : 'Failed to load department structure'
-    } finally {
       loading.value = false
     }
   }
@@ -199,9 +209,33 @@
   @import 'treant-js/Treant.css';
 
   .tree-container {
-    min-height: 400px;
+    width: 100%;
+    height: 500px;
+    position: relative;
     overflow: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background: #fafafa;
     padding: 20px;
+  }
+
+  /* Treant.js specific styling fixes */
+  :deep(.Treant) {
+    width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+  }
+
+  :deep(.Treant svg) {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 1;
+  }
+
+  :deep(.node) {
+    position: absolute !important;
+    z-index: 2;
   }
 
   :deep(.treant-node) {
