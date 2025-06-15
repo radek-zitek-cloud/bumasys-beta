@@ -7,7 +7,7 @@
 -->
 
 <template>
-  <v-card width="1000">
+  <v-card width="1500">
     <v-card-title>
       <v-icon class="mr-2">mdi-account-supervisor</v-icon>
       Organization Structure
@@ -132,8 +132,8 @@
       // Create the d3.js tree
       createTree(treeStructure, {
         containerSelector: '#staff-tree-container',
-        width: 950,
-        height: 500,
+        width: 850,
+        height: 700,
         nodeColor: '#9C27B0',
         linkColor: '#9C27B0',
       })
