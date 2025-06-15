@@ -113,14 +113,14 @@
 <script lang="ts" setup>
 /**
  * @fileoverview Main Application Component
- * 
+ *
  * This is the root component that provides the main application layout including:
  * - Top navigation bar with theme toggle and user menu
  * - Side navigation drawer with main navigation items
  * - Main content area with router-view
  * - Authentication dialogs and notifications
  * - Footer component
- * 
+ *
  * TODO: Consider extracting authentication logic into a composable
  * TODO: Add error boundary component for better error handling
  * TODO: Implement loading states for authentication operations
@@ -130,112 +130,112 @@
  * TODO: Implement proper toast/notification management system
  */
 
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useTheme } from 'vuetify'
-import AppFooter from './components/AppFooter.vue'
-import ChangePasswordCard from './components/ChangePasswordCard.vue'
-import ConfigDisplayCard from './components/ConfigDisplayCard.vue'
-import DebugInfoCard from './components/DebugInfoCard.vue'
-import LoginCard from './components/LoginCard.vue'
-import LogoutCard from './components/LogoutCard.vue'
-import PasswordResetCard from './components/PasswordResetCard.vue'
-import ProfileCard from './components/ProfileCard.vue'
-import RegisterCard from './components/RegisterCard.vue'
-import * as authApi from './services/auth'
-import { useAuthStore } from './stores/auth'
+  import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useTheme } from 'vuetify'
+  import AppFooter from './components/AppFooter.vue'
+  import ChangePasswordCard from './components/ChangePasswordCard.vue'
+  import ConfigDisplayCard from './components/ConfigDisplayCard.vue'
+  import DebugInfoCard from './components/DebugInfoCard.vue'
+  import LoginCard from './components/LoginCard.vue'
+  import LogoutCard from './components/LogoutCard.vue'
+  import PasswordResetCard from './components/PasswordResetCard.vue'
+  import ProfileCard from './components/ProfileCard.vue'
+  import RegisterCard from './components/RegisterCard.vue'
+  import * as authApi from './services/auth'
+  import { useAuthStore } from './stores/auth'
 
-/**
- * Interface for navigation items in the side drawer.
- * Supports both regular navigation items and separators.
- */
-interface NavigationItem {
-  /** Material Design icon name */
-  icon?: string
-  /** Display title for the navigation item */
-  title?: string
-  /** Subtitle/description shown below title */
-  subtitle?: string
-  /** Router path for navigation */
-  to?: string
-  /** Whether this is a separator (visual divider) */
-  separator?: boolean
-}
-
-const router = useRouter()
-const snackbar = ref(false)
-const snackbarMessage = ref('')
-const snackbarColor = ref<'success' | 'error'>('success')
-
-/**
- * Display a notification message to the user.
- * @param message - The message to display
- * @param success - Whether this is a success (true) or error (false) message
- */
-function notify (message: string, success = true) {
-  snackbarMessage.value = message
-  snackbarColor.value = success ? 'success' : 'error'
-  snackbar.value = true
-}
-
-/**
- * Reactive state for the navigation drawer.
- */
-const drawer = ref(true)
-
-/** Authentication store controlling login state. */
-const auth = useAuthStore()
-
-/** Dialog visibility flags for each action. */
-const showLogin = ref(false)
-const showRegister = ref(false)
-const showReset = ref(false)
-const showChange = ref(false)
-const showLogout = ref(false)
-const showProfile = ref(false)
-const showDebugInfo = ref(false)
-const showConfig = ref(false)
-
-/**
- * Access Vuetify's theme instance so we can switch between light and dark
- * modes.
- */
-const vuetifyTheme = useTheme()
-
-/**
- * Toggle between light and dark themes.
- */
-function toggleTheme () {
-  vuetifyTheme.global.name.value = vuetifyTheme.global.current.value.dark
-    ? 'light'
-    : 'dark'
-}
-
-/**
- * Determine if a navigation item should be disabled based on authentication state.
- * Home is always enabled, all other items require authentication.
- * @param item - The navigation item to check
- * @returns true if the item should be disabled
- */
-function isNavigationItemDisabled (item: NavigationItem): boolean {
-  // Skip separator items (they don't have disable property)
-  if (item.separator) {
-    return false
+  /**
+   * Interface for navigation items in the side drawer.
+   * Supports both regular navigation items and separators.
+   */
+  interface NavigationItem {
+    /** Material Design icon name */
+    icon?: string
+    /** Display title for the navigation item */
+    title?: string
+    /** Subtitle/description shown below title */
+    subtitle?: string
+    /** Router path for navigation */
+    to?: string
+    /** Whether this is a separator (visual divider) */
+    separator?: boolean
   }
-  // Home is always enabled
-  if (item.title === 'Home' || item.to === '/') {
-    return false
-  }
-  // All other items require authentication
-  return !auth.loggedIn
-}
 
-/**
- * Navigation drawer items.
- * Each entry has a Material Design icon, a title, and a short description
- * shown as the subtitle. Separators are represented with `separator: true`.
- */
-const navigationItems: NavigationItem[] = [
+  const router = useRouter()
+  const snackbar = ref(false)
+  const snackbarMessage = ref('')
+  const snackbarColor = ref<'success' | 'error'>('success')
+
+  /**
+   * Display a notification message to the user.
+   * @param message - The message to display
+   * @param success - Whether this is a success (true) or error (false) message
+   */
+  function notify (message: string, success = true) {
+    snackbarMessage.value = message
+    snackbarColor.value = success ? 'success' : 'error'
+    snackbar.value = true
+  }
+
+  /**
+   * Reactive state for the navigation drawer.
+   */
+  const drawer = ref(true)
+
+  /** Authentication store controlling login state. */
+  const auth = useAuthStore()
+
+  /** Dialog visibility flags for each action. */
+  const showLogin = ref(false)
+  const showRegister = ref(false)
+  const showReset = ref(false)
+  const showChange = ref(false)
+  const showLogout = ref(false)
+  const showProfile = ref(false)
+  const showDebugInfo = ref(false)
+  const showConfig = ref(false)
+
+  /**
+   * Access Vuetify's theme instance so we can switch between light and dark
+   * modes.
+   */
+  const vuetifyTheme = useTheme()
+
+  /**
+   * Toggle between light and dark themes.
+   */
+  function toggleTheme () {
+    vuetifyTheme.global.name.value = vuetifyTheme.global.current.value.dark
+      ? 'light'
+      : 'dark'
+  }
+
+  /**
+   * Determine if a navigation item should be disabled based on authentication state.
+   * Home is always enabled, all other items require authentication.
+   * @param item - The navigation item to check
+   * @returns true if the item should be disabled
+   */
+  function isNavigationItemDisabled (item: NavigationItem): boolean {
+    // Skip separator items (they don't have disable property)
+    if (item.separator) {
+      return false
+    }
+    // Home is always enabled
+    if (item.title === 'Home' || item.to === '/') {
+      return false
+    }
+    // All other items require authentication
+    return !auth.loggedIn
+  }
+
+  /**
+   * Navigation drawer items.
+   * Each entry has a Material Design icon, a title, and a short description
+   * shown as the subtitle. Separators are represented with `separator: true`.
+   */
+  const navigationItems: NavigationItem[] = [
     { icon: 'mdi-home', title: 'Home', subtitle: 'Return to home page', to: '/' },
     { separator: true },
     {

@@ -1,10 +1,10 @@
 /**
  * @fileoverview Notification Management Composable
- * 
+ *
  * This composable provides a centralized notification system for the application.
  * It manages toast notifications, snackbars, and alert messages with consistent
  * styling and behavior across all components.
- * 
+ *
  * Features:
  * - Multiple notification types (success, error, warning, info)
  * - Queue management for multiple notifications
@@ -13,15 +13,15 @@
  * - Action buttons in notifications
  * - Undo functionality
  * - Notification history
- * 
+ *
  * Usage:
  * ```typescript
  * const { notify, notifySuccess, notifyError, clearAll } = useNotifications()
- * 
+ *
  * // Basic notifications
  * notifySuccess('Operation completed successfully')
  * notifyError('Something went wrong')
- * 
+ *
  * // Advanced notifications
  * notify({
  *   type: 'warning',
@@ -34,7 +34,7 @@
  *   ]
  * })
  * ```
- * 
+ *
  * TODO: Add notification positioning options
  * TODO: Implement notification grouping by category
  * TODO: Add sound notifications for important alerts
@@ -43,7 +43,7 @@
  * TODO: Implement notification rate limiting
  */
 
-import { ref, reactive, computed, readonly } from 'vue'
+import { computed, reactive, readonly, ref } from 'vue'
 
 /**
  * Notification type enumeration
@@ -148,7 +148,7 @@ const typeDefaults: Record<NotificationType, Partial<NotificationConfig>> = {
 /**
  * Notification management composable
  */
-export function useNotifications() {
+export function useNotifications () {
   /**
    * Add a new notification
    * @param config - Notification configuration
@@ -156,8 +156,8 @@ export function useNotifications() {
    */
   const notify = (config: NotificationConfig | string): string => {
     // Handle simple string messages
-    const notificationConfig: NotificationConfig = 
-      typeof config === 'string' 
+    const notificationConfig: NotificationConfig
+      = typeof config === 'string'
         ? { type: 'info', message: config }
         : config
 
@@ -205,12 +205,12 @@ export function useNotifications() {
     const index = notifications.findIndex(n => n.id === id)
     if (index !== -1) {
       const notification = notifications[index]
-      
+
       // Clear timeout if exists
       if (notification.timeoutHandle) {
         clearTimeout(notification.timeoutHandle)
       }
-      
+
       // Remove from active notifications
       notifications.splice(index, 1)
     }
@@ -221,12 +221,12 @@ export function useNotifications() {
    */
   const clearAll = () => {
     // Clear all timeouts
-    notifications.forEach(notification => {
+    for (const notification of notifications) {
       if (notification.timeoutHandle) {
         clearTimeout(notification.timeoutHandle)
       }
-    })
-    
+    }
+
     // Clear notifications array
     notifications.splice(0, notifications.length)
   }
@@ -292,7 +292,7 @@ export function useNotifications() {
   const notifyWithUndo = (
     message: string,
     undoAction: () => void | Promise<void>,
-    options?: Partial<NotificationConfig>
+    options?: Partial<NotificationConfig>,
   ) => {
     return notify({
       type: 'success',
@@ -353,21 +353,21 @@ export function useNotifications() {
     notify,
     dismiss,
     clearAll,
-    
+
     // Shorthand methods
     notifySuccess,
     notifyError,
     notifyWarning,
     notifyInfo,
     notifyWithUndo,
-    
+
     // State
     notifications: readonly(notifications) as readonly Notification[],
     notificationHistory: readonly(notificationHistory) as readonly Notification[],
     visibleCount,
     hasErrors,
     hasWarnings,
-    
+
     // Utility methods
     getNotificationsByType,
     getRecentNotifications,

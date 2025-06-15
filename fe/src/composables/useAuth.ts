@@ -1,25 +1,25 @@
 /**
  * @fileoverview Authentication Composable
- * 
+ *
  * This composable provides a centralized way to handle authentication operations
  * including login, registration, password management, and user profile updates.
  * It encapsulates error handling and success notifications for authentication flows.
- * 
+ *
  * Usage:
  * ```typescript
  * const { login, register, logout, changePassword, resetPassword, updateProfile } = useAuth()
- * 
+ *
  * // Login example
  * await login({ email: 'user@example.com', password: 'password123' })
  * ```
- * 
+ *
  * Features:
  * - Consistent error handling across all auth operations
  * - Success/error notifications with customizable messages
  * - Automatic navigation on successful login/registration
  * - Loading states for UI feedback
  * - Type-safe interfaces for all operations
- * 
+ *
  * TODO: Add retry logic for failed authentication attempts
  * TODO: Implement automatic token refresh handling
  * TODO: Add biometric authentication support
@@ -27,7 +27,7 @@
  * TODO: Add session timeout warnings
  */
 
-import { ref, readonly } from 'vue'
+import { readonly, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import * as authApi from '../services/auth'
 import { useAuthStore } from '../stores/auth'
@@ -44,10 +44,10 @@ export interface NotifyFunction {
  * @param notify - Function to display notifications to the user
  * @returns Object containing authentication methods and loading states
  */
-export function useAuth(notify: NotifyFunction) {
+export function useAuth (notify: NotifyFunction) {
   const router = useRouter()
   const auth = useAuthStore()
-  
+
   // Loading states for different operations
   const loginLoading = ref(false)
   const registerLoading = ref(false)
@@ -60,7 +60,7 @@ export function useAuth(notify: NotifyFunction) {
    * Handle user login with email and password
    * @param credentials - Login credentials
    */
-  async function login(credentials: { email: string; password: string }) {
+  async function login (credentials: { email: string, password: string }) {
     loginLoading.value = true
     try {
       const { login: loginResponse } = await authApi.login(credentials.email, credentials.password)
@@ -81,7 +81,7 @@ export function useAuth(notify: NotifyFunction) {
    * Handle user registration
    * @param userData - Registration data
    */
-  async function register(userData: {
+  async function register (userData: {
     email: string
     password: string
     firstName?: string
@@ -114,7 +114,7 @@ export function useAuth(notify: NotifyFunction) {
    * Handle password reset request
    * @param email - Email address for password reset
    */
-  async function resetPassword(email: string) {
+  async function resetPassword (email: string) {
     resetPasswordLoading.value = true
     try {
       await authApi.resetPassword(email)
@@ -132,7 +132,7 @@ export function useAuth(notify: NotifyFunction) {
    * Handle password change for authenticated user
    * @param passwords - Old and new passwords
    */
-  async function changePassword(passwords: { oldPassword: string; newPassword: string }) {
+  async function changePassword (passwords: { oldPassword: string, newPassword: string }) {
     changePasswordLoading.value = true
     try {
       await authApi.changePassword(passwords.oldPassword, passwords.newPassword)
@@ -149,7 +149,7 @@ export function useAuth(notify: NotifyFunction) {
   /**
    * Handle user logout
    */
-  async function logout() {
+  async function logout () {
     logoutLoading.value = true
     try {
       if (auth.refreshToken) {
@@ -170,7 +170,7 @@ export function useAuth(notify: NotifyFunction) {
    * Handle user profile updates
    * @param profileData - Updated profile information
    */
-  async function updateProfile(profileData: {
+  async function updateProfile (profileData: {
     firstName: string
     lastName: string
     note: string
@@ -207,7 +207,7 @@ export function useAuth(notify: NotifyFunction) {
     changePassword,
     logout,
     updateProfile,
-    
+
     // Loading states
     loginLoading: readonly(loginLoading),
     registerLoading: readonly(registerLoading),

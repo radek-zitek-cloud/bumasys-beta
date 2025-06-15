@@ -1,12 +1,12 @@
 /**
  * @fileoverview Tests for ConfigDisplayCard Component
- * 
+ *
  * This test suite verifies the ConfigDisplayCard component functionality
  * including configuration loading, error handling, and JSON formatting.
  */
 
 import { mount } from '@vue/test-utils'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ConfigDisplayCard from '../../../src/components/ConfigDisplayCard.vue'
 import * as configService from '../../../src/services/config'
 
@@ -29,14 +29,14 @@ describe('ConfigDisplayCard', () => {
 
   it('renders component title correctly', () => {
     const wrapper = mount(ConfigDisplayCard)
-    
+
     // Should render the card title
     expect(wrapper.html()).toContain('Backend Configuration')
   })
 
   it('shows loading state initially', () => {
     const wrapper = mount(ConfigDisplayCard)
-    
+
     // Should show loading message initially
     expect(wrapper.html()).toContain('Loading configuration...')
   })
@@ -52,7 +52,7 @@ describe('ConfigDisplayCard', () => {
     vi.mocked(configService.getConfig).mockResolvedValue({ config: mockConfig })
 
     const wrapper = mount(ConfigDisplayCard)
-    
+
     // Wait for the component to load the config
     await wrapper.vm.$nextTick()
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -68,7 +68,7 @@ describe('ConfigDisplayCard', () => {
     vi.mocked(configService.getConfig).mockRejectedValue(new Error(errorMessage))
 
     const wrapper = mount(ConfigDisplayCard)
-    
+
     // Wait for the error to be handled
     await wrapper.vm.$nextTick()
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -79,14 +79,14 @@ describe('ConfigDisplayCard', () => {
 
   it('emits close event when close button is clicked', async () => {
     const wrapper = mount(ConfigDisplayCard)
-    
+
     // Find and click the close button
     const buttons = wrapper.findAll('button')
     const closeButton = buttons.find(button => button.text().includes('Close'))
-    
+
     if (closeButton) {
       await closeButton.trigger('click')
-      
+
       // Should emit close event
       expect(wrapper.emitted()).toHaveProperty('close')
       expect(wrapper.emitted('close')).toHaveLength(1)
@@ -105,7 +105,7 @@ describe('ConfigDisplayCard', () => {
     vi.mocked(configService.getConfig).mockResolvedValue({ config: mockConfig })
 
     const wrapper = mount(ConfigDisplayCard)
-    
+
     // Wait for the config to load
     await wrapper.vm.$nextTick()
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -113,7 +113,7 @@ describe('ConfigDisplayCard', () => {
     // Should format JSON with proper indentation
     const expectedJson = JSON.stringify(mockConfig, null, 2)
     const textarea = wrapper.find('textarea')
-    
+
     if (textarea.exists()) {
       expect(textarea.element.value).toBe(expectedJson)
     }

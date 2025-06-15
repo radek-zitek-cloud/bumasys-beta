@@ -7,7 +7,7 @@
 -->
 
 <template>
-  <v-card width="75vw" height="90vh" class="d-flex flex-column">
+  <v-card class="d-flex flex-column" height="90vh" width="75vw">
     <v-card-title>
       <v-icon class="mr-2">mdi-file-tree</v-icon>
       Department Structure

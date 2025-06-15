@@ -1,35 +1,35 @@
 /**
  * @fileoverview Loading State Management Composable
- * 
+ *
  * This composable provides consistent loading state management across components.
  * It helps standardize loading indicators, error handling, and async operation states.
- * 
+ *
  * Features:
  * - Multiple named loading states
  * - Automatic error state management
  * - Loading operation wrappers
  * - Async operation helpers
  * - Global loading state
- * 
+ *
  * Usage:
  * ```typescript
  * const { loading, error, withLoading, setLoading } = useLoading()
- * 
+ *
  * // Basic loading state
  * setLoading(true)
  * // ... perform operation
  * setLoading(false)
- * 
+ *
  * // Wrap async operation
  * const result = await withLoading(async () => {
  *   return await api.fetchData()
  * })
- * 
+ *
  * // Named loading states
  * const { loading: saveLoading } = useLoading('save')
  * const { loading: deleteLoading } = useLoading('delete')
  * ```
- * 
+ *
  * TODO: Add loading state persistence for complex workflows
  * TODO: Implement loading timeout handling
  * TODO: Add loading progress tracking
@@ -37,7 +37,7 @@
  * TODO: Add loading analytics and performance monitoring
  */
 
-import { ref, computed, readonly } from 'vue'
+import { computed, readonly, ref } from 'vue'
 
 /**
  * Global loading states registry
@@ -50,7 +50,7 @@ const globalErrorStates = new Map<string, ReturnType<typeof ref<Error | null>>>(
  * @param namespace - Optional namespace for named loading states
  * @returns Loading state management utilities
  */
-export function useLoading(namespace = 'default') {
+export function useLoading (namespace = 'default') {
   // Get or create loading state for this namespace
   if (!globalLoadingStates.has(namespace)) {
     globalLoadingStates.set(namespace, ref(false))
@@ -103,9 +103,9 @@ export function useLoading(namespace = 'default') {
       const result = await operation()
       setError(null)
       return result
-    } catch (err) {
-      setError(err as Error)
-      throw err
+    } catch (error_) {
+      setError(error_ as Error)
+      throw error_
     } finally {
       setLoading(false)
     }
@@ -119,8 +119,8 @@ export function useLoading(namespace = 'default') {
   const safeWithLoading = async <T>(operation: () => Promise<T>): Promise<T | null> => {
     try {
       return await withLoading(operation)
-    } catch (err) {
-      console.error(`Operation failed in namespace '${namespace}':`, err)
+    } catch (error_) {
+      console.error(`Operation failed in namespace '${namespace}':`, error_)
       return null
     }
   }
@@ -133,7 +133,7 @@ export function useLoading(namespace = 'default') {
   const withLoadingSequence = async <T>(operations: (() => Promise<T>)[]): Promise<T[]> => {
     setLoading(true)
     const results: T[] = []
-    
+
     try {
       for (const operation of operations) {
         const result = await operation()
@@ -141,9 +141,9 @@ export function useLoading(namespace = 'default') {
       }
       setError(null)
       return results
-    } catch (err) {
-      setError(err as Error)
-      throw err
+    } catch (error_) {
+      setError(error_ as Error)
+      throw error_
     } finally {
       setLoading(false)
     }
@@ -160,9 +160,9 @@ export function useLoading(namespace = 'default') {
       const results = await Promise.all(operations.map(op => op()))
       setError(null)
       return results
-    } catch (err) {
-      setError(err as Error)
-      throw err
+    } catch (error_) {
+      setError(error_ as Error)
+      throw error_
     } finally {
       setLoading(false)
     }
@@ -184,7 +184,7 @@ export function useLoading(namespace = 'default') {
 /**
  * Global loading state utilities
  */
-export function useGlobalLoading() {
+export function useGlobalLoading () {
   /**
    * Check if any loading state is active
    */
@@ -216,7 +216,7 @@ export function useGlobalLoading() {
    * Get all error states
    */
   const allErrors = computed(() => {
-    const errors: { namespace: string; error: Error }[] = []
+    const errors: { namespace: string, error: Error }[] = []
     for (const [namespace, state] of globalErrorStates.entries()) {
       if (state.value) {
         errors.push({ namespace, error: state.value })
