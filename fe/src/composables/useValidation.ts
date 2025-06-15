@@ -226,14 +226,14 @@ export function useValidation() {
       try {
         // Clear previous errors
         Object.keys(errors).forEach(key => {
-          delete errors[key as keyof T]
+          delete (errors as any)[key]
         })
 
         // Validate each field
         for (const [fieldName, value] of Object.entries(data)) {
           const fieldErrors = validateField(fieldName as keyof T, value)
           if (fieldErrors.length > 0) {
-            errors[fieldName as keyof T] = fieldErrors
+            (errors as any)[fieldName] = fieldErrors
           }
         }
 
@@ -253,10 +253,10 @@ export function useValidation() {
       const fieldErrors = validateField(fieldName, value)
       
       if (fieldErrors.length > 0) {
-        errors[fieldName] = fieldErrors
+        (errors as any)[fieldName] = fieldErrors
         return false
       } else {
-        delete errors[fieldName]
+        delete (errors as any)[fieldName]
         return true
       }
     }
@@ -266,7 +266,7 @@ export function useValidation() {
      */
     const clearErrors = () => {
       Object.keys(errors).forEach(key => {
-        delete errors[key as keyof T]
+        delete (errors as any)[key]
       })
     }
 
@@ -275,7 +275,7 @@ export function useValidation() {
      * @param fieldName - Field to clear errors for
      */
     const clearFieldErrors = (fieldName: keyof T) => {
-      delete errors[fieldName]
+      delete (errors as any)[fieldName]
     }
 
     /**
@@ -284,7 +284,7 @@ export function useValidation() {
      * @returns Array of error messages
      */
     const getFieldErrors = (fieldName: keyof T): string[] => {
-      return errors[fieldName] || []
+      return (errors as any)[fieldName] || []
     }
 
     /**
@@ -293,7 +293,7 @@ export function useValidation() {
      * @returns Whether field has errors
      */
     const hasFieldErrors = (fieldName: keyof T): boolean => {
-      const fieldErrors = errors[fieldName]
+      const fieldErrors = (errors as any)[fieldName]
       return fieldErrors ? fieldErrors.length > 0 : false
     }
 
