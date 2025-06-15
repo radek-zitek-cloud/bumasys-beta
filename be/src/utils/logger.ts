@@ -3,11 +3,12 @@ import config from './config';
 
 /** Application logger instance using pino */
 const loggerOptions = {
+  level: config.logging.level || 'debug', // Set the global log level
   transport: {
     targets: [
       {
         target: 'pino-pretty',
-        level: config.logging.level || 'info',
+        level: config.logging.level || 'debug',
         options: {
           colorize: true,
           hideObject: true,
@@ -18,7 +19,7 @@ const loggerOptions = {
         ? [
             {
               target: '@logtail/pino',
-              level: config.logging.level || 'info',
+              level: config.logging.level || 'debug',
               options: {
                 sourceToken: config.logging.betterStack.sourceToken,
                 options: {
