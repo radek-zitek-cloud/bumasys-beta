@@ -32,6 +32,8 @@ describe('ComplexityService', () => {
         taskEvaluations: [],
         taskStatusReports: [],
         projectStatusReports: [],
+        teams: [],
+        teamMembers: [],
       },
       write: jest.fn().mockResolvedValue(undefined),
     };

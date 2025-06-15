@@ -22,6 +22,7 @@ import {
   OrganizationService,
   DepartmentService,
   StaffService,
+  TeamService,
   StatusService,
   PriorityService,
   ComplexityService,
@@ -86,6 +87,7 @@ export async function createApp(): Promise<AppInstances> {
   const organizationService = new OrganizationService(db);
   const departmentService = new DepartmentService(db);
   const staffService = new StaffService(db);
+  const teamService = new TeamService(db);
   const statusService = new StatusService(db);
   const priorityService = new PriorityService(db);
   const complexityService = new ComplexityService(db);
@@ -103,6 +105,7 @@ export async function createApp(): Promise<AppInstances> {
     organizationService,
     departmentService,
     staffService,
+    teamService,
     statusService,
     priorityService,
     complexityService,

@@ -10,6 +10,8 @@ import {
   organizationResolvers,
   departmentResolvers,
   staffResolvers,
+  teamResolvers,
+  teamMemberResolvers,
   projectResolvers,
   taskResolvers,
   taskProgressResolvers,
@@ -28,6 +30,7 @@ import {
   OrganizationService,
   DepartmentService,
   StaffService,
+  TeamService,
   StatusService,
   PriorityService,
   ComplexityService,
@@ -51,6 +54,8 @@ export const resolvers = {
   Organization: organizationResolvers,
   Department: departmentResolvers,
   Staff: staffResolvers,
+  Team: teamResolvers,
+  TeamMember: teamMemberResolvers,
   Project: projectResolvers,
   Task: taskResolvers,
   TaskProgress: taskProgressResolvers,
@@ -67,6 +72,7 @@ export const resolvers = {
  * @param organizationService - OrganizationService instance for organization operations
  * @param departmentService - DepartmentService instance for department operations
  * @param staffService - StaffService instance for staff operations
+ * @param teamService - TeamService instance for team operations
  * @param statusService - StatusService instance for status operations
  * @param priorityService - PriorityService instance for priority operations
  * @param complexityService - ComplexityService instance for complexity operations
@@ -83,6 +89,7 @@ export function initializeResolvers(
   organizationService: OrganizationService,
   departmentService: DepartmentService,
   staffService: StaffService,
+  teamService: TeamService,
   statusService: StatusService,
   priorityService: PriorityService,
   complexityService: ComplexityService,
@@ -98,6 +105,7 @@ export function initializeResolvers(
     organizationService,
     departmentService,
     staffService,
+    teamService,
     statusService,
     priorityService,
     complexityService,
@@ -114,6 +122,7 @@ export function initializeResolvers(
     organizationService,
     departmentService,
     staffService,
+    teamService,
     statusService,
     priorityService,
     complexityService,

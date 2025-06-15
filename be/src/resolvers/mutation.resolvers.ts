@@ -17,6 +17,10 @@ import type {
   UpdateDepartmentInput,
   CreateStaffInput,
   UpdateStaffInput,
+  CreateTeamInput,
+  UpdateTeamInput,
+  CreateTeamMemberInput,
+  UpdateTeamMemberInput,
   CreateStatusInput,
   UpdateStatusInput,
   CreatePriorityInput,
@@ -43,6 +47,7 @@ import {
   OrganizationService,
   DepartmentService,
   StaffService,
+  TeamService,
   StatusService,
   PriorityService,
   ComplexityService,
@@ -62,6 +67,7 @@ let userService: UserService;
 let organizationService: OrganizationService;
 let departmentService: DepartmentService;
 let staffService: StaffService;
+let teamService: TeamService;
 let statusService: StatusService;
 let priorityService: PriorityService;
 let complexityService: ComplexityService;
@@ -79,6 +85,7 @@ let projectStatusReportService: ProjectStatusReportService;
  * @param organization - OrganizationService instance
  * @param department - DepartmentService instance
  * @param staff - StaffService instance
+ * @param team - TeamService instance
  * @param status - StatusService instance
  * @param priority - PriorityService instance
  * @param complexity - ComplexityService instance
@@ -95,6 +102,7 @@ export function setServices(
   organization: OrganizationService,
   department: DepartmentService,
   staff: StaffService,
+  team: TeamService,
   status: StatusService,
   priority: PriorityService,
   complexity: ComplexityService,
@@ -110,6 +118,7 @@ export function setServices(
   organizationService = organization;
   departmentService = department;
   staffService = staff;
+  teamService = team;
   statusService = status;
   priorityService = priority;
   complexityService = complexity;
@@ -561,6 +570,140 @@ export const mutationResolvers = {
       throw new Error('Unauthenticated');
     }
     return staffService.deleteStaff(id);
+  },
+
+  // Team mutations
+  /**
+   * Create a new team
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing team data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the created team
+   * @throws Error if user is not authenticated
+   */
+  createTeam: async (
+    _: unknown,
+    args: CreateTeamInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return teamService.createTeam(args);
+  },
+
+  /**
+   * Update an existing team
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing team update data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the updated team
+   * @throws Error if user is not authenticated
+   */
+  updateTeam: async (
+    _: unknown,
+    args: UpdateTeamInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return teamService.updateTeam(args);
+  },
+
+  /**
+   * Delete a team by ID
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing team ID
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if deleted successfully
+   * @throws Error if user is not authenticated
+   */
+  deleteTeam: async (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return teamService.deleteTeam(id);
+  },
+
+  /**
+   * Add a staff member to a team
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing team member data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the created team member
+   * @throws Error if user is not authenticated
+   */
+  addTeamMember: async (
+    _: unknown,
+    args: CreateTeamMemberInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return teamService.addTeamMember(args);
+  },
+
+  /**
+   * Update a team member's role
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing team member update data
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to the updated team member
+   * @throws Error if user is not authenticated
+   */
+  updateTeamMember: async (
+    _: unknown,
+    args: UpdateTeamMemberInput,
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return teamService.updateTeamMember(args);
+  },
+
+  /**
+   * Remove a team member by ID
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing team member ID
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if removed successfully
+   * @throws Error if user is not authenticated
+   */
+  removeTeamMember: async (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return teamService.removeTeamMember(id);
+  },
+
+  /**
+   * Remove a staff member from a team
+   * @param _ - Parent object (unused)
+   * @param args - Arguments containing team and staff IDs
+   * @param context - GraphQL context containing user info
+   * @returns Promise resolving to true if removed successfully
+   * @throws Error if user is not authenticated
+   */
+  removeStaffFromTeam: async (
+    _: unknown,
+    { teamId, staffId }: { teamId: string; staffId: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return teamService.removeStaffFromTeam(teamId, staffId);
   },
 
   // Status mutations
