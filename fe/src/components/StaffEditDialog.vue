@@ -58,11 +58,10 @@
             <v-select
               v-model="form.organizationId"
               :items="organizationOptions"
-              label="Organization *"
+              label="Organization"
               prepend-icon="mdi-office-building"
-              required
-              :rules="organizationRules"
-              @update:model-value="onOrganizationChange"
+              readonly
+              variant="outlined"
             />
           </v-col>
           <v-col cols="12">
@@ -125,7 +124,7 @@
   }>()
 
   /** Form data reactive object */
-  const form = reactive<Omit<UpdateStaffInput, 'id'>>({
+  const form = reactive<Omit<UpdateStaffInput, 'id'> & { organizationId: string }>({
     firstName: '',
     lastName: '',
     email: '',
@@ -196,10 +195,6 @@
     (v: string) => (v && v.length <= 50) || 'Role must be less than 50 characters',
   ]
 
-  const organizationRules = [
-    (v: string) => !!v || 'Organization is required',
-  ]
-
   const departmentRules = [
     (v: string) => !!v || 'Department is required',
   ]
@@ -222,21 +217,6 @@
     { immediate: true },
   )
 
-  /** Handle organization change - reset department and supervisor if needed */
-  function onOrganizationChange () {
-    // Check if current department belongs to new organization
-    const currentDept = props.departments.find(d => d.id === form.departmentId)
-    if (!currentDept || currentDept.organizationId !== form.organizationId) {
-      form.departmentId = ''
-    }
-
-    // Check if current supervisor belongs to new organization
-    const currentSupervisor = props.allStaff.find(s => s.id === form.supervisorId)
-    if (!currentSupervisor || currentSupervisor.organizationId !== form.organizationId) {
-      form.supervisorId = ''
-    }
-  }
-
   /**
    * Handle form submission
    * Validates form data and emits updated event with staff data
@@ -249,8 +229,8 @@
 
     processing.value = true
     try {
-      // Clean up empty optional fields
-      const staffData = { ...form }
+      // Clean up empty optional fields and exclude organizationId
+      const { organizationId, ...staffData } = form // Extract organizationId and get rest of data
       if (!staffData.phone) {
         delete staffData.phone
       }
