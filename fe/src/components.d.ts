@@ -20,6 +20,7 @@ declare module 'vue' {
     DepartmentEditDialog: typeof import('./components/DepartmentEditDialog.vue')['default']
     DepartmentTreeDialog: typeof import('./components/DepartmentTreeDialog.vue')['default']
     DepartmentViewDialog: typeof import('./components/DepartmentViewDialog.vue')['default']
+    ErrorBoundary: typeof import('./components/ErrorBoundary.vue')['default']
     LoginCard: typeof import('./components/LoginCard.vue')['default']
     LogoutCard: typeof import('./components/LogoutCard.vue')['default']
     OrganizationCreateDialog: typeof import('./components/OrganizationCreateDialog.vue')['default']
