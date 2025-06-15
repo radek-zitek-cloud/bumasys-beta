@@ -42,7 +42,6 @@ export interface UpdateStaffInput {
   email?: string
   phone?: string
   role?: string
-  organizationId?: string
   departmentId?: string
   supervisorId?: string
 }
@@ -162,7 +161,6 @@ export function updateStaff (input: UpdateStaffInput): Promise<{ updateStaff: St
         $email: String
         $phone: String
         $role: String
-        $organizationId: ID
         $departmentId: ID
         $supervisorId: ID
       ) {
@@ -173,7 +171,6 @@ export function updateStaff (input: UpdateStaffInput): Promise<{ updateStaff: St
           email: $email
           phone: $phone
           role: $role
-          organizationId: $organizationId
           departmentId: $departmentId
           supervisorId: $supervisorId
         ) {
