@@ -1,6 +1,6 @@
 <!--
   @fileoverview Staff Edit Dialog Component
-  
+
   This component provides a form interface for editing existing staff members.
 -->
 
@@ -78,10 +78,10 @@
           <v-col cols="12">
             <v-select
               v-model="form.supervisorId"
+              clearable
               :items="supervisorOptions"
               label="Supervisor"
               prepend-icon="mdi-account-supervisor"
-              clearable
             />
           </v-col>
         </v-row>
@@ -105,10 +105,10 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, reactive, ref, watch } from 'vue'
-  import type { Staff, UpdateStaffInput } from '../services/staff'
-  import type { Organization } from '../services/organizations'
   import type { Department } from '../services/departments'
+  import type { Organization } from '../services/organizations'
+  import type { Staff, UpdateStaffInput } from '../services/staff'
+  import { computed, reactive, ref, watch } from 'vue'
 
   /** Component props */
   const props = defineProps<{
@@ -144,7 +144,7 @@
     props.organizations.map(org => ({
       title: org.name,
       value: org.id,
-    }))
+    })),
   )
 
   /** Department options filtered by selected organization */
@@ -162,9 +162,9 @@
   const supervisorOptions = computed(() => {
     if (!form.organizationId) return []
     return props.allStaff
-      .filter(member => 
-        member.organizationId === form.organizationId && 
-        member.id !== props.staff.id
+      .filter(member =>
+        member.organizationId === form.organizationId
+        && member.id !== props.staff.id,
       )
       .map(member => ({
         title: `${member.firstName} ${member.lastName}`,
@@ -175,13 +175,13 @@
   /** Validation rules */
   const firstNameRules = [
     (v: string) => !!v || 'First name is required',
-    (v: string) => (v && v.length >= 1) || 'First name must be at least 1 character',
+    (v: string) => (v && v.length > 0) || 'First name must be at least 1 character',
     (v: string) => (v && v.length <= 50) || 'First name must be less than 50 characters',
   ]
 
   const lastNameRules = [
     (v: string) => !!v || 'Last name is required',
-    (v: string) => (v && v.length >= 1) || 'Last name must be at least 1 character',
+    (v: string) => (v && v.length > 0) || 'Last name must be at least 1 character',
     (v: string) => (v && v.length <= 50) || 'Last name must be less than 50 characters',
   ]
 
@@ -207,7 +207,7 @@
   /** Watch for changes to the staff prop and update form */
   watch(
     () => props.staff,
-    (newStaff) => {
+    newStaff => {
       if (newStaff) {
         form.firstName = newStaff.firstName
         form.lastName = newStaff.lastName
@@ -219,17 +219,17 @@
         form.supervisorId = newStaff.supervisorId || ''
       }
     },
-    { immediate: true }
+    { immediate: true },
   )
 
   /** Handle organization change - reset department and supervisor if needed */
-  function onOrganizationChange() {
+  function onOrganizationChange () {
     // Check if current department belongs to new organization
     const currentDept = props.departments.find(d => d.id === form.departmentId)
     if (!currentDept || currentDept.organizationId !== form.organizationId) {
       form.departmentId = ''
     }
-    
+
     // Check if current supervisor belongs to new organization
     const currentSupervisor = props.allStaff.find(s => s.id === form.supervisorId)
     if (!currentSupervisor || currentSupervisor.organizationId !== form.organizationId) {
@@ -241,7 +241,7 @@
    * Handle form submission
    * Validates form data and emits updated event with staff data
    */
-  async function onSubmit() {
+  async function onSubmit () {
     // Validate required fields
     if (!form.firstName || !form.lastName || !form.email || !form.role || !form.organizationId || !form.departmentId) {
       return
@@ -257,7 +257,7 @@
       if (!staffData.supervisorId) {
         delete staffData.supervisorId
       }
-      
+
       // Emit the staff data to parent for actual API call
       emit('updated', {
         id: props.staff.id,

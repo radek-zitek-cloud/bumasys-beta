@@ -1,6 +1,6 @@
 <!--
   @fileoverview Staff Create Dialog Component
-  
+
   This component provides a form interface for creating new staff members.
   It includes dropdown selection for organization, department, and supervisor.
 -->
@@ -79,10 +79,10 @@
           <v-col cols="12">
             <v-select
               v-model="form.supervisorId"
+              clearable
               :items="supervisorOptions"
               label="Supervisor"
               prepend-icon="mdi-account-supervisor"
-              clearable
             />
           </v-col>
         </v-row>
@@ -106,11 +106,10 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, reactive, ref } from 'vue'
-  import type { CreateStaffInput } from '../services/staff'
-  import type { Organization } from '../services/organizations'
   import type { Department } from '../services/departments'
-  import type { Staff } from '../services/staff'
+  import type { Organization } from '../services/organizations'
+  import type { CreateStaffInput, Staff } from '../services/staff'
+  import { computed, reactive, ref } from 'vue'
 
   /** Component props */
   const props = defineProps<{
@@ -145,7 +144,7 @@
     props.organizations.map(org => ({
       title: org.name,
       value: org.id,
-    }))
+    })),
   )
 
   /** Department options filtered by selected organization */
@@ -173,13 +172,13 @@
   /** Validation rules */
   const firstNameRules = [
     (v: string) => !!v || 'First name is required',
-    (v: string) => (v && v.length >= 1) || 'First name must be at least 1 character',
+    (v: string) => (v && v.length > 0) || 'First name must be at least 1 character',
     (v: string) => (v && v.length <= 50) || 'First name must be less than 50 characters',
   ]
 
   const lastNameRules = [
     (v: string) => !!v || 'Last name is required',
-    (v: string) => (v && v.length >= 1) || 'Last name must be at least 1 character',
+    (v: string) => (v && v.length > 0) || 'Last name must be at least 1 character',
     (v: string) => (v && v.length <= 50) || 'Last name must be less than 50 characters',
   ]
 
@@ -203,7 +202,7 @@
   ]
 
   /** Handle organization change - reset department and supervisor */
-  function onOrganizationChange() {
+  function onOrganizationChange () {
     form.departmentId = ''
     form.supervisorId = ''
   }
@@ -212,7 +211,7 @@
    * Handle form submission
    * Validates form data and emits created event with staff data
    */
-  async function onSubmit() {
+  async function onSubmit () {
     // Validate required fields
     if (!form.firstName || !form.lastName || !form.email || !form.role || !form.organizationId || !form.departmentId) {
       return
@@ -228,7 +227,7 @@
       if (!staffData.supervisorId) {
         delete staffData.supervisorId
       }
-      
+
       // Emit the staff data to parent for actual API call
       emit('created', staffData)
     } finally {

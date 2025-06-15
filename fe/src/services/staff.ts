@@ -1,6 +1,6 @@
 /**
  * @fileoverview Staff service for frontend GraphQL operations
- * 
+ *
  * This service provides all staff-related API calls following the same
  * patterns as the users service. It handles staff CRUD operations
  * through GraphQL queries and mutations.
@@ -52,7 +52,7 @@ export interface UpdateStaffInput {
  * Optionally filter by organization or department ID.
  * Requires authentication.
  */
-export function getStaff(organizationId?: string, departmentId?: string): Promise<{ staff: Staff[] }> {
+export function getStaff (organizationId?: string, departmentId?: string): Promise<{ staff: Staff[] }> {
   const store = useAuthStore()
   return graphqlClient<{ staff: Staff[] }>(
     `
@@ -79,7 +79,7 @@ export function getStaff(organizationId?: string, departmentId?: string): Promis
  * Fetch a specific staff member by ID.
  * Requires authentication.
  */
-export function getStaffMember(id: string): Promise<{ staffMember: Staff | null }> {
+export function getStaffMember (id: string): Promise<{ staffMember: Staff | null }> {
   const store = useAuthStore()
   return graphqlClient<{ staffMember: Staff | null }>(
     `
@@ -106,7 +106,7 @@ export function getStaffMember(id: string): Promise<{ staffMember: Staff | null 
  * Create a new staff member.
  * Requires authentication.
  */
-export function createStaff(input: CreateStaffInput): Promise<{ createStaff: Staff }> {
+export function createStaff (input: CreateStaffInput): Promise<{ createStaff: Staff }> {
   const store = useAuthStore()
   return graphqlClient<{ createStaff: Staff }>(
     `
@@ -151,7 +151,7 @@ export function createStaff(input: CreateStaffInput): Promise<{ createStaff: Sta
  * Update an existing staff member.
  * Requires authentication.
  */
-export function updateStaff(input: UpdateStaffInput): Promise<{ updateStaff: Staff }> {
+export function updateStaff (input: UpdateStaffInput): Promise<{ updateStaff: Staff }> {
   const store = useAuthStore()
   return graphqlClient<{ updateStaff: Staff }>(
     `
@@ -198,7 +198,7 @@ export function updateStaff(input: UpdateStaffInput): Promise<{ updateStaff: Sta
  * Delete a staff member by ID.
  * Requires authentication.
  */
-export function deleteStaff(id: string): Promise<{ deleteStaff: boolean }> {
+export function deleteStaff (id: string): Promise<{ deleteStaff: boolean }> {
   const store = useAuthStore()
   return graphqlClient<{ deleteStaff: boolean }>(
     `

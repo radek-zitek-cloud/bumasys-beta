@@ -1,6 +1,6 @@
 <!--
   @fileoverview Staff Delete Dialog Component
-  
+
   This component provides a confirmation dialog for deleting staff members.
 -->
 
@@ -16,9 +16,9 @@
         <strong>{{ staff.firstName }} {{ staff.lastName }}</strong>?
       </p>
       <v-alert
+        class="mb-4"
         type="warning"
         variant="tonal"
-        class="mb-4"
       >
         <v-icon>mdi-alert</v-icon>
         <div>
@@ -51,8 +51,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue'
   import type { Staff } from '../services/staff'
+  import { ref } from 'vue'
 
   /** Component props */
   const props = defineProps<{
@@ -72,7 +72,7 @@
    * Handle delete confirmation
    * Emits deleted event with staff ID
    */
-  async function onConfirm() {
+  async function onConfirm () {
     processing.value = true
     try {
       // Emit the staff ID to parent for actual API call

@@ -1,6 +1,6 @@
 /**
  * @fileoverview Organization service for frontend GraphQL operations
- * 
+ *
  * This service provides all organization-related API calls following the same
  * patterns as the users service. It handles organization CRUD operations
  * through GraphQL queries and mutations.
@@ -37,7 +37,7 @@ export interface UpdateOrganizationInput {
  * Fetch all organizations from the system.
  * Requires authentication.
  */
-export function getOrganizations(): Promise<{ organizations: Organization[] }> {
+export function getOrganizations (): Promise<{ organizations: Organization[] }> {
   const store = useAuthStore()
   return graphqlClient<{ organizations: Organization[] }>(
     `
@@ -60,7 +60,7 @@ export function getOrganizations(): Promise<{ organizations: Organization[] }> {
  * Fetch a specific organization by ID.
  * Requires authentication.
  */
-export function getOrganization(id: string): Promise<{ organization: Organization | null }> {
+export function getOrganization (id: string): Promise<{ organization: Organization | null }> {
   const store = useAuthStore()
   return graphqlClient<{ organization: Organization | null }>(
     `
@@ -83,7 +83,7 @@ export function getOrganization(id: string): Promise<{ organization: Organizatio
  * Create a new organization.
  * Requires authentication.
  */
-export function createOrganization(input: CreateOrganizationInput): Promise<{ createOrganization: Organization }> {
+export function createOrganization (input: CreateOrganizationInput): Promise<{ createOrganization: Organization }> {
   const store = useAuthStore()
   return graphqlClient<{ createOrganization: Organization }>(
     `
@@ -106,7 +106,7 @@ export function createOrganization(input: CreateOrganizationInput): Promise<{ cr
  * Update an existing organization.
  * Requires authentication.
  */
-export function updateOrganization(input: UpdateOrganizationInput): Promise<{ updateOrganization: Organization }> {
+export function updateOrganization (input: UpdateOrganizationInput): Promise<{ updateOrganization: Organization }> {
   const store = useAuthStore()
   return graphqlClient<{ updateOrganization: Organization }>(
     `
@@ -141,7 +141,7 @@ export function updateOrganization(input: UpdateOrganizationInput): Promise<{ up
  * Delete an organization by ID.
  * Requires authentication.
  */
-export function deleteOrganization(id: string): Promise<{ deleteOrganization: boolean }> {
+export function deleteOrganization (id: string): Promise<{ deleteOrganization: boolean }> {
   const store = useAuthStore()
   return graphqlClient<{ deleteOrganization: boolean }>(
     `
