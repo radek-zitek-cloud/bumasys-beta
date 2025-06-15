@@ -1,11 +1,11 @@
 {
-  "port": "PORT",
-  "jwtSecret": "JWT_SECRET",
-  "dbFile": "DB_FILE",
+  "port": "FCRM_PORT",
+  "jwtSecret": "FCRM_JWT_SECRET",
+  "dbFile": "FCRM_DB_FILE",
   "logging": {
     "betterStack": {
-      "enabled": "BETTER_STACK_ENABLED",
-      "sourceToken": "BETTER_STACK_SOURCE_TOKEN"
+      "enabled": "FCRM_BETTER_STACK_ENABLED",
+      "sourceToken": "FCRM_BETTER_STACK_SOURCE_TOKEN"
     }
   }
 }
