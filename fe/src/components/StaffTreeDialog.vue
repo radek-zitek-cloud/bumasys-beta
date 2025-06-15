@@ -11,9 +11,9 @@
     class="staff-tree-dialog"
     :width="dialogWidth"
     :height="dialogHeight"
-    :style="{ width: `${dialogWidth}px`, height: `${dialogHeight}px` }"
   >
-    <v-card-title class="dialog-header">
+
+  <v-card-title class="dialog-header">
       <v-icon class="mr-2">mdi-account-supervisor</v-icon>
       Organization Structure
     </v-card-title>
@@ -169,8 +169,6 @@
   .staff-tree-dialog {
     max-width: 95vw !important;
     max-height: 90vh !important;
-    width: 95vw !important;
-    height: 90vh !important;
     overflow: hidden;
     display: flex;
     flex-direction: column;

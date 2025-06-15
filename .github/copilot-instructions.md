@@ -188,3 +188,14 @@ If in doubt:
 - Leave notes for human reviewers where multiple interpretations exist
 - Always prioritize clarity and maintainability over cleverness
 - Follow the established patterns and practices of the project
+
+Always output the summary of the changes made to /WORKLOG.md, including:
+- Root cause analysis
+- Impact of changes
+- New features added
+- Bugs fixed
+- Improvements made
+- Documentation updates
+- Any TODOs or follow-up tasks
+- Any potential issues or risks identified
+- Etc.

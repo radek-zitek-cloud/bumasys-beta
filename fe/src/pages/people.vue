@@ -480,7 +480,7 @@
     </v-dialog>
 
     <!-- Tree Structure Dialogs -->
-    <v-dialog v-model="showDepartmentTreeDialog" max-width="1200" persistent>
+    <v-dialog v-model="showDepartmentTreeDialog" persistent>
       <DepartmentTreeDialog
         v-if="selectedDepartment"
         :department="selectedDepartment"
@@ -488,7 +488,7 @@
       />
     </v-dialog>
 
-    <v-dialog v-model="showStaffTreeDialog" max-width="1200" persistent>
+    <v-dialog v-model="showStaffTreeDialog" persistent>
       <StaffTreeDialog
         v-if="selectedStaff"
         :staff="selectedStaff"
