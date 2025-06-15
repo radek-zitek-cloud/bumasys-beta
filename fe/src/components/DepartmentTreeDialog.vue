@@ -23,7 +23,7 @@
       </div>
 
       <div v-else>
-        <div id="department-tree-container" ref="treeContainer" class="tree-container"></div>
+        <div id="department-tree-container" ref="treeContainer" class="tree-container" />
       </div>
     </v-card-text>
     <v-card-actions>
@@ -38,17 +38,17 @@
 <script lang="ts" setup>
   import type { Department } from '../services/departments'
   import type { Staff } from '../services/staff'
-  import Raphael from 'raphael'; // Import Raphael and make it globally available
-  import TreantJS from 'treant-js';
-  
-  // Make Raphael available globally for Treant.js
-  (window as any).Raphael = Raphael;
-  
-  // Extract the Treant constructor from the module
-  const { Treant } = TreantJS as any;
+  import Raphael from 'raphael' // Import Raphael and make it globally available
+  import TreantJS from 'treant-js'
   import { nextTick, onMounted, ref } from 'vue'
   import * as departmentService from '../services/departments'
   import * as staffService from '../services/staff'
+
+  // Make Raphael available globally for Treant.js
+  (window as any).Raphael = Raphael
+
+  // Extract the Treant constructor from the module
+  const { Treant } = TreantJS as any
 
   /** Local type definitions for Treant.js */
   interface TreeConfig {
@@ -164,7 +164,7 @@
       }
 
       if (!treeContainer.value) {
-        throw new Error('Tree container not found');
+        throw new Error('Tree container not found')
       }
 
       // Configure Treant.js
@@ -191,7 +191,7 @@
       }
 
       // Create the tree using the destructured Treant constructor
-      new Treant(config);
+      new Treant(config)
     } catch (error_) {
       console.error('Error initializing department tree:', error_)
       error.value = error_ instanceof Error ? error_.message : 'Failed to load department structure'
