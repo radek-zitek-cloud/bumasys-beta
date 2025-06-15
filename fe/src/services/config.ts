@@ -1,5 +1,4 @@
-import { useAuthStore } from '../stores/auth'
-import { graphqlClient } from './graphql-client'
+import config from '../utils/config'
 
 /** BetterStack logging configuration interface */
 export interface BetterStackConfig {
@@ -12,7 +11,7 @@ export interface BetterStackConfig {
 export interface LoggingConfig {
   [key: string]: any
   level?: string
-  betterStack: BetterStackConfig
+  betterStack?: BetterStackConfig
 }
 
 /** New feature configuration interface */
@@ -27,56 +26,69 @@ export interface NewFeatureConfig {
 }
 
 /**
- * Backend configuration interface supporting dynamic fields.
+ * Frontend configuration interface supporting dynamic fields.
  * This interface defines the known structure but allows additional fields
  * to be present without code changes.
  */
 export interface Config {
   [key: string]: any
-  port: number
-  accessTokenExpiresIn: string
-  refreshTokenExpiresIn: string
-  dbFile: string
-  logging: LoggingConfig
+  app: {
+    name: string
+    version: string
+    theme: string
+  }
+  api: {
+    baseUrl: string
+    graphqlEndpoint: string
+    timeout: number
+  }
+  ui: {
+    theme: {
+      dark: boolean
+      primaryColor: string
+    }
+    pagination: {
+      defaultPageSize: number
+      pageSizeOptions: number[]
+    }
+    table: {
+      sortable: boolean
+      filterable: boolean
+    }
+  }
+  features: {
+    debugMode: boolean
+    showConfigCard: boolean
+    enableLogging: boolean
+  }
+  logging: {
+    level: string
+    console: {
+      enabled: boolean
+      pretty: boolean
+    }
+    betterStack?: {
+      enabled: boolean
+      sourceToken?: string
+      endpoint?: string
+    }
+  }
+  // Legacy fields for backward compatibility (can be removed in future versions)
+  port?: number
+  accessTokenExpiresIn?: string
+  refreshTokenExpiresIn?: string
+  dbFile?: string
   newFeature?: NewFeatureConfig
   customSetting?: string
 }
 
 /**
- * Fetch backend configuration from the server.
- * This returns the complete dynamic configuration without sensitive information.
- * Explicitly requests all known configuration fields for type safety.
+ * Get frontend configuration from local JSON files.
+ * This returns the complete dynamic configuration loaded from local files
+ * with environment variable overrides support.
  */
 export function getConfig (): Promise<{ config: Config }> {
-  const store = useAuthStore()
-  return graphqlClient<{ config: Config }>(
-    `
-      query {
-        config {
-          port
-          accessTokenExpiresIn
-          refreshTokenExpiresIn
-          dbFile
-          logging {
-            level
-            betterStack {
-              enabled
-              sourceToken
-              endpoint
-            }
-          }
-          newFeature {
-            enabled
-            options {
-              maxRetries
-              timeout
-            }
-          }
-          customSetting
-        }
-      }
-    `,
-    {},
-    store.token,
-  )
+  return Promise.resolve({
+    config: config as Config,
+  })
 }

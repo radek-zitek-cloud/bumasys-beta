@@ -142,9 +142,9 @@
   import PasswordResetCard from './components/PasswordResetCard.vue'
   import ProfileCard from './components/ProfileCard.vue'
   import RegisterCard from './components/RegisterCard.vue'
+  import { useLogger } from './composables/useLogger'
   import * as authApi from './services/auth'
   import { useAuthStore } from './stores/auth'
-  import { useLogger } from './composables/useLogger'
 
   /**
    * Interface for navigation items in the side drawer.
@@ -315,10 +315,10 @@
     note?: string
   }) {
     try {
-      logInfo('User attempting to register', { 
-        email: payload.email, 
+      logInfo('User attempting to register', {
+        email: payload.email,
         firstName: payload.firstName,
-        lastName: payload.lastName 
+        lastName: payload.lastName,
       })
       const { register } = await authApi.register(
         payload.email,
@@ -418,10 +418,10 @@
       return
     }
     try {
-      logInfo('User attempting profile update', { 
+      logInfo('User attempting profile update', {
         userId: auth.user.id,
         firstName: payload.firstName,
-        lastName: payload.lastName 
+        lastName: payload.lastName,
       })
       const { updateUser } = await authApi.updateUser(
         auth.user.id,

@@ -10,7 +10,7 @@
 
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
-import { logDebug, logInfo, logWarn, logError } from '../utils/logger'
+import { logDebug, logError, logInfo, logWarn } from '../utils/logger'
 
 /**
  * Centralized GraphQL client with automatic authentication handling.
@@ -37,16 +37,16 @@ export async function graphqlClient<T> (
   // Use provided token or get from store
   const authToken = token || authStore.token
 
-  logDebug('GraphQL request initiated', { 
+  logDebug('GraphQL request initiated', {
     hasAuthToken: !!authToken,
     hasVariables: !!variables,
-    queryType: query.trim().startsWith('mutation') ? 'mutation' : 'query'
+    queryType: query.trim().startsWith('mutation') ? 'mutation' : 'query',
   })
 
   // Perform the GraphQL request
   const performRequest = async (requestToken?: string): Promise<T> => {
     const startTime = Date.now()
-    
+
     try {
       const res = await fetch('/graphql', {
         method: 'POST',
@@ -60,16 +60,16 @@ export async function graphqlClient<T> (
       const json = await res.json()
       const duration = Date.now() - startTime
 
-      logDebug('GraphQL response received', { 
+      logDebug('GraphQL response received', {
         status: res.status,
         duration,
-        hasErrors: !!json.errors
+        hasErrors: !!json.errors,
       })
 
       if (json.errors) {
-        logWarn('GraphQL response contains errors', { 
+        logWarn('GraphQL response contains errors', {
           errors: json.errors,
-          duration 
+          duration,
         })
 
         // Check if error is authentication-related
@@ -105,7 +105,7 @@ export async function graphqlClient<T> (
       try {
         logInfo('Attempting token refresh after authentication error')
         await authStore.refreshAuth()
-        
+
         logInfo('Token refresh successful, retrying GraphQL request')
         // Retry with new token
         return await performRequest(authStore.token)

@@ -42,7 +42,7 @@
 
 // Utilities
 import { defineStore } from 'pinia'
-import { logInfo, logDebug, logError, logWarn } from '../utils/logger'
+import { logDebug, logError, logInfo, logWarn } from '../utils/logger'
 
 /** Authenticated user payload. */
 export interface User {
@@ -83,20 +83,20 @@ export const useAuthStore = defineStore('auth', {
      * @param payload - Authentication data from login/register response
      */
     setAuth (payload: { token: string, refreshToken: string, user: User }) {
-      logInfo('Setting authentication state', { 
-        userId: payload.user.id, 
-        email: payload.user.email 
+      logInfo('Setting authentication state', {
+        userId: payload.user.id,
+        email: payload.user.email,
       })
-      
+
       this.loggedIn = true
       this.token = payload.token
       this.refreshToken = payload.refreshToken
       this.user = payload.user
-      
+
       logDebug('Authentication state updated successfully', {
         hasToken: !!this.token,
         hasRefreshToken: !!this.refreshToken,
-        loggedIn: this.loggedIn
+        loggedIn: this.loggedIn,
       })
     },
 
@@ -108,17 +108,17 @@ export const useAuthStore = defineStore('auth', {
     clearAuth () {
       const wasLoggedIn = this.loggedIn
       const userId = this.user?.id
-      
-      logInfo('Clearing authentication state', { 
+
+      logInfo('Clearing authentication state', {
         wasLoggedIn,
-        userId
+        userId,
       })
-      
+
       this.loggedIn = false
       this.token = ''
       this.refreshToken = ''
       this.user = null
-      
+
       logDebug('Authentication state cleared successfully')
     },
 
@@ -135,7 +135,7 @@ export const useAuthStore = defineStore('auth', {
       }
 
       logDebug('Attempting to refresh authentication tokens')
-      
+
       try {
         // Direct fetch to avoid circular dependency with graphql-client
         const res = await fetch('/graphql', {
@@ -173,9 +173,9 @@ export const useAuthStore = defineStore('auth', {
         }
 
         logInfo('Token refresh successful', {
-          userId: json.data.refreshToken.user.id
+          userId: json.data.refreshToken.user.id,
         })
-        
+
         this.setAuth(json.data.refreshToken)
       } catch (error) {
         logError('Token refresh request failed', error)

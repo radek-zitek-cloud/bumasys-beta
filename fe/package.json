@@ -18,7 +18,9 @@
     "@fontsource/roboto": "5.2.5",
     "@logtail/pino": "^0.5.5",
     "@mdi/font": "7.4.47",
+    "@types/config": "^3.3.5",
     "@types/d3": "^7.4.3",
+    "config": "^4.0.0",
     "d3": "^7.9.0",
     "pinia-plugin-persistedstate": "^4.3.0",
     "pino": "^9.7.0",
@@ -26,6 +28,8 @@
     "vue": "^3.5.13",
     "vue3-d3-tree": "^1.0.2",
     "vuetify": "^3.8.1"
+    "vuetify": "^3.8.1",
+    "zod": "^3.25.64"
   },
   "devDependencies": {
     "@playwright/test": "^1.42.0",

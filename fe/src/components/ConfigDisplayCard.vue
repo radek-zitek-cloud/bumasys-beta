@@ -1,11 +1,11 @@
 <!--
-  @fileoverview Backend Configuration Display Card
+  @fileoverview Frontend Configuration Display Card
 
-  This component fetches and displays backend configuration in a readable JSON format.
-  Intended for debugging and administration purposes to inspect current backend settings.
+  This component displays frontend configuration loaded from local JSON files.
+  Intended for debugging and administration purposes to inspect current frontend settings.
 
   Features:
-  - Automatic configuration fetching on mount
+  - Automatic configuration loading from local JSON files
   - Pretty-printed JSON formatting with syntax highlighting
   - Loading and error state handling
   - Read-only display for security
@@ -17,14 +17,14 @@
   ```
 
   Security Note:
-  This component displays backend configuration which may contain sensitive
+  This component displays frontend configuration which may contain environment-specific
   information. Ensure proper access controls are in place before exposing
   this component to users.
 -->
 
 <template>
   <v-card width="600">
-    <v-card-title>Backend Configuration</v-card-title>
+    <v-card-title>Frontend Configuration</v-card-title>
     <v-card-text>
       <v-row>
         <v-col cols="12">
@@ -51,7 +51,7 @@
 /**
  * @fileoverview Config Display Card Script
  *
- * Handles fetching and formatting backend configuration data for display.
+ * Handles loading and formatting frontend configuration data for display.
  * Provides proper error handling and loading states for a smooth user experience.
  */
 
@@ -59,7 +59,7 @@
   import { computed, onMounted, ref } from 'vue'
   import { getConfig } from '../services/config'
 
-  /** Configuration data fetched from backend */
+  /** Configuration data loaded from local files */
   const config = ref<Config | null>(null)
 
   /** Loading state indicator */
@@ -108,7 +108,7 @@
       const response = await getConfig()
       config.value = response.config
     } catch (error_) {
-      console.error('Failed to fetch configuration:', error_)
+      console.error('Failed to load configuration:', error_)
       error.value = (error_ as Error).message || 'Unknown error occurred'
     } finally {
       loading.value = false
