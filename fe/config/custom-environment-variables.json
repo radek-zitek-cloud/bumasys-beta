@@ -14,6 +14,11 @@
     "showConfigCard": "FCRM_FE_SHOW_CONFIG_CARD"
   },
   "logging": {
-    "level": "FCRM_FE_LOG_LEVEL"
+    "level": "FCRM_FE_LOG_LEVEL",
+    "betterStack": {
+      "enabled": "FCRM_BETTER_STACK_ENABLED",
+      "sourceToken": "FCRM_BETTER_STACK_SOURCE_TOKEN"
+    }
+
   }
 }

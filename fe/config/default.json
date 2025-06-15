@@ -29,15 +29,15 @@
     "enableLogging": true
   },
   "logging": {
-    "level": "info",
+    "level": "debug",
     "console": {
       "enabled": true,
       "pretty": true
     },
     "betterStack": {
-      "enabled": false,
-      "sourceToken": "",
-      "endpoint": ""
+      "enabled": true,
+      "sourceToken": "token",
+      "endpoint": "s1349096.eu-nbg-2.betterstackdata.com"
     }
   }
 }

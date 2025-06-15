@@ -104,6 +104,33 @@ The logger configuration is automatically fetched from the backend and includes:
 
 Logging is initialized in `main.ts` before the Vue application mounts.
 
+## ⚙️ Environment Configuration
+
+The frontend application supports configuration via Vite environment variables. Copy `.env.example` to `.env.local` and adjust values as needed:
+
+### Available Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_API_BASE_URL` | `http://localhost:4000` | Backend API base URL |
+| `VITE_API_TIMEOUT` | `10000` | API request timeout in milliseconds |
+| `VITE_LOG_LEVEL` | `info` | Logging level (debug, info, warn, error) |
+| `VITE_LOGGING_ENABLED` | `true` | Enable/disable logging |
+| `VITE_BETTERSTACK_TOKEN` | - | BetterStack authentication token (optional) |
+| `VITE_BETTERSTACK_ENDPOINT` | `https://logs.betterstack.com` | BetterStack endpoint URL |
+| `VITE_BETTERSTACK_ENABLED` | `true` | Enable BetterStack logging (requires token) |
+| `VITE_DEBUG_MODE` | `false` | Enable debug mode features |
+
+### BetterStack Integration
+
+To enable BetterStack logging in the frontend:
+
+1. Set the `VITE_BETTERSTACK_TOKEN` environment variable
+2. Optionally configure the endpoint with `VITE_BETTERSTACK_ENDPOINT`
+3. The integration will be automatically enabled when a token is provided
+
+**Note**: BetterStack configuration is optional. If no token is provided, only local logging will be used.
+
 ## 💡 Usage
 
 This section covers how to start the development server and build your project for production.

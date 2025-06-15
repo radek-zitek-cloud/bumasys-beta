@@ -26,6 +26,11 @@ registerPlugins(app)
 
 // Initialize logger before mounting the app
 async function initializeApp () {
+  console.log('🚀 Bumasys Frontend - Starting Application Initialization...')
+  console.log('📊 Environment:', import.meta.env.MODE)
+  console.log('🔧 API Base URL:', import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000')
+  console.log('🔒 BetterStack Configured:', !!import.meta.env.VITE_BETTERSTACK_TOKEN)
+  
   try {
     logInfo('Starting application initialization...')
 
@@ -39,6 +44,7 @@ async function initializeApp () {
     // Mount the app regardless of logger initialization status
     app.mount('#app')
     logInfo('Vue application mounted')
+    console.log('✅ Vue application successfully mounted to #app')
   }
 }
 
