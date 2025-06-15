@@ -146,8 +146,16 @@
       // Build tree structure starting from the root
       const treeStructure = buildStaffTree(allStaff, rootStaff)
 
-      // Wait for DOM to update
+      // Wait for DOM to update and container to be available
       await nextTick()
+
+      // Wait for the container to be available with retry logic
+      let retries = 0
+      const maxRetries = 10
+      while (retries < maxRetries && !treeContainer.value) {
+        await new Promise(resolve => setTimeout(resolve, 50))
+        retries++
+      }
 
       if (!treeContainer.value) {
         throw new Error('Tree container not found')
