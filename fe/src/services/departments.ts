@@ -1,6 +1,6 @@
 /**
  * @fileoverview Department service for frontend GraphQL operations
- * 
+ *
  * This service provides all department-related API calls following the same
  * patterns as the users service. It handles department CRUD operations
  * through GraphQL queries and mutations.
@@ -41,7 +41,7 @@ export interface UpdateDepartmentInput {
  * Optionally filter by organization ID.
  * Requires authentication.
  */
-export function getDepartments(organizationId?: string): Promise<{ departments: Department[] }> {
+export function getDepartments (organizationId?: string): Promise<{ departments: Department[] }> {
   const store = useAuthStore()
   return graphqlClient<{ departments: Department[] }>(
     `
@@ -65,7 +65,7 @@ export function getDepartments(organizationId?: string): Promise<{ departments: 
  * Fetch a specific department by ID.
  * Requires authentication.
  */
-export function getDepartment(id: string): Promise<{ department: Department | null }> {
+export function getDepartment (id: string): Promise<{ department: Department | null }> {
   const store = useAuthStore()
   return graphqlClient<{ department: Department | null }>(
     `
@@ -89,7 +89,7 @@ export function getDepartment(id: string): Promise<{ department: Department | nu
  * Create a new department.
  * Requires authentication.
  */
-export function createDepartment(input: CreateDepartmentInput): Promise<{ createDepartment: Department }> {
+export function createDepartment (input: CreateDepartmentInput): Promise<{ createDepartment: Department }> {
   const store = useAuthStore()
   return graphqlClient<{ createDepartment: Department }>(
     `
@@ -123,7 +123,7 @@ export function createDepartment(input: CreateDepartmentInput): Promise<{ create
  * Update an existing department.
  * Requires authentication.
  */
-export function updateDepartment(input: UpdateDepartmentInput): Promise<{ updateDepartment: Department }> {
+export function updateDepartment (input: UpdateDepartmentInput): Promise<{ updateDepartment: Department }> {
   const store = useAuthStore()
   return graphqlClient<{ updateDepartment: Department }>(
     `
@@ -159,7 +159,7 @@ export function updateDepartment(input: UpdateDepartmentInput): Promise<{ update
  * Delete a department by ID.
  * Requires authentication.
  */
-export function deleteDepartment(id: string): Promise<{ deleteDepartment: boolean }> {
+export function deleteDepartment (id: string): Promise<{ deleteDepartment: boolean }> {
   const store = useAuthStore()
   return graphqlClient<{ deleteDepartment: boolean }>(
     `

@@ -1,6 +1,6 @@
 <!--
   @fileoverview Organization Management Page
-  
+
   This page provides a comprehensive interface for managing organizations,
   departments, and staff. It follows the design patterns established in
   the user management and reference data interfaces.
@@ -165,9 +165,9 @@
             <!-- Organization Column -->
             <template #item.organizationId="{ item }">
               <v-chip
+                color="primary"
                 size="small"
                 variant="tonal"
-                color="primary"
               >
                 {{ getOrganizationName(item.organizationId) }}
               </v-chip>
@@ -176,6 +176,15 @@
             <!-- Actions Column -->
             <template #item.actions="{ item }">
               <div class="d-flex gap-1">
+                <v-btn
+                  icon="mdi-eye"
+                  size="small"
+                  variant="text"
+                  @click="openDepartmentViewDialog(item)"
+                >
+                  <v-icon>mdi-eye</v-icon>
+                  <v-tooltip activator="parent" location="top">View Details</v-tooltip>
+                </v-btn>
                 <v-btn
                   icon="mdi-pencil"
                   size="small"
@@ -265,9 +274,9 @@
             <!-- Organization Column -->
             <template #item.organizationId="{ item }">
               <v-chip
+                color="primary"
                 size="small"
                 variant="tonal"
-                color="primary"
               >
                 {{ getOrganizationName(item.organizationId) }}
               </v-chip>
@@ -276,9 +285,9 @@
             <!-- Department Column -->
             <template #item.departmentId="{ item }">
               <v-chip
+                color="secondary"
                 size="small"
                 variant="tonal"
-                color="secondary"
               >
                 {{ getDepartmentName(item.departmentId) }}
               </v-chip>
@@ -287,6 +296,15 @@
             <!-- Actions Column -->
             <template #item.actions="{ item }">
               <div class="d-flex gap-1">
+                <v-btn
+                  icon="mdi-eye"
+                  size="small"
+                  variant="text"
+                  @click="openStaffViewDialog(item)"
+                >
+                  <v-icon>mdi-eye</v-icon>
+                  <v-tooltip activator="parent" location="top">View Details</v-tooltip>
+                </v-btn>
                 <v-btn
                   icon="mdi-pencil"
                   size="small"
@@ -350,8 +368,8 @@
     <!-- Department Dialogs -->
     <v-dialog v-model="showDepartmentCreateDialog" max-width="600" persistent>
       <DepartmentCreateDialog
-        :organizations="organizations"
         :departments="departments"
+        :organizations="organizations"
         @cancel="showDepartmentCreateDialog = false"
         @created="handleDepartmentCreated"
       />
@@ -368,6 +386,14 @@
       />
     </v-dialog>
 
+    <v-dialog v-model="showDepartmentViewDialog" max-width="600" persistent>
+      <DepartmentViewDialog
+        v-if="selectedDepartment"
+        :department="selectedDepartment"
+        @close="showDepartmentViewDialog = false"
+      />
+    </v-dialog>
+
     <v-dialog v-model="showDepartmentDeleteDialog" max-width="500" persistent>
       <DepartmentDeleteDialog
         v-if="selectedDepartment"
@@ -380,8 +406,8 @@
     <!-- Staff Dialogs -->
     <v-dialog v-model="showStaffCreateDialog" max-width="700" persistent>
       <StaffCreateDialog
-        :organizations="organizations"
         :departments="departments"
+        :organizations="organizations"
         :staff="staff"
         @cancel="showStaffCreateDialog = false"
         @created="handleStaffCreated"
@@ -391,12 +417,20 @@
     <v-dialog v-model="showStaffEditDialog" max-width="700" persistent>
       <StaffEditDialog
         v-if="selectedStaff"
-        :staff="selectedStaff"
-        :organizations="organizations"
+        :all-staff="staff"
         :departments="departments"
-        :allStaff="staff"
+        :organizations="organizations"
+        :staff="selectedStaff"
         @cancel="showStaffEditDialog = false"
         @updated="handleStaffUpdated"
+      />
+    </v-dialog>
+
+    <v-dialog v-model="showStaffViewDialog" max-width="600" persistent>
+      <StaffViewDialog
+        v-if="selectedStaff"
+        :staff="selectedStaff"
+        @close="showStaffViewDialog = false"
       />
     </v-dialog>
 
@@ -422,24 +456,26 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, onMounted, reactive, ref } from 'vue'
   import type { VDataTable } from 'vuetify/components'
+  import type { CreateDepartmentInput, Department, UpdateDepartmentInput } from '../services/departments'
+  import type { CreateOrganizationInput, Organization, UpdateOrganizationInput } from '../services/organizations'
+  import type { CreateStaffInput, Staff, UpdateStaffInput } from '../services/staff'
+  import { computed, onMounted, reactive, ref } from 'vue'
+  import DepartmentCreateDialog from '../components/DepartmentCreateDialog.vue'
+  import DepartmentDeleteDialog from '../components/DepartmentDeleteDialog.vue'
+  import DepartmentEditDialog from '../components/DepartmentEditDialog.vue'
+  import DepartmentViewDialog from '../components/DepartmentViewDialog.vue'
   import OrganizationCreateDialog from '../components/OrganizationCreateDialog.vue'
+  import OrganizationDeleteDialog from '../components/OrganizationDeleteDialog.vue'
   import OrganizationEditDialog from '../components/OrganizationEditDialog.vue'
   import OrganizationViewDialog from '../components/OrganizationViewDialog.vue'
-  import OrganizationDeleteDialog from '../components/OrganizationDeleteDialog.vue'
-  import DepartmentCreateDialog from '../components/DepartmentCreateDialog.vue'
-  import DepartmentEditDialog from '../components/DepartmentEditDialog.vue'
-  import DepartmentDeleteDialog from '../components/DepartmentDeleteDialog.vue'
   import StaffCreateDialog from '../components/StaffCreateDialog.vue'
-  import StaffEditDialog from '../components/StaffEditDialog.vue'
   import StaffDeleteDialog from '../components/StaffDeleteDialog.vue'
-  import * as organizationService from '../services/organizations'
+  import StaffEditDialog from '../components/StaffEditDialog.vue'
+  import StaffViewDialog from '../components/StaffViewDialog.vue'
   import * as departmentService from '../services/departments'
+  import * as organizationService from '../services/organizations'
   import * as staffService from '../services/staff'
-  import type { Organization, CreateOrganizationInput, UpdateOrganizationInput } from '../services/organizations'
-  import type { Department, CreateDepartmentInput, UpdateDepartmentInput } from '../services/departments'
-  import type { Staff, CreateStaffInput, UpdateStaffInput } from '../services/staff'
 
   /** Data table configuration */
   type DataTableHeaders = VDataTable['$props']['headers']
@@ -454,7 +490,7 @@
     { title: 'Name', key: 'name', sortable: true },
     { title: 'Organization', key: 'organizationId', sortable: true },
     { title: 'Description', key: 'description', sortable: true },
-    { title: 'Actions', key: 'actions', sortable: false, width: '120px' },
+    { title: 'Actions', key: 'actions', sortable: false, width: '150px' },
   ]
 
   const staffHeaders: DataTableHeaders = [
@@ -463,7 +499,7 @@
     { title: 'Role', key: 'role', sortable: true },
     { title: 'Organization', key: 'organizationId', sortable: true },
     { title: 'Department', key: 'departmentId', sortable: true },
-    { title: 'Actions', key: 'actions', sortable: false, width: '120px' },
+    { title: 'Actions', key: 'actions', sortable: false, width: '150px' },
   ]
 
   /** Reactive data */
@@ -491,9 +527,11 @@
   const showOrganizationDeleteDialog = ref(false)
   const showDepartmentCreateDialog = ref(false)
   const showDepartmentEditDialog = ref(false)
+  const showDepartmentViewDialog = ref(false)
   const showDepartmentDeleteDialog = ref(false)
   const showStaffCreateDialog = ref(false)
   const showStaffEditDialog = ref(false)
+  const showStaffViewDialog = ref(false)
   const showStaffDeleteDialog = ref(false)
 
   /** Data table configuration */
@@ -519,8 +557,8 @@
 
     const searchTerm = organizationSearch.value.toLowerCase()
     return organizations.value.filter(org =>
-      org.name.toLowerCase().includes(searchTerm) ||
-      (org.description && org.description.toLowerCase().includes(searchTerm))
+      org.name.toLowerCase().includes(searchTerm)
+      || (org.description && org.description.toLowerCase().includes(searchTerm)),
     )
   })
 
@@ -529,9 +567,9 @@
 
     const searchTerm = departmentSearch.value.toLowerCase()
     return departments.value.filter(dept =>
-      dept.name.toLowerCase().includes(searchTerm) ||
-      (dept.description && dept.description.toLowerCase().includes(searchTerm)) ||
-      getOrganizationName(dept.organizationId).toLowerCase().includes(searchTerm)
+      dept.name.toLowerCase().includes(searchTerm)
+      || (dept.description && dept.description.toLowerCase().includes(searchTerm))
+      || getOrganizationName(dept.organizationId).toLowerCase().includes(searchTerm),
     )
   })
 
@@ -540,53 +578,53 @@
 
     const searchTerm = staffSearch.value.toLowerCase()
     return staff.value.filter(member =>
-      member.firstName.toLowerCase().includes(searchTerm) ||
-      member.lastName.toLowerCase().includes(searchTerm) ||
-      member.email.toLowerCase().includes(searchTerm) ||
-      member.role.toLowerCase().includes(searchTerm) ||
-      getOrganizationName(member.organizationId).toLowerCase().includes(searchTerm) ||
-      getDepartmentName(member.departmentId).toLowerCase().includes(searchTerm)
+      member.firstName.toLowerCase().includes(searchTerm)
+      || member.lastName.toLowerCase().includes(searchTerm)
+      || member.email.toLowerCase().includes(searchTerm)
+      || member.role.toLowerCase().includes(searchTerm)
+      || getOrganizationName(member.organizationId).toLowerCase().includes(searchTerm)
+      || getDepartmentName(member.departmentId).toLowerCase().includes(searchTerm),
     )
   })
 
   /** Helper functions */
-  function getOrganizationName(id: string): string {
+  function getOrganizationName (id: string): string {
     const org = organizations.value.find(o => o.id === id)
     return org ? org.name : 'Unknown'
   }
 
-  function getDepartmentName(id: string): string {
+  function getDepartmentName (id: string): string {
     const dept = departments.value.find(d => d.id === id)
     return dept ? dept.name : 'Unknown'
   }
 
-  function showSnackbar(message: string, color: typeof snackbar.color = 'success') {
+  function showSnackbar (message: string, color: typeof snackbar.color = 'success') {
     snackbar.message = message
     snackbar.color = color
     snackbar.show = true
   }
 
   /** Organization dialog handlers */
-  function openOrganizationCreateDialog() {
+  function openOrganizationCreateDialog () {
     showOrganizationCreateDialog.value = true
   }
 
-  function openOrganizationEditDialog(organization: Organization) {
+  function openOrganizationEditDialog (organization: Organization) {
     selectedOrganization.value = organization
     showOrganizationEditDialog.value = true
   }
 
-  function openOrganizationViewDialog(organization: Organization) {
+  function openOrganizationViewDialog (organization: Organization) {
     selectedOrganization.value = organization
     showOrganizationViewDialog.value = true
   }
 
-  function openOrganizationDeleteDialog(organization: Organization) {
+  function openOrganizationDeleteDialog (organization: Organization) {
     selectedOrganization.value = organization
     showOrganizationDeleteDialog.value = true
   }
 
-  async function handleOrganizationCreated(organizationData: CreateOrganizationInput) {
+  async function handleOrganizationCreated (organizationData: CreateOrganizationInput) {
     try {
       const { createOrganization } = await organizationService.createOrganization(organizationData)
       organizations.value.push(createOrganization)
@@ -598,7 +636,7 @@
     }
   }
 
-  async function handleOrganizationUpdated(organizationData: UpdateOrganizationInput) {
+  async function handleOrganizationUpdated (organizationData: UpdateOrganizationInput) {
     try {
       const { updateOrganization } = await organizationService.updateOrganization(organizationData)
       const index = organizations.value.findIndex(org => org.id === updateOrganization.id)
@@ -613,7 +651,7 @@
     }
   }
 
-  async function handleOrganizationDeleted(organizationId: string) {
+  async function handleOrganizationDeleted (organizationId: string) {
     try {
       await organizationService.deleteOrganization(organizationId)
       const index = organizations.value.findIndex(org => org.id === organizationId)
@@ -629,21 +667,26 @@
   }
 
   /** Department dialog handlers */
-  function openDepartmentCreateDialog() {
+  function openDepartmentCreateDialog () {
     showDepartmentCreateDialog.value = true
   }
 
-  function openDepartmentEditDialog(department: Department) {
+  function openDepartmentEditDialog (department: Department) {
     selectedDepartment.value = department
     showDepartmentEditDialog.value = true
   }
 
-  function openDepartmentDeleteDialog(department: Department) {
+  function openDepartmentViewDialog (department: Department) {
+    selectedDepartment.value = department
+    showDepartmentViewDialog.value = true
+  }
+
+  function openDepartmentDeleteDialog (department: Department) {
     selectedDepartment.value = department
     showDepartmentDeleteDialog.value = true
   }
 
-  async function handleDepartmentCreated(departmentData: CreateDepartmentInput) {
+  async function handleDepartmentCreated (departmentData: CreateDepartmentInput) {
     try {
       const { createDepartment } = await departmentService.createDepartment(departmentData)
       departments.value.push(createDepartment)
@@ -655,7 +698,7 @@
     }
   }
 
-  async function handleDepartmentUpdated(departmentData: UpdateDepartmentInput) {
+  async function handleDepartmentUpdated (departmentData: UpdateDepartmentInput) {
     try {
       const { updateDepartment } = await departmentService.updateDepartment(departmentData)
       const index = departments.value.findIndex(dept => dept.id === updateDepartment.id)
@@ -670,7 +713,7 @@
     }
   }
 
-  async function handleDepartmentDeleted(departmentId: string) {
+  async function handleDepartmentDeleted (departmentId: string) {
     try {
       await departmentService.deleteDepartment(departmentId)
       const index = departments.value.findIndex(dept => dept.id === departmentId)
@@ -686,21 +729,26 @@
   }
 
   /** Staff dialog handlers */
-  function openStaffCreateDialog() {
+  function openStaffCreateDialog () {
     showStaffCreateDialog.value = true
   }
 
-  function openStaffEditDialog(staffMember: Staff) {
+  function openStaffEditDialog (staffMember: Staff) {
     selectedStaff.value = staffMember
     showStaffEditDialog.value = true
   }
 
-  function openStaffDeleteDialog(staffMember: Staff) {
+  function openStaffViewDialog (staffMember: Staff) {
+    selectedStaff.value = staffMember
+    showStaffViewDialog.value = true
+  }
+
+  function openStaffDeleteDialog (staffMember: Staff) {
     selectedStaff.value = staffMember
     showStaffDeleteDialog.value = true
   }
 
-  async function handleStaffCreated(staffData: CreateStaffInput) {
+  async function handleStaffCreated (staffData: CreateStaffInput) {
     try {
       const { createStaff } = await staffService.createStaff(staffData)
       staff.value.push(createStaff)
@@ -712,7 +760,7 @@
     }
   }
 
-  async function handleStaffUpdated(staffData: UpdateStaffInput) {
+  async function handleStaffUpdated (staffData: UpdateStaffInput) {
     try {
       const { updateStaff } = await staffService.updateStaff(staffData)
       const index = staff.value.findIndex(member => member.id === updateStaff.id)
@@ -727,7 +775,7 @@
     }
   }
 
-  async function handleStaffDeleted(staffId: string) {
+  async function handleStaffDeleted (staffId: string) {
     try {
       await staffService.deleteStaff(staffId)
       const index = staff.value.findIndex(member => member.id === staffId)
@@ -743,7 +791,7 @@
   }
 
   /** Load all data */
-  async function loadOrganizations() {
+  async function loadOrganizations () {
     try {
       organizationLoading.value = true
       const { organizations: data } = await organizationService.getOrganizations()
@@ -756,7 +804,7 @@
     }
   }
 
-  async function loadDepartments() {
+  async function loadDepartments () {
     try {
       departmentLoading.value = true
       const { departments: data } = await departmentService.getDepartments()
@@ -769,7 +817,7 @@
     }
   }
 
-  async function loadStaff() {
+  async function loadStaff () {
     try {
       staffLoading.value = true
       const { staff: data } = await staffService.getStaff()

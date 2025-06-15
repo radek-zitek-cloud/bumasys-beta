@@ -1,6 +1,6 @@
 <!--
   @fileoverview Organization Edit Dialog Component
-  
+
   This component provides a form interface for editing existing organizations.
   It follows the same design patterns as UserEditDialog.vue with proper
   validation and error handling.
@@ -51,8 +51,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref, watch } from 'vue'
   import type { Organization, UpdateOrganizationInput } from '../services/organizations'
+  import { reactive, ref, watch } from 'vue'
 
   /** Component props */
   const props = defineProps<{
@@ -89,20 +89,20 @@
   /** Watch for changes to the organization prop and update form */
   watch(
     () => props.organization,
-    (newOrganization) => {
+    newOrganization => {
       if (newOrganization) {
         form.name = newOrganization.name
         form.description = newOrganization.description || ''
       }
     },
-    { immediate: true }
+    { immediate: true },
   )
 
   /**
    * Handle form submission
    * Validates form data and emits updated event with organization data
    */
-  async function onSubmit() {
+  async function onSubmit () {
     // Validate required fields
     if (!form.name) {
       return

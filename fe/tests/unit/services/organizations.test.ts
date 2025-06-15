@@ -1,13 +1,13 @@
 /**
  * @fileoverview Unit tests for the organizations service
- * 
+ *
  * These tests verify the GraphQL integration and API calls for organization
  * management functionality, following the same patterns as existing service tests.
  */
 
+import type { CreateOrganizationInput, Organization, UpdateOrganizationInput } from '../../../src/services/organizations'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as organizationService from '../../../src/services/organizations'
-import type { Organization, CreateOrganizationInput, UpdateOrganizationInput } from '../../../src/services/organizations'
 
 // Mock the auth store
 vi.mock('../../../src/stores/auth', () => ({

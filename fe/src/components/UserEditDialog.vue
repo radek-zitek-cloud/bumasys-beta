@@ -7,12 +7,12 @@
           <v-col cols="12">
             <v-text-field
               v-model="form.email"
+              hint="Email cannot be changed as it is used for login"
               label="Email *"
+              persistent-hint
               prepend-icon="mdi-email"
               readonly
               type="email"
-              hint="Email cannot be changed as it is used for login"
-              persistent-hint
             />
           </v-col>
           <v-col cols="6">

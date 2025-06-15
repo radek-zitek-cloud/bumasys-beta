@@ -1,6 +1,6 @@
 <!--
   @fileoverview Department Delete Dialog Component
-  
+
   This component provides a confirmation dialog for deleting departments.
 -->
 
@@ -16,9 +16,9 @@
         <strong>{{ department.name }}</strong>?
       </p>
       <v-alert
+        class="mb-4"
         type="warning"
         variant="tonal"
-        class="mb-4"
       >
         <v-icon>mdi-alert</v-icon>
         <div>
@@ -50,8 +50,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue'
   import type { Department } from '../services/departments'
+  import { ref } from 'vue'
 
   /** Component props */
   const props = defineProps<{
@@ -71,7 +71,7 @@
    * Handle delete confirmation
    * Emits deleted event with department ID
    */
-  async function onConfirm() {
+  async function onConfirm () {
     processing.value = true
     try {
       // Emit the department ID to parent for actual API call

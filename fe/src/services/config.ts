@@ -26,7 +26,7 @@ export interface NewFeatureConfig {
   [key: string]: any // Allow additional feature config fields
 }
 
-/** 
+/**
  * Backend configuration interface supporting dynamic fields.
  * This interface defines the known structure but allows additional fields
  * to be present without code changes.
@@ -38,11 +38,11 @@ export interface Config {
   refreshTokenExpiresIn: string
   dbFile: string
   logging: LoggingConfig
-  
+
   // Dynamic fields that may be present
   newFeature?: NewFeatureConfig
   customSetting?: string
-  
+
   // Allow any additional dynamic fields
   [key: string]: any
 }

@@ -1,6 +1,6 @@
 <!--
   @fileoverview Organization Create Dialog Component
-  
+
   This component provides a form interface for creating new organizations.
   It follows the same design patterns as UserCreateDialog.vue with proper
   validation and error handling.
@@ -51,8 +51,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref } from 'vue'
   import type { CreateOrganizationInput } from '../services/organizations'
+  import { reactive, ref } from 'vue'
 
   /** Component events */
   const emit = defineEmits<{
@@ -85,7 +85,7 @@
    * Handle form submission
    * Validates form data and emits created event with organization data
    */
-  async function onSubmit() {
+  async function onSubmit () {
     // Validate required fields
     if (!form.name) {
       return

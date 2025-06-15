@@ -1,6 +1,6 @@
 <!--
   @fileoverview Department Create Dialog Component
-  
+
   This component provides a form interface for creating new departments.
   It includes dropdown selection for organization and parent department.
 -->
@@ -33,10 +33,10 @@
           <v-col cols="12">
             <v-select
               v-model="form.parentDepartmentId"
+              clearable
               :items="parentDepartmentOptions"
               label="Parent Department"
               prepend-icon="mdi-file-tree"
-              clearable
             />
           </v-col>
           <v-col cols="12">
@@ -69,10 +69,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, reactive, ref } from 'vue'
-  import type { CreateDepartmentInput } from '../services/departments'
+  import type { CreateDepartmentInput, Department } from '../services/departments'
   import type { Organization } from '../services/organizations'
-  import type { Department } from '../services/departments'
+  import { computed, reactive, ref } from 'vue'
 
   /** Component props */
   const props = defineProps<{
@@ -102,7 +101,7 @@
     props.organizations.map(org => ({
       title: org.name,
       value: org.id,
-    }))
+    })),
   )
 
   /** Parent department options filtered by selected organization */
@@ -137,7 +136,7 @@
    * Handle form submission
    * Validates form data and emits created event with department data
    */
-  async function onSubmit() {
+  async function onSubmit () {
     // Validate required fields
     if (!form.name || !form.organizationId) {
       return
@@ -150,7 +149,7 @@
       if (!departmentData.parentDepartmentId) {
         delete departmentData.parentDepartmentId
       }
-      
+
       // Emit the department data to parent for actual API call
       emit('created', departmentData)
     } finally {

@@ -1,6 +1,6 @@
 <!--
   @fileoverview Department Edit Dialog Component
-  
+
   This component provides a form interface for editing existing departments.
   It includes dropdown selection for organization and parent department.
 -->
@@ -23,19 +23,19 @@
           <v-col cols="12">
             <v-select
               v-model="form.parentDepartmentId"
+              clearable
               :items="parentDepartmentOptions"
               label="Parent Department"
               prepend-icon="mdi-file-tree"
-              clearable
             />
           </v-col>
           <v-col cols="12">
             <v-select
               v-model="form.managerId"
+              clearable
               :items="managerOptions"
               label="Manager"
               prepend-icon="mdi-account-supervisor"
-              clearable
             />
           </v-col>
           <v-col cols="12">
@@ -68,9 +68,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, reactive, ref, watch } from 'vue'
   import type { Department, UpdateDepartmentInput } from '../services/departments'
   import type { Staff } from '../services/staff'
+  import { computed, reactive, ref, watch } from 'vue'
 
   /** Component props */
   const props = defineProps<{
@@ -99,9 +99,9 @@
   /** Parent department options filtered by same organization, excluding self */
   const parentDepartmentOptions = computed(() => {
     return props.departments
-      .filter(dept => 
-        dept.organizationId === props.department.organizationId && 
-        dept.id !== props.department.id
+      .filter(dept =>
+        dept.organizationId === props.department.organizationId
+        && dept.id !== props.department.id,
       )
       .map(dept => ({
         title: dept.name,
@@ -134,7 +134,7 @@
   /** Watch for changes to the department prop and update form */
   watch(
     () => props.department,
-    (newDepartment) => {
+    newDepartment => {
       if (newDepartment) {
         form.name = newDepartment.name
         form.description = newDepartment.description || ''
@@ -142,14 +142,14 @@
         form.managerId = newDepartment.managerId || ''
       }
     },
-    { immediate: true }
+    { immediate: true },
   )
 
   /**
    * Handle form submission
    * Validates form data and emits updated event with department data
    */
-  async function onSubmit() {
+  async function onSubmit () {
     // Validate required fields
     if (!form.name) {
       return
@@ -165,7 +165,7 @@
       if (!departmentData.managerId) {
         delete departmentData.managerId
       }
-      
+
       // Emit the department data to parent for actual API call
       emit('updated', {
         id: props.department.id,

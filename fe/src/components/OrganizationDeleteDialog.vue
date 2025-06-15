@@ -1,6 +1,6 @@
 <!--
   @fileoverview Organization Delete Dialog Component
-  
+
   This component provides a confirmation dialog for deleting organizations.
   It follows the same design patterns as UserDeleteDialog.vue with proper
   warnings about the irreversible nature of the action.
@@ -18,9 +18,9 @@
         <strong>{{ organization.name }}</strong>?
       </p>
       <v-alert
+        class="mb-4"
         type="warning"
         variant="tonal"
-        class="mb-4"
       >
         <v-icon>mdi-alert</v-icon>
         <div>
@@ -52,8 +52,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue'
   import type { Organization } from '../services/organizations'
+  import { ref } from 'vue'
 
   /** Component props */
   const props = defineProps<{
@@ -73,7 +73,7 @@
    * Handle delete confirmation
    * Emits deleted event with organization ID
    */
-  async function onConfirm() {
+  async function onConfirm () {
     processing.value = true
     try {
       // Emit the organization ID to parent for actual API call
