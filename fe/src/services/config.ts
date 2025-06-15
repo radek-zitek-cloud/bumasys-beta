@@ -45,14 +45,35 @@ export interface Config {
 /**
  * Fetch backend configuration from the server.
  * This returns the complete dynamic configuration without sensitive information.
- * New configuration fields will be automatically available without code changes.
+ * Explicitly requests all known configuration fields for type safety.
  */
 export function getConfig (): Promise<{ config: Config }> {
   const store = useAuthStore()
   return graphqlClient<{ config: Config }>(
     `
       query {
-        config
+        config {
+          port
+          accessTokenExpiresIn
+          refreshTokenExpiresIn
+          dbFile
+          logging {
+            level
+            betterStack {
+              enabled
+              sourceToken
+              endpoint
+            }
+          }
+          newFeature {
+            enabled
+            options {
+              maxRetries
+              timeout
+            }
+          }
+          customSetting
+        }
       }
     `,
     {},
