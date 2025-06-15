@@ -108,8 +108,8 @@
   const managerDisplay = computed(() => {
     if (!props.department.managerId) return null
     const manager = props.staff.find(s => s.id === props.department.managerId)
-    return manager 
-      ? `${manager.firstName} ${manager.lastName} (ID: ${manager.id})` 
+    return manager
+      ? `${manager.firstName} ${manager.lastName} (ID: ${manager.id})`
       : `Unknown (ID: ${props.department.managerId})`
   })
 </script>

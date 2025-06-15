@@ -1,20 +1,20 @@
-import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { describe, expect, it, vi } from 'vitest'
 import DepartmentTreeDialog from '../../../src/components/DepartmentTreeDialog.vue'
 import StaffTreeDialog from '../../../src/components/StaffTreeDialog.vue'
 
 // Mock Treant.js since it's not available in test environment
 vi.mock('treant-js', () => ({
-  default: vi.fn().mockImplementation(() => ({}))
+  default: vi.fn().mockImplementation(() => ({})),
 }))
 
 // Mock the service modules
 vi.mock('../../../src/services/departments', () => ({
-  getDepartments: vi.fn().mockResolvedValue({ departments: [] })
+  getDepartments: vi.fn().mockResolvedValue({ departments: [] }),
 }))
 
 vi.mock('../../../src/services/staff', () => ({
-  getStaff: vi.fn().mockResolvedValue({ staff: [] })
+  getStaff: vi.fn().mockResolvedValue({ staff: [] }),
 }))
 
 describe('Tree Dialog Components', () => {
@@ -24,7 +24,7 @@ describe('Tree Dialog Components', () => {
     organizationId: 'org1',
     description: 'Test description',
     managerId: 'manager1',
-    parentDepartmentId: null
+    parentDepartmentId: null,
   }
 
   const mockStaff = {
@@ -35,14 +35,14 @@ describe('Tree Dialog Components', () => {
     email: 'john@example.com',
     role: 'Manager',
     supervisorId: null,
-    departmentId: 'dept1'
+    departmentId: 'dept1',
   }
 
   it('DepartmentTreeDialog renders without crashing', () => {
     const wrapper = mount(DepartmentTreeDialog, {
       props: {
-        department: mockDepartment
-      }
+        department: mockDepartment,
+      },
     })
 
     expect(wrapper.exists()).toBe(true)
@@ -52,8 +52,8 @@ describe('Tree Dialog Components', () => {
   it('StaffTreeDialog renders without crashing', () => {
     const wrapper = mount(StaffTreeDialog, {
       props: {
-        staff: mockStaff
-      }
+        staff: mockStaff,
+      },
     })
 
     expect(wrapper.exists()).toBe(true)
@@ -63,8 +63,8 @@ describe('Tree Dialog Components', () => {
   it('DepartmentTreeDialog shows loading state initially', () => {
     const wrapper = mount(DepartmentTreeDialog, {
       props: {
-        department: mockDepartment
-      }
+        department: mockDepartment,
+      },
     })
 
     expect(wrapper.text()).toContain('Loading department structure...')
@@ -73,8 +73,8 @@ describe('Tree Dialog Components', () => {
   it('StaffTreeDialog shows loading state initially', () => {
     const wrapper = mount(StaffTreeDialog, {
       props: {
-        staff: mockStaff
-      }
+        staff: mockStaff,
+      },
     })
 
     expect(wrapper.text()).toContain('Loading organization structure...')
