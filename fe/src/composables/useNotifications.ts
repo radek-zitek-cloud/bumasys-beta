@@ -99,7 +99,7 @@ interface Notification extends NotificationConfig {
   /** Whether notification is currently visible */
   visible: boolean
   /** Timeout handle for auto-dismiss */
-  timeoutHandle?: number
+  timeoutHandle?: ReturnType<typeof setTimeout>
 }
 
 /**
