@@ -19,8 +19,8 @@
  */
 
 import { useAuthStore } from '../stores/auth'
+import { logDebug, logError, logInfo } from '../utils/logger'
 import { graphqlClient } from './graphql-client'
-import { logInfo, logError, logDebug } from '../utils/logger'
 
 /** User interface matching the backend schema */
 export interface User {
@@ -58,7 +58,7 @@ export async function getUsers (): Promise<{ users: User[] }> {
   try {
     const store = useAuthStore()
     logDebug('Fetching all users')
-    
+
     const result = await graphqlClient<{ users: User[] }>(
       `
         query {
@@ -74,7 +74,7 @@ export async function getUsers (): Promise<{ users: User[] }> {
       {},
       store.token,
     )
-    
+
     logInfo('Users fetched successfully', { count: result.users.length })
     return result
   } catch (error) {
@@ -91,7 +91,7 @@ export async function getUser (id: string): Promise<{ user: User | null }> {
   try {
     const store = useAuthStore()
     logDebug('Fetching user by ID', { userId: id })
-    
+
     const result = await graphqlClient<{ user: User | null }>(
       `
         query ($id: ID!) {
@@ -107,10 +107,10 @@ export async function getUser (id: string): Promise<{ user: User | null }> {
       { id },
       store.token,
     )
-    
-    logInfo('User fetched successfully', { 
-      userId: id, 
-      found: !!result.user 
+
+    logInfo('User fetched successfully', {
+      userId: id,
+      found: !!result.user,
     })
     return result
   } catch (error) {

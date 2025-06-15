@@ -7,15 +7,15 @@
 // Composables
 import { createApp } from 'vue'
 
+// Logger
+import { initializeAppLogger } from '@/composables/useLogger'
+
 // Plugins
 import { registerPlugins } from '@/plugins'
 
+import { logInfo } from '@/utils/logger'
 // Components
 import App from './App.vue'
-
-// Logger
-import { initializeAppLogger } from '@/composables/useLogger'
-import { logInfo } from '@/utils/logger'
 
 // Styles
 import 'unfonts.css'
@@ -25,13 +25,13 @@ const app = createApp(App)
 registerPlugins(app)
 
 // Initialize logger before mounting the app
-async function initializeApp() {
+async function initializeApp () {
   try {
     logInfo('Starting application initialization...')
-    
+
     // Initialize logger with backend configuration
     await initializeAppLogger()
-    
+
     logInfo('Application initialization completed successfully')
   } catch (error) {
     console.warn('Logger initialization failed, continuing with fallback logger:', error)

@@ -1,20 +1,20 @@
 /**
  * @fileoverview Tests for Pino logger utility
- * 
+ *
  * This test file validates the frontend Pino logger implementation including
  * logger initialization, configuration, and logging methods.
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { 
-  initializeLogger, 
-  getLogger, 
-  logDebug, 
-  logInfo, 
-  logWarn, 
-  logError 
-} from '../../../src/utils/logger'
 import type { Config } from '../../../src/services/config'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  getLogger,
+  initializeLogger,
+  logDebug,
+  logError,
+  logInfo,
+  logWarn,
+} from '../../../src/utils/logger'
 
 // Mock pino to avoid actual logging during tests
 vi.mock('pino', () => ({
@@ -23,8 +23,8 @@ vi.mock('pino', () => ({
     info: vi.fn(),
     warn: vi.fn(),
     error: vi.fn(),
-    level: 'debug'
-  }))
+    level: 'debug',
+  })),
 }))
 
 describe('Logger utility', () => {
@@ -38,9 +38,9 @@ describe('Logger utility', () => {
       betterStack: {
         enabled: false,
         sourceToken: '',
-        endpoint: ''
-      }
-    }
+        endpoint: '',
+      },
+    },
   }
 
   beforeEach(() => {
@@ -72,7 +72,7 @@ describe('Logger utility', () => {
 
   it('should handle logging with data objects', () => {
     const testData = { userId: '123', action: 'test' }
-    
+
     expect(() => logInfo('test message with data', testData)).not.toThrow()
     expect(() => logError('test error with data', new Error('test error'))).not.toThrow()
   })
@@ -85,9 +85,9 @@ describe('Logger utility', () => {
         betterStack: {
           enabled: true,
           sourceToken: 'test-token',
-          endpoint: 'https://example.com'
-        }
-      }
+          endpoint: 'https://example.com',
+        },
+      },
     }
 
     const logger = initializeLogger(configWithBetterStack)

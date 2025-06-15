@@ -12,7 +12,7 @@ import { setupLayouts } from 'virtual:generated-layouts'
 import { createRouter, createWebHistory } from 'vue-router/auto'
 // eslint-disable-next-line import/no-duplicates
 import { routes } from 'vue-router/auto-routes'
-import { logInfo, logError, logWarn, logDebug } from '../utils/logger'
+import { logDebug, logError, logInfo, logWarn } from '../utils/logger'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,7 +24,7 @@ router.beforeEach((to, from, next) => {
   logDebug('Router navigation started', {
     from: from.path,
     to: to.path,
-    name: to.name
+    name: to.name,
   })
   next()
 })
@@ -33,7 +33,7 @@ router.afterEach((to, from) => {
   logInfo('Router navigation completed', {
     from: from.path,
     to: to.path,
-    name: to.name
+    name: to.name,
   })
 })
 

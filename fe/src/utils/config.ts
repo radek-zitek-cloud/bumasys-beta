@@ -1,5 +1,5 @@
-import configLib from 'config';
-import { z } from 'zod';
+import configLib from 'config'
+import { z } from 'zod'
 
 /**
  * Frontend configuration system that provides access to all JSON config values
@@ -37,66 +37,66 @@ import { z } from 'zod';
  * Theme configuration interface
  */
 export interface ThemeConfig {
-  dark: boolean;
-  primaryColor: string;
+  dark: boolean
+  primaryColor: string
 }
 
 /**
  * UI configuration interface
  */
 export interface UIConfig {
-  theme: ThemeConfig;
+  theme: ThemeConfig
   pagination: {
-    defaultPageSize: number;
-    pageSizeOptions: number[];
-  };
+    defaultPageSize: number
+    pageSizeOptions: number[]
+  }
   table: {
-    sortable: boolean;
-    filterable: boolean;
-  };
+    sortable: boolean
+    filterable: boolean
+  }
 }
 
 /**
  * API configuration interface
  */
 export interface APIConfig {
-  baseUrl: string;
-  graphqlEndpoint: string;
-  timeout: number;
+  baseUrl: string
+  graphqlEndpoint: string
+  timeout: number
 }
 
 /**
  * Features configuration interface
  */
 export interface FeaturesConfig {
-  debugMode: boolean;
-  showConfigCard: boolean;
-  enableLogging: boolean;
+  debugMode: boolean
+  showConfigCard: boolean
+  enableLogging: boolean
 }
 
 /**
  * Logging configuration interface
  */
 export interface LoggingConfig {
-  level: string;
+  level: string
   console: {
-    enabled: boolean;
-    pretty: boolean;
-  };
+    enabled: boolean
+    pretty: boolean
+  }
   betterStack?: {
-    enabled: boolean;
-    sourceToken?: string;
-    endpoint?: string;
-  };
+    enabled: boolean
+    sourceToken?: string
+    endpoint?: string
+  }
 }
 
 /**
  * App configuration interface
  */
 export interface AppConfig {
-  name: string;
-  version: string;
-  theme: string;
+  name: string
+  version: string
+  theme: string
 }
 
 /**
@@ -104,13 +104,13 @@ export interface AppConfig {
  * This interface can be extended as needed but is not exhaustive.
  */
 interface KnownConfig {
-  app: AppConfig;
-  api: APIConfig;
-  ui: UIConfig;
-  features: FeaturesConfig;
-  logging: LoggingConfig;
   // Allow dynamic access to any other configuration fields
-  [key: string]: any;
+  [key: string]: any
+  app: AppConfig
+  api: APIConfig
+  ui: UIConfig
+  features: FeaturesConfig
+  logging: LoggingConfig
 }
 
 /**
@@ -120,16 +120,16 @@ interface KnownConfig {
 const criticalFieldsSchema = z.object({
   // No critical fields requiring strict validation at this time
   // Frontend can operate with defaults if configuration is malformed
-});
+})
 
 /**
  * Validates critical fields and creates a dynamic configuration object
  * that provides access to all fields from the JSON configuration.
  */
-function loadConfig(): KnownConfig {
+function loadConfig (): KnownConfig {
   try {
     // Validate critical fields (currently none required)
-    const criticalFields = criticalFieldsSchema.parse({});
+    const criticalFields = criticalFieldsSchema.parse({})
 
     // Create a base configuration object with all known fields
     const baseConfig: any = {
@@ -149,7 +149,7 @@ function loadConfig(): KnownConfig {
         : {
             baseUrl: 'http://localhost:4000',
             graphqlEndpoint: '/graphql',
-            timeout: 10000,
+            timeout: 10_000,
           },
       ui: configLib.has('ui')
         ? configLib.get('ui')
@@ -188,76 +188,76 @@ function loadConfig(): KnownConfig {
               endpoint: '',
             },
           },
-    };
+    }
 
     // Create a proxy that allows dynamic access while maintaining the base object properties
     const dynamicConfig = new Proxy(baseConfig, {
-      get(target, prop: string | symbol) {
+      get (target, prop: string | symbol) {
         if (typeof prop === 'string') {
           // First check if the property exists in our base config
           if (prop in target) {
-            return target[prop];
+            return target[prop]
           }
           // Then check if it exists in the config library
           if (configLib.has(prop)) {
-            return configLib.get(prop);
+            return configLib.get(prop)
           }
         }
-        return target[prop as keyof typeof target];
+        return target[prop as keyof typeof target]
       },
 
-      set(target, prop: string | symbol, value: any) {
+      set (target, prop: string | symbol, _value: any) {
         // Configuration should be read-only
         console.warn(
           `Attempted to modify configuration property '${String(prop)}'. Configuration is read-only.`,
-        );
-        return false;
+        )
+        return false
       },
 
-      has(target, prop: string | symbol) {
+      has (target, prop: string | symbol) {
         if (typeof prop === 'string') {
-          return prop in target || configLib.has(prop);
+          return prop in target || configLib.has(prop)
         }
-        return prop in target;
+        return prop in target
       },
 
-      ownKeys(target) {
+      ownKeys (target) {
         // Get keys from base config and config library
-        const baseKeys = Object.keys(target);
+        const baseKeys = Object.keys(target)
         const configKeys = configLib.util
           .getConfigSources()
-          .flatMap((src) => Object.keys(src.parsed || {}));
-        return Array.from(new Set([...baseKeys, ...configKeys]));
+          .flatMap(src => Object.keys(src.parsed || {}))
+        return Array.from(new Set([...baseKeys, ...configKeys]))
       },
 
-      getOwnPropertyDescriptor(target, prop) {
+      getOwnPropertyDescriptor (target, prop) {
         if (typeof prop === 'string' && (prop in target || configLib.has(prop))) {
           return {
             enumerable: true,
             configurable: true, // Changed to true to avoid proxy errors
             writable: false,
-          };
+          }
         }
-        return Object.getOwnPropertyDescriptor(target, prop);
+        return Object.getOwnPropertyDescriptor(target, prop)
       },
-    });
+    })
 
-    return dynamicConfig;
+    return dynamicConfig
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.error('Critical frontend configuration validation failed:', error.errors);
+      console.error('Critical frontend configuration validation failed:', error.errors)
       throw new Error(
         'Invalid critical frontend configuration: ' + JSON.stringify(error.errors),
-      );
+      )
     } else if (error instanceof Error) {
       console.error(
         'Failed to load frontend configuration:',
         error.message,
-      );
-      throw error;
+      )
+      throw error
     } else {
-      console.error('Unknown error loading frontend configuration:', error);
-      throw new Error('Unknown configuration error');
+      console.error('Unknown error loading frontend configuration:', error)
+      throw new Error('Unknown configuration error')
     }
   }
 }
@@ -274,10 +274,10 @@ function loadConfig(): KnownConfig {
  * config.newField              // dynamic access to any new field
  * config.nested.custom.field   // dynamic access to nested fields
  */
-const config: KnownConfig = loadConfig();
+const config: KnownConfig = loadConfig()
 
 if (process.env.NODE_ENV) {
-  console.info(`Loaded frontend configuration for environment: ${process.env.NODE_ENV}`);
+  console.info(`Loaded frontend configuration for environment: ${process.env.NODE_ENV}`)
 }
 
-export default config;
+export default config
