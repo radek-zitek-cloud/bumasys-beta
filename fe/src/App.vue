@@ -11,7 +11,7 @@
             ? 'mdi-weather-night'
             : 'mdi-weather-sunny'
           " slim @click="toggleTheme" />
-        <v-menu>
+        <v-menu location="bottom end" offset="8">
           <template #activator="{ props }">
             <v-btn v-bind="props" icon="mdi-dots-vertical" />
           </template>
@@ -105,15 +105,15 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTheme } from 'vuetify'
-import AppFooter from './components/AppFooter.vue'
-import ChangePasswordCard from './components/ChangePasswordCard.vue'
-import ConfigDisplayCard from './components/ConfigDisplayCard.vue'
-import DebugInfoCard from './components/DebugInfoCard.vue'
-import LoginCard from './components/LoginCard.vue'
-import LogoutCard from './components/LogoutCard.vue'
-import PasswordResetCard from './components/PasswordResetCard.vue'
-import ProfileCard from './components/ProfileCard.vue'
-import RegisterCard from './components/RegisterCard.vue'
+import AppFooter from './components/common/AppFooter.vue'
+import ChangePasswordCard from './components/auth/ChangePasswordCard.vue'
+import ConfigDisplayCard from './components/debug/ConfigDisplayCard.vue'
+import DebugInfoCard from './components/debug/DebugInfoCard.vue'
+import LoginCard from './components/auth/LoginCard.vue'
+import LogoutCard from './components/auth/LogoutCard.vue'
+import PasswordResetCard from './components/auth/PasswordResetCard.vue'
+import ProfileCard from './components/auth/ProfileCard.vue'
+import RegisterCard from './components/auth/RegisterCard.vue'
 import { useLogger } from './composables/useLogger'
 import * as authApi from './services/auth'
 import { useAuthStore } from './stores/auth'
@@ -414,8 +414,8 @@ async function handleProfile(payload: {
 </script>
 
 <style>
-/* Global fix for Vuetify dialog centering issues */
-.v-overlay__content {
+/* Global fix for Vuetify dialog centering issues - only for dialogs, not menus */
+.v-dialog .v-overlay__content {
   /* Ensure dialogs are properly centered horizontally */
   left: 50% !important;
   transform: translateX(-50%) translateY(-50%) !important;
@@ -423,8 +423,8 @@ async function handleProfile(payload: {
   position: fixed !important;
 }
 
-/* Alternative approach - ensure the overlay container uses full viewport */
-.v-overlay__scrim {
+/* Alternative approach - ensure the overlay container uses full viewport for dialogs */
+.v-dialog .v-overlay__scrim {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;

@@ -399,16 +399,6 @@
 
   import type { CreateTaskInput, Task, UpdateTaskInput } from '../services/tasks'
   import { computed, onMounted, ref } from 'vue'
-  // Import dialog components
-  import ProjectCreateDialog from '../components/ProjectCreateDialog.vue'
-  import ProjectDeleteDialog from '../components/ProjectDeleteDialog.vue'
-  import ProjectEditDialog from '../components/ProjectEditDialog.vue'
-  import ProjectViewDialog from '../components/ProjectViewDialog.vue'
-  import TaskCreateDialog from '../components/TaskCreateDialog.vue'
-  import TaskDeleteDialog from '../components/TaskDeleteDialog.vue'
-
-  import TaskEditDialog from '../components/TaskEditDialog.vue'
-  import TaskViewDialog from '../components/TaskViewDialog.vue'
   import { createProject, deleteProject, getProjects, updateProject } from '../services/projects'
   import { createTask, deleteTask, getTasks, updateTask } from '../services/tasks'
 

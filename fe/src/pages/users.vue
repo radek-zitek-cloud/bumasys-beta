@@ -169,10 +169,6 @@
   import type { VDataTable } from 'vuetify/components'
   import type { CreateUserInput, UpdateUserInput, User } from '../services/users'
   import { computed, onMounted, reactive, ref } from 'vue'
-  import UserCreateDialog from '../components/UserCreateDialog.vue'
-  import UserDeleteDialog from '../components/UserDeleteDialog.vue'
-  import UserEditDialog from '../components/UserEditDialog.vue'
-  import UserViewDialog from '../components/UserViewDialog.vue'
   import * as userService from '../services/users'
 
   /** Data table configuration */

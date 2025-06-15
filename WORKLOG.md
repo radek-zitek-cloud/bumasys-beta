@@ -404,3 +404,107 @@ Successfully fixed all frontend test failures and established a robust testing f
 3. **Priority 3**: Implement plugin configuration testing
 4. **Priority 4**: Set up E2E testing framework for user workflows
 5. **Priority 5**: Establish coverage thresholds and CI/CD integration
+
+### 2025-06-15 - Menu Positioning Fix
+
+#### Root Cause Analysis:
+**Three Dots Menu Positioning Issue**: 
+- The v-menu component in App.vue was opening in the center of the screen instead of below the three dots icon
+- Issue caused by overly broad CSS selectors (`.v-overlay__content`) that applied dialog-specific positioning rules to all overlay content
+- Vuetify 3 uses the same overlay system for both dialogs and menus, but they require different positioning strategies
+- Missing `location` attribute on v-menu component prevented proper anchor positioning
+
+#### Impact of Changes:
+- **UI/UX**: Three dots menu now properly opens below and aligned to the right of the activator icon
+- **Code Quality**: More specific CSS selectors prevent interference between dialog and menu positioning
+- **User Experience**: Improved navigation usability with properly positioned dropdown menu
+
+#### Bugs Fixed:
+- **Menu Positioning**: Fixed three dots menu opening in screen center instead of below icon
+- **CSS Specificity**: Resolved overly broad overlay CSS affecting menu positioning
+
+#### Improvements Made:
+- **Enhanced v-menu Configuration**: Added `location="bottom end"` and `offset="8"` for proper positioning
+- **Improved CSS Specificity**: Changed `.v-overlay__content` to `.v-dialog .v-overlay__content` to target only dialogs
+- **Better Component Separation**: Ensured menu and dialog overlays have independent positioning logic
+
+#### Technical Details:
+- Updated v-menu in App.vue with proper location and offset attributes
+- Refined CSS selectors to prevent dialog positioning rules from affecting menus
+- Maintained existing dialog centering functionality while fixing menu positioning
+
+### 2025-01-19 - Frontend Architecture Refactor and UI Improvements
+
+#### Root Cause Analysis:
+1. **Frontend Component Organization Issues**:
+   - Flat component structure with 53+ components in `/fe/src/components/` making navigation difficult
+   - Poor discoverability and maintainability for new team members
+   - No logical grouping based on domain boundaries or feature areas
+   - Monolithic approach conflicting with domain-driven design principles
+
+2. **App Bar Three Dots Menu Positioning**:
+   - `v-menu` component not properly positioned relative to trigger button
+   - Missing `location` and `offset` properties causing menu to appear in unexpected positions
+   - CSS overlay centering rules inadvertently affecting menu positioning
+
+#### Impact of Changes:
+- **Frontend Architecture**: Completely reorganized component structure into domain-based folders for improved maintainability
+- **Developer Experience**: Enhanced discoverability with clear domain boundaries and comprehensive documentation
+- **Build Process**: Maintained auto-import functionality and verified all compilation processes work correctly
+- **UI/UX**: Fixed three dots menu positioning for better user experience
+
+#### New Features Added:
+- **Domain-Based Component Architecture:**
+  - `common/` - Shared UI components (AppBar, AppFooter, ConfirmDialog, etc.)
+  - `auth/` - Authentication-related components (LoginForm, etc.)
+  - `organization/` - Organization management components (dialogs, forms)
+  - `teams/` - Team management components (dialogs, lists)
+  - `projects/` - Project and task management components
+  - `references/` - Reference data management components
+  - `users/` - User management components
+  - `debug/` - Development and debugging utilities
+
+- **Comprehensive Documentation System:**
+  - Main `/fe/src/components/README.md` with architecture overview
+  - Individual README.md files for each domain folder explaining purpose and components
+  - Clear guidelines for component placement and organization
+
+#### Bugs Fixed:
+- Three dots menu positioning in app bar (added `location="bottom end"` and `offset="8"`)
+- CSS overlay centering affecting menus (updated to target only dialogs)
+- Import path issues after component reorganization (updated all relative imports)
+- Type error in `UserCreateDialog.vue` form data initialization
+- Auto-import functionality maintained across all moved components
+
+#### Improvements Made:
+- **Code Organization**: Migrated from flat to domain-based folder structure
+- **Import Management**: Removed manual component imports in favor of auto-imports
+- **Path Resolution**: Updated all relative import paths to match new folder depth
+- **Type Safety**: Fixed type errors and ensured TypeScript compilation success
+- **Build Verification**: Confirmed all build processes work correctly after refactor
+
+#### Documentation Updates:
+- Created comprehensive component architecture documentation
+- Added domain-specific README files with component inventories
+- Updated main components README with folder structure and guidelines
+- Documented component placement rules and best practices
+
+#### Follow-up Tasks:
+- Monitor application performance after refactor
+- Consider adding component-level unit tests for critical components
+- Evaluate potential for further domain boundary refinements
+- Update team onboarding documentation to reflect new structure
+
+#### Technical Details:
+- **Components Moved**: 53+ components reorganized into 8 domain folders
+- **Files Updated**: 15+ page files updated to use auto-imports
+- **Import Paths Fixed**: 20+ component files with updated relative imports
+- **Build Status**: ✅ Type-check passed, ✅ Build completed successfully, ✅ Dev server running
+- **Verification**: Manual testing confirmed all dialogs and menus work correctly
+
+#### Architecture Benefits:
+- **Scalability**: New components can be easily placed in appropriate domains
+- **Maintainability**: Clear separation of concerns and logical grouping
+- **Team Collaboration**: Reduced conflicts through better organization
+- **Code Discovery**: Faster navigation and understanding for new developers
+- **Domain Alignment**: Component structure matches business domain boundaries

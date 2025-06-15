@@ -310,20 +310,6 @@
   import type { CreatePriorityInput, Priority, UpdatePriorityInput } from '../services/priority'
   import type { CreateStatusInput, Status, UpdateStatusInput } from '../services/status'
   import { computed, onMounted, reactive, ref } from 'vue'
-  // Complexity imports
-  import ComplexityCreateDialog from '../components/ComplexityCreateDialog.vue'
-  import ComplexityDeleteDialog from '../components/ComplexityDeleteDialog.vue'
-
-  import ComplexityEditDialog from '../components/ComplexityEditDialog.vue'
-  // Priority imports
-  import PriorityCreateDialog from '../components/PriorityCreateDialog.vue'
-  import PriorityDeleteDialog from '../components/PriorityDeleteDialog.vue'
-  import PriorityEditDialog from '../components/PriorityEditDialog.vue'
-  // Status imports
-  import StatusCreateDialog from '../components/StatusCreateDialog.vue'
-
-  import StatusDeleteDialog from '../components/StatusDeleteDialog.vue'
-  import StatusEditDialog from '../components/StatusEditDialog.vue'
   import * as complexityService from '../services/complexity'
   import * as priorityService from '../services/priority'
   import * as statusService from '../services/status'
