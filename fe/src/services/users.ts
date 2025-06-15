@@ -1,3 +1,23 @@
+/**
+ * @fileoverview Users service for frontend GraphQL operations
+ *
+ * This service provides all user-related API calls for user management operations.
+ * It handles user CRUD operations through GraphQL queries and mutations with
+ * proper authentication and error handling.
+ *
+ * Features:
+ * - Complete CRUD operations for users
+ * - Type-safe interfaces for all operations
+ * - Automatic authentication token handling
+ * - Consistent error handling patterns
+ *
+ * TODO: Add user avatar upload functionality
+ * TODO: Implement user role management
+ * TODO: Add user search and filtering capabilities
+ * TODO: Implement user batch operations
+ * TODO: Add user activity logging
+ */
+
 import { useAuthStore } from '../stores/auth'
 import { graphqlClient } from './graphql-client'
 

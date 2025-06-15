@@ -1,3 +1,26 @@
+<!--
+  @fileoverview Debug Information Dialog Component
+
+  This component displays debug information about the current authentication state.
+  Intended for development and troubleshooting purposes. Shows user details,
+  tokens, and login status in a read-only format.
+
+  Usage:
+  ```vue
+  <DebugInfoCard @close="handleClose" />
+  ```
+
+  Features:
+  - Displays current user information
+  - Shows authentication tokens (for debugging)
+  - Read-only interface for security
+  - Responsive layout compatible with mobile devices
+  
+  Security Note:
+  This component displays sensitive authentication tokens and should only be
+  accessible to authenticated users in development environments.
+-->
+
 <template>
   <v-card width="600">
     <v-card-title>Debug Information</v-card-title>
@@ -79,14 +102,28 @@
 </template>
 
 <script setup lang="ts">
-  import { useAuthStore } from '../stores/auth'
+/**
+ * @fileoverview Debug Info Card Script
+ * 
+ * This script handles the debug information display functionality.
+ * It provides access to the authentication store for displaying current
+ * user state and authentication tokens.
+ */
 
-  /** Authentication store to access debug information. */
-  const auth = useAuthStore()
+import { useAuthStore } from '../stores/auth'
 
-  /** Define component events */
-  defineEmits<{
-    /** Emitted when the dialog should be closed */
-    (e: 'close'): void
-  }>()
+/** 
+ * Authentication store to access debug information.
+ * Provides access to current user data, tokens, and login status.
+ */
+const auth = useAuthStore()
+
+/** 
+ * Define component events.
+ * @event close - Emitted when the dialog should be closed
+ */
+defineEmits<{
+  /** Emitted when the dialog should be closed */
+  (e: 'close'): void
+}>()
 </script>
