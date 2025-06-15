@@ -6,11 +6,11 @@ import path from 'path';
 
 // Clean environment before each test
 function cleanEnv() {
-  delete process.env.PORT;
-  delete process.env.JWT_SECRET;
-  delete process.env.DB_FILE;
-  delete process.env.BETTER_STACK_ENABLED;
-  delete process.env.BETTER_STACK_SOURCE_TOKEN;
+  delete process.env.FCRM_PORT;
+  delete process.env.FCRM_JWT_SECRET;
+  delete process.env.FCRM_DB_FILE;
+  delete process.env.FCRM_BETTER_STACK_ENABLED;
+  delete process.env.FCRM_BETTER_STACK_SOURCE_TOKEN;
 }
 
 describe('Dynamic Configuration', () => {
@@ -24,8 +24,8 @@ describe('Dynamic Configuration', () => {
   });
 
   test('can access logging.level field from JSON config', () => {
-    process.env.JWT_SECRET = 'testsecret1234567890';
-    process.env.DB_FILE = path.join(__dirname, 'test-db.json');
+    process.env.FCRM_JWT_SECRET = 'testsecret1234567890';
+    process.env.FCRM_DB_FILE = path.join(__dirname, 'test-db.json');
 
     const config = require('../src/utils/config').default;
 
@@ -36,8 +36,8 @@ describe('Dynamic Configuration', () => {
   });
 
   test('demonstrates the core issue solution: adding config without code changes', () => {
-    process.env.JWT_SECRET = 'testsecret1234567890';
-    process.env.DB_FILE = path.join(__dirname, 'test-db.json');
+    process.env.FCRM_JWT_SECRET = 'testsecret1234567890';
+    process.env.FCRM_DB_FILE = path.join(__dirname, 'test-db.json');
 
     const config = require('../src/utils/config').default;
 
@@ -57,8 +57,8 @@ describe('Dynamic Configuration', () => {
   });
 
   test('can access any new field added to JSON without code changes', () => {
-    process.env.JWT_SECRET = 'testsecret1234567890';
-    process.env.DB_FILE = path.join(__dirname, 'test-db.json');
+    process.env.FCRM_JWT_SECRET = 'testsecret1234567890';
+    process.env.FCRM_DB_FILE = path.join(__dirname, 'test-db.json');
 
     // This test demonstrates that any field in the JSON config can be accessed
     // Let's test with fields that might exist in default.json
@@ -72,8 +72,8 @@ describe('Dynamic Configuration', () => {
   });
 
   test('maintains critical field validation', () => {
-    process.env.JWT_SECRET = 'short'; // Too short, should fail validation
-    process.env.DB_FILE = path.join(__dirname, 'test-db.json');
+    process.env.FCRM_JWT_SECRET = 'short'; // Too short, should fail validation
+    process.env.FCRM_DB_FILE = path.join(__dirname, 'test-db.json');
 
     expect(() => {
       require('../src/utils/config').default;
@@ -81,8 +81,8 @@ describe('Dynamic Configuration', () => {
   });
 
   test('supports assignment for test purposes', () => {
-    process.env.JWT_SECRET = 'testsecret1234567890';
-    process.env.DB_FILE = path.join(__dirname, 'test-db.json');
+    process.env.FCRM_JWT_SECRET = 'testsecret1234567890';
+    process.env.FCRM_DB_FILE = path.join(__dirname, 'test-db.json');
 
     const config = require('../src/utils/config').default;
 
