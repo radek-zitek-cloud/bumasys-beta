@@ -15,7 +15,7 @@
   - Shows authentication tokens (for debugging)
   - Read-only interface for security
   - Responsive layout compatible with mobile devices
-  
+
   Security Note:
   This component displays sensitive authentication tokens and should only be
   accessible to authenticated users in development environments.
@@ -104,26 +104,26 @@
 <script setup lang="ts">
 /**
  * @fileoverview Debug Info Card Script
- * 
+ *
  * This script handles the debug information display functionality.
  * It provides access to the authentication store for displaying current
  * user state and authentication tokens.
  */
 
-import { useAuthStore } from '../stores/auth'
+  import { useAuthStore } from '../stores/auth'
 
-/** 
- * Authentication store to access debug information.
- * Provides access to current user data, tokens, and login status.
- */
-const auth = useAuthStore()
+  /**
+   * Authentication store to access debug information.
+   * Provides access to current user data, tokens, and login status.
+   */
+  const auth = useAuthStore()
 
-/** 
- * Define component events.
- * @event close - Emitted when the dialog should be closed
- */
-defineEmits<{
-  /** Emitted when the dialog should be closed */
-  (e: 'close'): void
-}>()
+  /**
+   * Define component events.
+   * @event close - Emitted when the dialog should be closed
+   */
+  defineEmits<{
+    /** Emitted when the dialog should be closed */
+    (e: 'close'): void
+  }>()
 </script>

@@ -54,72 +54,72 @@
 <script setup lang="ts">
 /**
  * @fileoverview App Footer Script
- * 
+ *
  * Handles footer functionality including backend health checking,
  * user authentication display, and external link management.
  */
 
-import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref } from 'vue'
-import { useAuthStore } from '../stores/auth'
+  import { storeToRefs } from 'pinia'
+  import { computed, onMounted, ref } from 'vue'
+  import { useAuthStore } from '../stores/auth'
 
-/**
- * External links configuration for footer social/reference links.
- * Each item contains title, icon, and href for external navigation.
- */
-const items = [
-  {
-    title: 'Vuetify Documentation',
-    icon: `$vuetify`,
-    href: 'https://vuetifyjs.com/',
-  },
-]
+  /**
+   * External links configuration for footer social/reference links.
+   * Each item contains title, icon, and href for external navigation.
+   */
+  const items = [
+    {
+      title: 'Vuetify Documentation',
+      icon: `$vuetify`,
+      href: 'https://vuetifyjs.com/',
+    },
+  ]
 
-/** 
- * Backend readiness indicator.
- * - null: initial state (checking)
- * - true: backend is responding
- * - false: backend is offline or error occurred
- */
-const ready = ref<boolean | null>(null)
+  /**
+   * Backend readiness indicator.
+   * - null: initial state (checking)
+   * - true: backend is responding
+   * - false: backend is offline or error occurred
+   */
+  const ready = ref<boolean | null>(null)
 
-/** Authentication store for accessing user details */
-const auth = useAuthStore()
-const { user } = storeToRefs(auth)
+  /** Authentication store for accessing user details */
+  const auth = useAuthStore()
+  const { user } = storeToRefs(auth)
 
-/** 
- * Computed user summary for display in footer.
- * Shows user's full name and email if authenticated.
- * Falls back to email only if no name is available.
- * Returns empty string if not authenticated.
- */
-const userSummary = computed(() => {
-  if (!user.value) return ''
-  const name = [user.value.firstName, user.value.lastName]
-    .filter(Boolean)
-    .join(' ')
-    .trim()
-  return name ? `${name} (${user.value.email})` : user.value.email
-})
+  /**
+   * Computed user summary for display in footer.
+   * Shows user's full name and email if authenticated.
+   * Falls back to email only if no name is available.
+   * Returns empty string if not authenticated.
+   */
+  const userSummary = computed(() => {
+    if (!user.value) return ''
+    const name = [user.value.firstName, user.value.lastName]
+      .filter(Boolean)
+      .join(' ')
+      .trim()
+    return name ? `${name} (${user.value.email})` : user.value.email
+  })
 
-/**
- * Query the backend health endpoint and update the readiness state.
- * Called on component mount to check initial backend connectivity.
- * Uses the GraphQL health query to verify backend availability.
- */
-onMounted(async () => {
-  try {
-    const res = await fetch('/graphql', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: 'query{ health }' }),
-    })
-    const json = await res.json()
-    ready.value = json?.data?.health === true
-  } catch {
-    ready.value = false
-  }
-})
+  /**
+   * Query the backend health endpoint and update the readiness state.
+   * Called on component mount to check initial backend connectivity.
+   * Uses the GraphQL health query to verify backend availability.
+   */
+  onMounted(async () => {
+    try {
+      const res = await fetch('/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: 'query{ health }' }),
+      })
+      const json = await res.json()
+      ready.value = json?.data?.health === true
+    } catch {
+      ready.value = false
+    }
+  })
 </script>
 
 <style scoped lang="sass">

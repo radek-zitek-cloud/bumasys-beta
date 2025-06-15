@@ -35,6 +35,75 @@ After completing the installation, your environment is ready for Vuetify develop
 
 These features are curated to provide a seamless development experience from setup to deployment, ensuring that your Vuetify application is both powerful and maintainable.
 
+## 📋 Logging
+
+This application uses [Pino](https://getpino.io/) for structured logging throughout the frontend application.
+
+### Logger Configuration
+
+The logger is automatically configured during application startup by fetching configuration from the backend GraphQL API. The logger supports:
+
+- **Development Mode**: Human-readable console output with colors
+- **Production Mode**: Structured JSON logs with optional BetterStack integration
+- **Dynamic Log Levels**: Configurable via backend configuration (debug, info, warn, error)
+
+### Usage in Components
+
+Use the `useLogger` composable in Vue components:
+
+```typescript
+import { useLogger } from '@/composables/useLogger'
+
+export default {
+  setup() {
+    const { logInfo, logError, logWarn, logDebug } = useLogger()
+    
+    const handleAction = async () => {
+      try {
+        logInfo('Starting important action', { userId: '123' })
+        // ... action logic
+        logInfo('Action completed successfully')
+      } catch (error) {
+        logError('Action failed', error)
+      }
+    }
+    
+    return { handleAction }
+  }
+}
+```
+
+### Usage in Services
+
+Import logging functions directly in services and utilities:
+
+```typescript
+import { logInfo, logError, logDebug } from '@/utils/logger'
+
+export async function fetchData() {
+  try {
+    logDebug('Fetching data from API')
+    const response = await api.getData()
+    logInfo('Data fetched successfully', { count: response.length })
+    return response
+  } catch (error) {
+    logError('Failed to fetch data', error)
+    throw error
+  }
+}
+```
+
+### Configuration
+
+The logger configuration is automatically fetched from the backend and includes:
+
+- `logging.level`: Global log level (debug, info, warn, error)
+- `logging.betterStack.enabled`: Whether to send logs to BetterStack
+- `logging.betterStack.sourceToken`: Authentication token for BetterStack
+- `logging.betterStack.endpoint`: BetterStack endpoint URL
+
+Logging is initialized in `main.ts` before the Vue application mounts.
+
 ## 💡 Usage
 
 This section covers how to start the development server and build your project for production.

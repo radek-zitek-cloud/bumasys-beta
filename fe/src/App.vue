@@ -113,14 +113,14 @@
 <script lang="ts" setup>
 /**
  * @fileoverview Main Application Component
- * 
+ *
  * This is the root component that provides the main application layout including:
  * - Top navigation bar with theme toggle and user menu
  * - Side navigation drawer with main navigation items
  * - Main content area with router-view
  * - Authentication dialogs and notifications
  * - Footer component
- * 
+ *
  * TODO: Consider extracting authentication logic into a composable
  * TODO: Add error boundary component for better error handling
  * TODO: Implement loading states for authentication operations
@@ -130,112 +130,115 @@
  * TODO: Implement proper toast/notification management system
  */
 
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useTheme } from 'vuetify'
-import AppFooter from './components/AppFooter.vue'
-import ChangePasswordCard from './components/ChangePasswordCard.vue'
-import ConfigDisplayCard from './components/ConfigDisplayCard.vue'
-import DebugInfoCard from './components/DebugInfoCard.vue'
-import LoginCard from './components/LoginCard.vue'
-import LogoutCard from './components/LogoutCard.vue'
-import PasswordResetCard from './components/PasswordResetCard.vue'
-import ProfileCard from './components/ProfileCard.vue'
-import RegisterCard from './components/RegisterCard.vue'
-import * as authApi from './services/auth'
-import { useAuthStore } from './stores/auth'
+  import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useTheme } from 'vuetify'
+  import AppFooter from './components/AppFooter.vue'
+  import ChangePasswordCard from './components/ChangePasswordCard.vue'
+  import ConfigDisplayCard from './components/ConfigDisplayCard.vue'
+  import DebugInfoCard from './components/DebugInfoCard.vue'
+  import LoginCard from './components/LoginCard.vue'
+  import LogoutCard from './components/LogoutCard.vue'
+  import PasswordResetCard from './components/PasswordResetCard.vue'
+  import ProfileCard from './components/ProfileCard.vue'
+  import RegisterCard from './components/RegisterCard.vue'
+  import * as authApi from './services/auth'
+  import { useAuthStore } from './stores/auth'
+  import { useLogger } from './composables/useLogger'
 
-/**
- * Interface for navigation items in the side drawer.
- * Supports both regular navigation items and separators.
- */
-interface NavigationItem {
-  /** Material Design icon name */
-  icon?: string
-  /** Display title for the navigation item */
-  title?: string
-  /** Subtitle/description shown below title */
-  subtitle?: string
-  /** Router path for navigation */
-  to?: string
-  /** Whether this is a separator (visual divider) */
-  separator?: boolean
-}
-
-const router = useRouter()
-const snackbar = ref(false)
-const snackbarMessage = ref('')
-const snackbarColor = ref<'success' | 'error'>('success')
-
-/**
- * Display a notification message to the user.
- * @param message - The message to display
- * @param success - Whether this is a success (true) or error (false) message
- */
-function notify (message: string, success = true) {
-  snackbarMessage.value = message
-  snackbarColor.value = success ? 'success' : 'error'
-  snackbar.value = true
-}
-
-/**
- * Reactive state for the navigation drawer.
- */
-const drawer = ref(true)
-
-/** Authentication store controlling login state. */
-const auth = useAuthStore()
-
-/** Dialog visibility flags for each action. */
-const showLogin = ref(false)
-const showRegister = ref(false)
-const showReset = ref(false)
-const showChange = ref(false)
-const showLogout = ref(false)
-const showProfile = ref(false)
-const showDebugInfo = ref(false)
-const showConfig = ref(false)
-
-/**
- * Access Vuetify's theme instance so we can switch between light and dark
- * modes.
- */
-const vuetifyTheme = useTheme()
-
-/**
- * Toggle between light and dark themes.
- */
-function toggleTheme () {
-  vuetifyTheme.global.name.value = vuetifyTheme.global.current.value.dark
-    ? 'light'
-    : 'dark'
-}
-
-/**
- * Determine if a navigation item should be disabled based on authentication state.
- * Home is always enabled, all other items require authentication.
- * @param item - The navigation item to check
- * @returns true if the item should be disabled
- */
-function isNavigationItemDisabled (item: NavigationItem): boolean {
-  // Skip separator items (they don't have disable property)
-  if (item.separator) {
-    return false
+  /**
+   * Interface for navigation items in the side drawer.
+   * Supports both regular navigation items and separators.
+   */
+  interface NavigationItem {
+    /** Material Design icon name */
+    icon?: string
+    /** Display title for the navigation item */
+    title?: string
+    /** Subtitle/description shown below title */
+    subtitle?: string
+    /** Router path for navigation */
+    to?: string
+    /** Whether this is a separator (visual divider) */
+    separator?: boolean
   }
-  // Home is always enabled
-  if (item.title === 'Home' || item.to === '/') {
-    return false
-  }
-  // All other items require authentication
-  return !auth.loggedIn
-}
 
-/**
- * Navigation drawer items.
- * Each entry has a Material Design icon, a title, and a short description
- * shown as the subtitle. Separators are represented with `separator: true`.
- */
-const navigationItems: NavigationItem[] = [
+  const router = useRouter()
+  const { logInfo, logError, logWarn } = useLogger()
+  const snackbar = ref(false)
+  const snackbarMessage = ref('')
+  const snackbarColor = ref<'success' | 'error'>('success')
+
+  /**
+   * Display a notification message to the user.
+   * @param message - The message to display
+   * @param success - Whether this is a success (true) or error (false) message
+   */
+  function notify (message: string, success = true) {
+    logInfo('Showing notification to user', { message, success })
+    snackbarMessage.value = message
+    snackbarColor.value = success ? 'success' : 'error'
+    snackbar.value = true
+  }
+
+  /**
+   * Reactive state for the navigation drawer.
+   */
+  const drawer = ref(true)
+
+  /** Authentication store controlling login state. */
+  const auth = useAuthStore()
+
+  /** Dialog visibility flags for each action. */
+  const showLogin = ref(false)
+  const showRegister = ref(false)
+  const showReset = ref(false)
+  const showChange = ref(false)
+  const showLogout = ref(false)
+  const showProfile = ref(false)
+  const showDebugInfo = ref(false)
+  const showConfig = ref(false)
+
+  /**
+   * Access Vuetify's theme instance so we can switch between light and dark
+   * modes.
+   */
+  const vuetifyTheme = useTheme()
+
+  /**
+   * Toggle between light and dark themes.
+   */
+  function toggleTheme () {
+    vuetifyTheme.global.name.value = vuetifyTheme.global.current.value.dark
+      ? 'light'
+      : 'dark'
+  }
+
+  /**
+   * Determine if a navigation item should be disabled based on authentication state.
+   * Home is always enabled, all other items require authentication.
+   * @param item - The navigation item to check
+   * @returns true if the item should be disabled
+   */
+  function isNavigationItemDisabled (item: NavigationItem): boolean {
+    // Skip separator items (they don't have disable property)
+    if (item.separator) {
+      return false
+    }
+    // Home is always enabled
+    if (item.title === 'Home' || item.to === '/') {
+      return false
+    }
+    // All other items require authentication
+    return !auth.loggedIn
+  }
+
+  /**
+   * Navigation drawer items.
+   * Each entry has a Material Design icon, a title, and a short description
+   * shown as the subtitle. Separators are represented with `separator: true`.
+   */
+  const navigationItems: NavigationItem[] = [
     { icon: 'mdi-home', title: 'Home', subtitle: 'Return to home page', to: '/' },
     { separator: true },
     {
@@ -284,13 +287,15 @@ const navigationItems: NavigationItem[] = [
    */
   async function handleLogin (payload: { email: string, password: string }) {
     try {
+      logInfo('User attempting to login', { email: payload.email })
       const { login } = await authApi.login(payload.email, payload.password)
       auth.setAuth(login)
       notify('Login successful')
+      logInfo('User login completed successfully', { userId: login.user.id })
       // Navigate to home page after successful login
       router.push('/')
     } catch (error) {
-      console.error(error)
+      logError('User login failed', error)
       notify((error as Error).message, false)
     } finally {
       showLogin.value = false
@@ -310,6 +315,11 @@ const navigationItems: NavigationItem[] = [
     note?: string
   }) {
     try {
+      logInfo('User attempting to register', { 
+        email: payload.email, 
+        firstName: payload.firstName,
+        lastName: payload.lastName 
+      })
       const { register } = await authApi.register(
         payload.email,
         payload.password,
@@ -319,10 +329,11 @@ const navigationItems: NavigationItem[] = [
       )
       auth.setAuth(register)
       notify('Registration successful')
+      logInfo('User registration completed successfully', { userId: register.user.id })
       // Navigate to home page after successful registration
       router.push('/')
     } catch (error) {
-      console.error(error)
+      logError('User registration failed', error)
       notify((error as Error).message, false)
     } finally {
       showRegister.value = false
@@ -336,10 +347,12 @@ const navigationItems: NavigationItem[] = [
    */
   async function handleReset (email: string) {
     try {
+      logInfo('User requesting password reset', { email })
       await authApi.resetPassword(email)
       notify('Password reset email sent')
+      logInfo('Password reset email sent successfully', { email })
     } catch (error) {
-      console.error(error)
+      logError('Password reset request failed', error)
       notify((error as Error).message, false)
     } finally {
       showReset.value = false
@@ -356,10 +369,12 @@ const navigationItems: NavigationItem[] = [
     newPassword: string
   }) {
     try {
+      logInfo('User attempting password change')
       await authApi.changePassword(payload.oldPassword, payload.newPassword)
       notify('Password changed')
+      logInfo('User password change completed successfully')
     } catch (error) {
-      console.error(error)
+      logError('User password change failed', error)
       notify((error as Error).message, false)
     } finally {
       showChange.value = false
@@ -373,10 +388,12 @@ const navigationItems: NavigationItem[] = [
    */
   async function handleLogout () {
     try {
+      logInfo('User attempting logout')
       if (auth.refreshToken) await authApi.logout(auth.refreshToken)
       notify('Logged out')
+      logInfo('User logout completed successfully')
     } catch (error) {
-      console.error(error)
+      logWarn('Logout request failed, but continuing with local logout', error)
       notify((error as Error).message, false)
     } finally {
       auth.clearAuth()
@@ -396,8 +413,16 @@ const navigationItems: NavigationItem[] = [
     lastName: string
     note: string
   }) {
-    if (!auth.user) return
+    if (!auth.user) {
+      logWarn('Profile update attempted but no authenticated user found')
+      return
+    }
     try {
+      logInfo('User attempting profile update', { 
+        userId: auth.user.id,
+        firstName: payload.firstName,
+        lastName: payload.lastName 
+      })
       const { updateUser } = await authApi.updateUser(
         auth.user.id,
         payload.firstName,
@@ -406,8 +431,9 @@ const navigationItems: NavigationItem[] = [
       )
       auth.user = updateUser
       notify('Profile updated')
+      logInfo('User profile update completed successfully', { userId: updateUser.id })
     } catch (error) {
-      console.error(error)
+      logError('User profile update failed', error)
       notify((error as Error).message, false)
     } finally {
       showProfile.value = false

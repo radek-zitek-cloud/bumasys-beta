@@ -45,11 +45,11 @@
 <script lang="ts" setup>
 /**
  * @fileoverview Home Page Script
- * 
+ *
  * Minimal script setup for the home page. Currently contains no reactive
  * logic as the page is static, but provides the foundation for future
  * enhancements such as user-specific welcome messages or dashboard widgets.
- * 
+ *
  * TODO: Add personalized welcome message for authenticated users
  * TODO: Consider adding quick action buttons for common tasks
  * TODO: Add application statistics or recent activity summary

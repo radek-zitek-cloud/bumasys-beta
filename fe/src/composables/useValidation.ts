@@ -1,10 +1,10 @@
 /**
  * @fileoverview Form Validation Composable
- * 
+ *
  * This composable provides reusable form validation logic that can be used
  * across all forms in the application. It includes common validation rules,
  * custom validation support, and reactive validation state management.
- * 
+ *
  * Features:
  * - Pre-defined validation rules for common fields
  * - Custom validation rule support
@@ -12,24 +12,24 @@
  * - Consistent error messaging
  * - Form-wide validation status
  * - Async validation support
- * 
+ *
  * Usage:
  * ```typescript
- * const { 
- *   validateRequired, 
- *   validateEmail, 
+ * const {
+ *   validateRequired,
+ *   validateEmail,
  *   validateMinLength,
  *   createValidator,
- *   useFormValidation 
+ *   useFormValidation
  * } = useValidation()
- * 
+ *
  * // Use in component
  * const { errors, isValid, validate, clearErrors } = useFormValidation({
  *   email: [validateRequired, validateEmail],
  *   password: [validateRequired, validateMinLength(8)]
  * })
  * ```
- * 
+ *
  * TODO: Add debounced validation for real-time feedback
  * TODO: Implement field-level validation state
  * TODO: Add internationalization support for error messages
@@ -37,7 +37,7 @@
  * TODO: Add async validation for server-side checks
  */
 
-import { ref, computed, reactive, readonly } from 'vue'
+import { computed, reactive, readonly, ref } from 'vue'
 
 /**
  * Validation rule function type
@@ -61,7 +61,7 @@ export type ValidationErrors<T extends Record<string, any>> = {
 /**
  * Common validation rule creators and form validation utilities
  */
-export function useValidation() {
+export function useValidation () {
   /**
    * Required field validation
    * @param message - Custom error message
@@ -89,7 +89,9 @@ export function useValidation() {
    */
   const validateEmail = (message = 'Please enter a valid email address'): ValidationRule<string> => {
     return (value: string) => {
-      if (!value) return true // Let required handle empty values
+      if (!value) {
+        return true
+      } // Let required handle empty values
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       return emailRegex.test(value) || message
     }
@@ -104,7 +106,9 @@ export function useValidation() {
   const validateMinLength = (minLength: number, message?: string): ValidationRule<string> => {
     const defaultMessage = `Must be at least ${minLength} characters long`
     return (value: string) => {
-      if (!value) return true // Let required handle empty values
+      if (!value) {
+        return true
+      } // Let required handle empty values
       return value.length >= minLength || (message || defaultMessage)
     }
   }
@@ -118,7 +122,9 @@ export function useValidation() {
   const validateMaxLength = (maxLength: number, message?: string): ValidationRule<string> => {
     const defaultMessage = `Must be no more than ${maxLength} characters long`
     return (value: string) => {
-      if (!value) return true
+      if (!value) {
+        return true
+      }
       return value.length <= maxLength || (message || defaultMessage)
     }
   }
@@ -131,7 +137,9 @@ export function useValidation() {
    */
   const validatePattern = (pattern: RegExp, message = 'Invalid format'): ValidationRule<string> => {
     return (value: string) => {
-      if (!value) return true
+      if (!value) {
+        return true
+      }
       return pattern.test(value) || message
     }
   }
@@ -143,8 +151,10 @@ export function useValidation() {
    */
   const validateNumeric = (message = 'Must be a valid number'): ValidationRule<string | number> => {
     return (value: string | number) => {
-      if (!value && value !== 0) return true
-      const numValue = typeof value === 'string' ? parseFloat(value) : value
+      if (!value && value !== 0) {
+        return true
+      }
+      const numValue = typeof value === 'string' ? Number.parseFloat(value) : value
       return !isNaN(numValue) || message
     }
   }
@@ -159,7 +169,9 @@ export function useValidation() {
   const validateRange = (min: number, max: number, message?: string): ValidationRule<number> => {
     const defaultMessage = `Must be between ${min} and ${max}`
     return (value: number) => {
-      if (value === null || value === undefined) return true
+      if (value === null || value === undefined) {
+        return true
+      }
       return (value >= min && value <= max) || (message || defaultMessage)
     }
   }
@@ -172,7 +184,7 @@ export function useValidation() {
    */
   const createValidator = <T>(
     validatorFn: (value: T) => boolean,
-    message: string
+    message: string,
   ): ValidationRule<T> => {
     return (value: T) => validatorFn(value) || message
   }
@@ -182,7 +194,7 @@ export function useValidation() {
    * @param rules - Validation rules for form fields
    * @returns Validation state and methods
    */
-  function useFormValidation<T extends Record<string, any>>(rules: ValidationRules<T>) {
+  function useFormValidation<T extends Record<string, any>> (rules: ValidationRules<T>) {
     const errors = reactive<ValidationErrors<T>>({})
     const isValidating = ref(false)
 
@@ -190,8 +202,8 @@ export function useValidation() {
      * Computed property indicating if the form is valid (no errors)
      */
     const isValid = computed(() => {
-      return Object.values(errors).every(fieldErrors => 
-        !fieldErrors || fieldErrors.length === 0
+      return Object.values(errors).every(fieldErrors =>
+        !fieldErrors || fieldErrors.length === 0,
       )
     })
 
@@ -222,12 +234,12 @@ export function useValidation() {
      */
     const validate = async (data: T): Promise<boolean> => {
       isValidating.value = true
-      
+
       try {
         // Clear previous errors
-        Object.keys(errors).forEach(key => {
+        for (const key of Object.keys(errors)) {
           delete (errors as any)[key]
-        })
+        }
 
         // Validate each field
         for (const [fieldName, value] of Object.entries(data)) {
@@ -251,7 +263,7 @@ export function useValidation() {
      */
     const validateSingleField = (fieldName: keyof T, value: any): boolean => {
       const fieldErrors = validateField(fieldName, value)
-      
+
       if (fieldErrors.length > 0) {
         (errors as any)[fieldName] = fieldErrors
         return false
@@ -265,9 +277,9 @@ export function useValidation() {
      * Clear all validation errors
      */
     const clearErrors = () => {
-      Object.keys(errors).forEach(key => {
+      for (const key of Object.keys(errors)) {
         delete (errors as any)[key]
-      })
+      }
     }
 
     /**
@@ -320,7 +332,7 @@ export function useValidation() {
     validateNumeric,
     validateRange,
     createValidator,
-    
+
     // Form validation composable
     useFormValidation,
   }
