@@ -173,6 +173,19 @@
               </v-chip>
             </template>
 
+            <!-- Manager Column -->
+            <template #item.managerId="{ item }">
+              <v-chip
+                v-if="item.managerId"
+                color="secondary"
+                size="small"
+                variant="tonal"
+              >
+                {{ getStaffName(item.managerId) }}
+              </v-chip>
+              <span v-else class="text-caption text-medium-emphasis">No manager</span>
+            </template>
+
             <!-- Actions Column -->
             <template #item.actions="{ item }">
               <div class="d-flex gap-1">
@@ -408,6 +421,8 @@
       <DepartmentViewDialog
         v-if="selectedDepartment"
         :department="selectedDepartment"
+        :organizations="organizations"
+        :staff="staff"
         @close="showDepartmentViewDialog = false"
       />
     </v-dialog>
@@ -526,6 +541,7 @@
   const departmentHeaders: DataTableHeaders = [
     { title: 'Name', key: 'name', sortable: true },
     { title: 'Organization', key: 'organizationId', sortable: true },
+    { title: 'Manager', key: 'managerId', sortable: true },
     { title: 'Description', key: 'description', sortable: true },
     { title: 'Actions', key: 'actions', sortable: false, width: '200px' },
   ]
@@ -635,6 +651,11 @@
   function getDepartmentName (id: string): string {
     const dept = departments.value.find(d => d.id === id)
     return dept ? dept.name : 'Unknown'
+  }
+
+  function getStaffName (id: string): string {
+    const staffMember = staff.value.find(s => s.id === id)
+    return staffMember ? `${staffMember.firstName} ${staffMember.lastName}` : 'Unknown'
   }
 
   function showSnackbar (message: string, color: typeof snackbar.color = 'success') {

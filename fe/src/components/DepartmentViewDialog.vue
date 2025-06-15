@@ -44,8 +44,8 @@
         </v-col>
         <v-col cols="12">
           <v-text-field
-            label="Organization ID"
-            :model-value="department.organizationId"
+            label="Organization"
+            :model-value="organizationDisplay"
             prepend-icon="mdi-office-building"
             readonly
             variant="outlined"
@@ -60,10 +60,10 @@
             variant="outlined"
           />
         </v-col>
-        <v-col v-if="department.managerId" cols="6">
+        <v-col v-if="managerDisplay" cols="6">
           <v-text-field
-            label="Manager ID"
-            :model-value="department.managerId"
+            label="Manager"
+            :model-value="managerDisplay"
             prepend-icon="mdi-account-supervisor"
             readonly
             variant="outlined"
@@ -82,14 +82,34 @@
 
 <script lang="ts" setup>
   import type { Department } from '../services/departments'
+  import type { Organization } from '../services/organizations'
+  import type { Staff } from '../services/staff'
+  import { computed } from 'vue'
 
   /** Component props */
-  const _props = defineProps<{
+  const props = defineProps<{
     department: Department
+    organizations: Organization[]
+    staff: Staff[]
   }>()
 
   /** Component events */
   const emit = defineEmits<{
     close: []
   }>()
+
+  /** Get organization display name with ID */
+  const organizationDisplay = computed(() => {
+    const org = props.organizations.find(o => o.id === props.department.organizationId)
+    return org ? `${org.name} (ID: ${org.id})` : `Unknown (ID: ${props.department.organizationId})`
+  })
+
+  /** Get manager display name with ID */
+  const managerDisplay = computed(() => {
+    if (!props.department.managerId) return null
+    const manager = props.staff.find(s => s.id === props.department.managerId)
+    return manager 
+      ? `${manager.firstName} ${manager.lastName} (ID: ${manager.id})` 
+      : `Unknown (ID: ${props.department.managerId})`
+  })
 </script>
