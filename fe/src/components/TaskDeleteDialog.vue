@@ -14,10 +14,10 @@
     </v-card-title>
     <v-card-text>
       <v-alert
+        class="mb-4"
         color="error"
         icon="mdi-alert-circle"
         variant="tonal"
-        class="mb-4"
       >
         <div class="text-h6">Warning</div>
         <div>This action cannot be undone. The task and all its data will be permanently deleted.</div>
@@ -26,18 +26,18 @@
       <div class="text-body-1 mb-3">
         Are you sure you want to delete the following task?
       </div>
-      
-      <v-card variant="outlined" class="mb-4">
+
+      <v-card class="mb-4" variant="outlined">
         <v-card-text>
           <div class="d-flex align-center mb-2">
             <v-icon class="mr-2" color="primary">mdi-clipboard-text-outline</v-icon>
             <span class="text-h6">{{ task.name }}</span>
           </div>
-          
+
           <div v-if="task.description" class="text-body-2 text-medium-emphasis mb-2">
             {{ task.description }}
           </div>
-          
+
           <div class="d-flex flex-wrap gap-2">
             <v-chip
               v-if="task.project"
@@ -48,7 +48,7 @@
               <v-icon start>mdi-clipboard-outline</v-icon>
               {{ task.project.name }}
             </v-chip>
-            
+
             <v-chip
               v-if="task.status"
               color="info"
@@ -58,7 +58,7 @@
               <v-icon start>mdi-flag</v-icon>
               {{ task.status.name }}
             </v-chip>
-            
+
             <v-chip
               v-if="task.priority"
               color="warning"
@@ -84,7 +84,7 @@
         variant="tonal"
       >
         <div class="text-body-2">
-          <strong>Note:</strong> If this task has child tasks, the deletion will fail. 
+          <strong>Note:</strong> If this task has child tasks, the deletion will fail.
           Please delete or reassign all child tasks before deleting this task.
         </div>
       </v-alert>
@@ -107,8 +107,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref } from 'vue'
   import type { Task } from '../services/tasks'
+  import { computed, ref } from 'vue'
 
   /** Component props */
   const props = defineProps<{
@@ -130,7 +130,7 @@
   })
 
   /** Handle deletion confirmation */
-  async function handleConfirm() {
+  async function handleConfirm () {
     loading.value = true
     try {
       emit('confirm', props.task)

@@ -41,8 +41,8 @@
           <!-- Project (read-only) -->
           <v-col cols="6">
             <v-text-field
-              :model-value="projectDisplay"
               label="Project"
+              :model-value="projectDisplay"
               prepend-icon="mdi-clipboard-outline"
               readonly
               variant="outlined"
@@ -179,14 +179,14 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, onMounted, ref, watch } from 'vue'
   import type { VForm } from 'vuetify/components'
   import type { Task, UpdateTaskInput } from '../services/tasks'
-  import { getTasks } from '../services/tasks'
+  import { computed, onMounted, ref, watch } from 'vue'
+  import { getComplexities } from '../services/complexity'
+  import { getPriorities } from '../services/priority'
   import { getStaff } from '../services/staff'
   import { getStatuses } from '../services/status'
-  import { getPriorities } from '../services/priority'
-  import { getComplexities } from '../services/complexity'
+  import { getTasks } from '../services/tasks'
 
   /** Component props */
   const props = defineProps<{
@@ -246,9 +246,9 @@
   /** Computed property for available parent tasks (exclude self and children) */
   const availableParentTasks = computed(() => {
     return tasks.value
-      .filter(task => 
-        task.projectId === props.task.projectId && 
-        task.id !== props.task.id // Cannot be parent of itself
+      .filter(task =>
+        task.projectId === props.task.projectId
+        && task.id !== props.task.id, // Cannot be parent of itself
       )
       .map(task => ({
         id: task.id,
@@ -257,7 +257,7 @@
   })
 
   /** Load reference data */
-  async function loadReferenceData() {
+  async function loadReferenceData () {
     try {
       const [
         tasksResponse,
@@ -287,7 +287,7 @@
   }
 
   /** Populate form data from props */
-  function populateForm() {
+  function populateForm () {
     formData.value = {
       id: props.task.id,
       name: props.task.name,
@@ -305,7 +305,7 @@
   }
 
   /** Handle form submission */
-  async function handleSubmit() {
+  async function handleSubmit () {
     if (!form.value) return
 
     const { valid: isValid } = await form.value.validate()

@@ -114,9 +114,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, ref, watch } from 'vue'
   import type { VForm } from 'vuetify/components'
   import type { Project, UpdateProjectInput } from '../services/projects'
+  import { onMounted, ref, watch } from 'vue'
   import { getStaff } from '../services/staff'
 
   /** Component props */
@@ -162,7 +162,7 @@
   ]
 
   /** Load staff members for lead staff selection */
-  async function loadStaffMembers() {
+  async function loadStaffMembers () {
     try {
       const { staff } = await getStaff()
       staffMembers.value = staff.map(member => ({
@@ -175,7 +175,7 @@
   }
 
   /** Populate form data from props */
-  function populateForm() {
+  function populateForm () {
     formData.value = {
       id: props.project.id,
       name: props.project.name,
@@ -189,7 +189,7 @@
   }
 
   /** Handle form submission */
-  async function handleSubmit() {
+  async function handleSubmit () {
     if (!form.value) return
 
     const { valid: isValid } = await form.value.validate()

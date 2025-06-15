@@ -183,15 +183,15 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, onMounted, ref, watch } from 'vue'
   import type { VForm } from 'vuetify/components'
   import type { CreateTaskInput } from '../services/tasks'
+  import { computed, onMounted, ref, watch } from 'vue'
+  import { getComplexities } from '../services/complexity'
+  import { getPriorities } from '../services/priority'
   import { getProjects } from '../services/projects'
-  import { getTasks } from '../services/tasks'
   import { getStaff } from '../services/staff'
   import { getStatuses } from '../services/status'
-  import { getPriorities } from '../services/priority'
-  import { getComplexities } from '../services/complexity'
+  import { getTasks } from '../services/tasks'
 
   /** Component events */
   const emit = defineEmits<{
@@ -246,7 +246,7 @@
   /** Computed property for available parent tasks (tasks in the same project) */
   const availableParentTasks = computed(() => {
     if (!formData.value.projectId) return []
-    
+
     return tasks.value
       .filter(task => task.projectId === formData.value.projectId)
       .map(task => ({
@@ -256,7 +256,7 @@
   })
 
   /** Load reference data */
-  async function loadReferenceData() {
+  async function loadReferenceData () {
     try {
       const [
         projectsResponse,
@@ -294,7 +294,7 @@
   })
 
   /** Handle form submission */
-  async function handleSubmit() {
+  async function handleSubmit () {
     if (!form.value) return
 
     const { valid: isValid } = await form.value.validate()

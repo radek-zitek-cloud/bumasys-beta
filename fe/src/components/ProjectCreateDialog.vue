@@ -114,9 +114,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, onMounted, ref } from 'vue'
   import type { VForm } from 'vuetify/components'
   import type { CreateProjectInput } from '../services/projects'
+  import { onMounted, ref } from 'vue'
   import { getStaff } from '../services/staff'
 
   /** Component events */
@@ -156,7 +156,7 @@
   ]
 
   /** Load staff members for lead staff selection */
-  async function loadStaffMembers() {
+  async function loadStaffMembers () {
     try {
       const { staff } = await getStaff()
       staffMembers.value = staff.map(member => ({
@@ -169,7 +169,7 @@
   }
 
   /** Handle form submission */
-  async function handleSubmit() {
+  async function handleSubmit () {
     if (!form.value) return
 
     const { valid: isValid } = await form.value.validate()

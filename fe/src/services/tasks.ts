@@ -90,7 +90,7 @@ export interface UpdateTaskInput {
  * Optionally filter by project ID.
  * Requires authentication.
  */
-export function getTasks(projectId?: string): Promise<{ tasks: Task[] }> {
+export function getTasks (projectId?: string): Promise<{ tasks: Task[] }> {
   const store = useAuthStore()
   return graphqlClient<{ tasks: Task[] }>(
     `
@@ -139,7 +139,7 @@ export function getTasks(projectId?: string): Promise<{ tasks: Task[] }> {
       }
     `,
     { projectId },
-    store.authHeaders
+    store.token,
   )
 }
 
@@ -148,7 +148,7 @@ export function getTasks(projectId?: string): Promise<{ tasks: Task[] }> {
  * Requires authentication.
  * @param id - Task ID to fetch
  */
-export function getTask(id: string): Promise<{ task: Task | null }> {
+export function getTask (id: string): Promise<{ task: Task | null }> {
   const store = useAuthStore()
   return graphqlClient<{ task: Task | null }>(
     `
@@ -202,7 +202,7 @@ export function getTask(id: string): Promise<{ task: Task | null }> {
       }
     `,
     { id },
-    store.authHeaders
+    store.token,
   )
 }
 
@@ -211,7 +211,7 @@ export function getTask(id: string): Promise<{ task: Task | null }> {
  * Requires authentication.
  * @param taskData - Task creation data
  */
-export function createTask(taskData: CreateTaskInput): Promise<{ createTask: Task }> {
+export function createTask (taskData: CreateTaskInput): Promise<{ createTask: Task }> {
   const store = useAuthStore()
   return graphqlClient<{ createTask: Task }>(
     `
@@ -281,8 +281,8 @@ export function createTask(taskData: CreateTaskInput): Promise<{ createTask: Tas
         }
       }
     `,
-    taskData,
-    store.authHeaders
+    taskData as unknown as Record<string, unknown>,
+    store.token,
   )
 }
 
@@ -291,7 +291,7 @@ export function createTask(taskData: CreateTaskInput): Promise<{ createTask: Tas
  * Requires authentication.
  * @param taskData - Task update data
  */
-export function updateTask(taskData: UpdateTaskInput): Promise<{ updateTask: Task }> {
+export function updateTask (taskData: UpdateTaskInput): Promise<{ updateTask: Task }> {
   const store = useAuthStore()
   return graphqlClient<{ updateTask: Task }>(
     `
@@ -361,8 +361,8 @@ export function updateTask(taskData: UpdateTaskInput): Promise<{ updateTask: Tas
         }
       }
     `,
-    taskData,
-    store.authHeaders
+    taskData as unknown as Record<string, unknown>,
+    store.token,
   )
 }
 
@@ -371,7 +371,7 @@ export function updateTask(taskData: UpdateTaskInput): Promise<{ updateTask: Tas
  * Requires authentication.
  * @param id - Task ID to delete
  */
-export function deleteTask(id: string): Promise<{ deleteTask: boolean }> {
+export function deleteTask (id: string): Promise<{ deleteTask: boolean }> {
   const store = useAuthStore()
   return graphqlClient<{ deleteTask: boolean }>(
     `
@@ -380,6 +380,6 @@ export function deleteTask(id: string): Promise<{ deleteTask: boolean }> {
       }
     `,
     { id },
-    store.authHeaders
+    store.token,
   )
 }

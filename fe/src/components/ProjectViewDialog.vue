@@ -121,8 +121,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed } from 'vue'
   import type { Project } from '../services/projects'
+  import { computed } from 'vue'
 
   /** Component props */
   const props = defineProps<{
@@ -147,9 +147,9 @@
    * @param dateString - ISO date string or undefined
    * @returns Formatted date or 'Not set'
    */
-  function formatDate(dateString?: string): string {
+  function formatDate (dateString?: string): string {
     if (!dateString) return 'Not set'
-    
+
     try {
       const date = new Date(dateString)
       return date.toLocaleDateString('en-US', {

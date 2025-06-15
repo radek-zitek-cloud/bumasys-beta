@@ -63,7 +63,7 @@ export interface UpdateProjectInput {
  * Fetch all projects from the system.
  * Requires authentication.
  */
-export function getProjects(): Promise<{ projects: Project[] }> {
+export function getProjects (): Promise<{ projects: Project[] }> {
   const store = useAuthStore()
   return graphqlClient<{ projects: Project[] }>(
     `
@@ -87,7 +87,7 @@ export function getProjects(): Promise<{ projects: Project[] }> {
       }
     `,
     {},
-    store.authHeaders
+    store.token,
   )
 }
 
@@ -96,7 +96,7 @@ export function getProjects(): Promise<{ projects: Project[] }> {
  * Requires authentication.
  * @param id - Project ID to fetch
  */
-export function getProject(id: string): Promise<{ project: Project | null }> {
+export function getProject (id: string): Promise<{ project: Project | null }> {
   const store = useAuthStore()
   return graphqlClient<{ project: Project | null }>(
     `
@@ -125,7 +125,7 @@ export function getProject(id: string): Promise<{ project: Project | null }> {
       }
     `,
     { id },
-    store.authHeaders
+    store.token,
   )
 }
 
@@ -134,7 +134,7 @@ export function getProject(id: string): Promise<{ project: Project | null }> {
  * Requires authentication.
  * @param projectData - Project creation data
  */
-export function createProject(projectData: CreateProjectInput): Promise<{ createProject: Project }> {
+export function createProject (projectData: CreateProjectInput): Promise<{ createProject: Project }> {
   const store = useAuthStore()
   return graphqlClient<{ createProject: Project }>(
     `
@@ -173,8 +173,8 @@ export function createProject(projectData: CreateProjectInput): Promise<{ create
         }
       }
     `,
-    projectData,
-    store.authHeaders
+    projectData as unknown as Record<string, unknown>,
+    store.token,
   )
 }
 
@@ -183,7 +183,7 @@ export function createProject(projectData: CreateProjectInput): Promise<{ create
  * Requires authentication.
  * @param projectData - Project update data
  */
-export function updateProject(projectData: UpdateProjectInput): Promise<{ updateProject: Project }> {
+export function updateProject (projectData: UpdateProjectInput): Promise<{ updateProject: Project }> {
   const store = useAuthStore()
   return graphqlClient<{ updateProject: Project }>(
     `
@@ -224,8 +224,8 @@ export function updateProject(projectData: UpdateProjectInput): Promise<{ update
         }
       }
     `,
-    projectData,
-    store.authHeaders
+    projectData as unknown as Record<string, unknown>,
+    store.token,
   )
 }
 
@@ -234,7 +234,7 @@ export function updateProject(projectData: UpdateProjectInput): Promise<{ update
  * Requires authentication.
  * @param id - Project ID to delete
  */
-export function deleteProject(id: string): Promise<{ deleteProject: boolean }> {
+export function deleteProject (id: string): Promise<{ deleteProject: boolean }> {
   const store = useAuthStore()
   return graphqlClient<{ deleteProject: boolean }>(
     `
@@ -243,6 +243,6 @@ export function deleteProject(id: string): Promise<{ deleteProject: boolean }> {
       }
     `,
     { id },
-    store.authHeaders
+    store.token,
   )
 }
