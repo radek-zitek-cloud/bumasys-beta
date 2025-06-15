@@ -112,6 +112,8 @@
       // Build tree structure starting from the root
       const treeStructure = buildStaffTree(allStaff, rootStaff)
 
+      loading.value = false
+
       // Wait for DOM to update and container to be available
       await nextTick()
 
