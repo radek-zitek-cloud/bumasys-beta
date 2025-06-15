@@ -9,9 +9,10 @@
               v-model="form.email"
               label="Email *"
               prepend-icon="mdi-email"
-              required
-              :rules="emailRules"
+              readonly
               type="email"
+              hint="Email cannot be changed as it is used for login"
+              persistent-hint
             />
           </v-col>
           <v-col cols="6">
@@ -133,12 +134,6 @@
     { immediate: true },
   )
 
-  /** Email validation rules */
-  const emailRules = [
-    (v: string) => !!v || 'Email is required',
-    (v: string) => /.+@.+\..+/.test(v) || 'Email must be valid',
-  ]
-
   /** Password validation rules (only when password is being changed) */
   const passwordRules = [
     (v: string) => !v || v.length >= 6 || 'Password must be at least 6 characters',
@@ -182,15 +177,14 @@
     return 'Strong'
   })
 
-  /** Check if form is valid */
+  /** Check if form is valid (email is readonly, so no validation needed for it) */
   const isFormValid = computed(() => {
-    const emailValid = form.email && /.+@.+\..+/.test(form.email)
     const passwordValid = !form.password || (
       form.password.length >= 6
       && form.confirmPassword
       && form.password === form.confirmPassword
     )
-    return emailValid && passwordValid
+    return passwordValid
   })
 
   /** Define component events */
@@ -207,7 +201,7 @@
 
     const updateData: UpdateUserInput = {
       id: props.user.id,
-      email: form.email,
+      // Email is intentionally excluded - it cannot be changed
     }
 
     // Only include fields that have values
