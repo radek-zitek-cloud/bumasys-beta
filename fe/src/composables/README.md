@@ -98,14 +98,14 @@ const { isAnyLoading, clearAllLoading } = useGlobalLoading()
 - Global loading state monitoring
 - Sequence and parallel operation support
 
-### D3 Tree Visualization (`useD3Tree.ts`)
+### Vue D3 Tree Visualization (`useD3Tree.ts`)
 
-Tree visualization functionality using d3.js for hierarchical data display.
+Tree visualization functionality using vue3-d3-tree for hierarchical data display.
 
 ```typescript
 import { useD3Tree, type TreeNodeData } from './useD3Tree'
 
-const { createTree, clearTree, error } = useD3Tree()
+const { createTree, VueTreeComponent, vueTreeProps, error } = useD3Tree()
 
 // Create tree structure
 const treeData: TreeNodeData = {
@@ -123,20 +123,39 @@ const treeData: TreeNodeData = {
   ]
 }
 
-// Render the tree
+// Configure the tree
 createTree(treeData, {
-  containerSelector: '#tree-container',
   width: 800,
   height: 600,
   nodeColor: '#1976D2',
-  linkColor: '#1976D2'
+  linkColor: '#1976D2',
+  direction: 'vertical'
 })
 ```
 
+**Template Usage:**
+```vue
+<template>
+  <component 
+    :is="VueTreeComponent" 
+    v-if="vueTreeProps" 
+    v-bind="vueTreeProps"
+  >
+    <template #node="{ data }">
+      <div class="custom-node">
+        <div class="node-name">{{ data.name }}</div>
+        <div v-if="data.title" class="node-title">{{ data.title }}</div>
+      </div>
+    </template>
+  </component>
+</template>
+```
+
 **Features:**
-- SVG-based tree rendering using d3.js
+- Vue component-based tree rendering using vue3-d3-tree
 - Customizable node and link colors
-- Text wrapping for long node labels
+- Custom node templates via slots
+- Zoom and pan functionality
 - Responsive design
 - Error handling
 
