@@ -1,6 +1,6 @@
 import { useAuthStore } from '../stores/auth'
+import { logDebug, logError, logInfo, logWarn } from '../utils/logger'
 import { graphqlClient } from './graphql-client'
-import { logInfo, logError, logDebug, logWarn } from '../utils/logger'
 
 export interface User {
   id: string
@@ -20,7 +20,7 @@ export interface AuthPayload {
 export async function login (email: string, password: string) {
   try {
     logInfo('Attempting user login', { email })
-    
+
     const result = await graphqlClient<{ login: AuthPayload }>(
       `
         mutation ($email: String!, $password: String!) {
@@ -39,12 +39,12 @@ export async function login (email: string, password: string) {
       `,
       { email, password },
     )
-    
-    logInfo('User login successful', { 
-      userId: result.login.user.id, 
-      email: result.login.user.email 
+
+    logInfo('User login successful', {
+      userId: result.login.user.id,
+      email: result.login.user.email,
     })
-    
+
     return result
   } catch (error) {
     logError('User login failed', error)
@@ -62,7 +62,7 @@ export async function register (
 ) {
   try {
     logInfo('Attempting user registration', { email, firstName, lastName })
-    
+
     const result = await graphqlClient<{ register: AuthPayload }>(
       `
         mutation (
@@ -93,12 +93,12 @@ export async function register (
       `,
       { email, password, firstName, lastName, note },
     )
-    
-    logInfo('User registration successful', { 
-      userId: result.register.user.id, 
-      email: result.register.user.email 
+
+    logInfo('User registration successful', {
+      userId: result.register.user.id,
+      email: result.register.user.email,
     })
-    
+
     return result
   } catch (error) {
     logError('User registration failed', error)
@@ -110,7 +110,7 @@ export async function register (
 export async function resetPassword (email: string) {
   try {
     logInfo('Requesting password reset', { email })
-    
+
     const result = await graphqlClient<{ resetPassword: boolean }>(
       `
         mutation ($email: String!) {
@@ -119,9 +119,9 @@ export async function resetPassword (email: string) {
       `,
       { email },
     )
-    
+
     logInfo('Password reset request completed', { email, success: result.resetPassword })
-    
+
     return result
   } catch (error) {
     logError('Password reset request failed', error)
@@ -134,7 +134,7 @@ export async function changePassword (oldPassword: string, newPassword: string) 
   try {
     const store = useAuthStore()
     logInfo('Attempting password change for authenticated user')
-    
+
     const result = await graphqlClient<{ changePassword: boolean }>(
       `
         mutation ($old: String!, $new: String!) {
@@ -144,9 +144,9 @@ export async function changePassword (oldPassword: string, newPassword: string) 
       { old: oldPassword, new: newPassword },
       store.token,
     )
-    
+
     logInfo('Password change completed', { success: result.changePassword })
-    
+
     return result
   } catch (error) {
     logError('Password change failed', error)
@@ -158,7 +158,7 @@ export async function changePassword (oldPassword: string, newPassword: string) 
 export async function logout (refreshToken: string) {
   try {
     logInfo('Attempting user logout')
-    
+
     const result = await graphqlClient<{ logout: boolean }>(
       `
         mutation ($token: String!) {
@@ -167,9 +167,9 @@ export async function logout (refreshToken: string) {
       `,
       { token: refreshToken },
     )
-    
+
     logInfo('User logout completed', { success: result.logout })
-    
+
     return result
   } catch (error) {
     logWarn('User logout failed, but continuing with local logout', error)
@@ -182,7 +182,7 @@ export async function logout (refreshToken: string) {
 export async function refresh (refreshToken: string) {
   try {
     logDebug('Attempting token refresh')
-    
+
     const result = await graphqlClient<{ refreshToken: AuthPayload }>(
       `
         mutation ($token: String!) {
@@ -201,11 +201,11 @@ export async function refresh (refreshToken: string) {
       `,
       { token: refreshToken },
     )
-    
-    logDebug('Token refresh successful', { 
-      userId: result.refreshToken.user.id 
+
+    logDebug('Token refresh successful', {
+      userId: result.refreshToken.user.id,
     })
-    
+
     return result
   } catch (error) {
     logError('Token refresh failed', error)
@@ -223,7 +223,7 @@ export async function updateUser (
   try {
     const store = useAuthStore()
     logInfo('Attempting user profile update', { userId: id, firstName, lastName })
-    
+
     const result = await graphqlClient<{ updateUser: User }>(
       `
         mutation (
@@ -249,12 +249,12 @@ export async function updateUser (
       { id, firstName, lastName, note },
       store.token,
     )
-    
-    logInfo('User profile update successful', { 
+
+    logInfo('User profile update successful', {
       userId: result.updateUser.id,
-      email: result.updateUser.email 
+      email: result.updateUser.email,
     })
-    
+
     return result
   } catch (error) {
     logError('User profile update failed', error)

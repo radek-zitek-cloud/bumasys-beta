@@ -1,1 +1,9 @@
-{}
+{
+  "features": {
+    "debugMode": false,
+    "showConfigCard": false
+  },
+  "logging": {
+    "level": "error"
+  }
+}
