@@ -10,20 +10,20 @@ export interface BetterStackConfig {
 
 /** Logging configuration interface with full structure */
 export interface LoggingConfig {
+  [key: string]: any
   level?: string
   betterStack: BetterStackConfig
-  [key: string]: any // Allow additional logging config fields
 }
 
 /** New feature configuration interface */
 export interface NewFeatureConfig {
+  [key: string]: any
   enabled: boolean
   options: {
+    [key: string]: any
     maxRetries: number
     timeout: number
-    [key: string]: any // Allow additional options
   }
-  [key: string]: any // Allow additional feature config fields
 }
 
 /**
@@ -32,19 +32,14 @@ export interface NewFeatureConfig {
  * to be present without code changes.
  */
 export interface Config {
-  // Known core fields
+  [key: string]: any
   port: number
   accessTokenExpiresIn: string
   refreshTokenExpiresIn: string
   dbFile: string
   logging: LoggingConfig
-
-  // Dynamic fields that may be present
   newFeature?: NewFeatureConfig
   customSetting?: string
-
-  // Allow any additional dynamic fields
-  [key: string]: any
 }
 
 /**

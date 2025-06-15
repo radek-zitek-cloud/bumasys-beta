@@ -230,7 +230,7 @@
     processing.value = true
     try {
       // Clean up empty optional fields and exclude organizationId
-      const { organizationId, ...staffData } = form // Extract organizationId and get rest of data
+      const { organizationId: _organizationId, ...staffData } = form // Extract organizationId and get rest of data
       if (!staffData.phone) {
         delete staffData.phone
       }

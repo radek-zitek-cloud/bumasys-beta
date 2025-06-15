@@ -43,7 +43,6 @@
   import * as departmentService from '../services/departments'
   import * as staffService from '../services/staff'
 
-
   /** Component props */
   const props = defineProps<{
     department: Department
@@ -140,7 +139,6 @@
       if (treeError.value) {
         throw new Error(treeError.value)
       }
-
     } catch (error_) {
       console.error('Error initializing department tree:', error_)
       error.value = error_ instanceof Error ? error_.message : 'Failed to load department structure'

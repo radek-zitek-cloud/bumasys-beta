@@ -165,6 +165,8 @@
                   Add Member
                 </v-btn>
                 <v-btn
+                  prepend-icon="mdi-close"
+                  size="small"
                   variant="outlined"
                   @click="selectedTeamForMembers = null"
                 >

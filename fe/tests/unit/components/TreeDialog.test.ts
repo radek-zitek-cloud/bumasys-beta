@@ -3,7 +3,6 @@ import { describe, expect, it, vi } from 'vitest'
 import DepartmentTreeDialog from '../../../src/components/DepartmentTreeDialog.vue'
 import StaffTreeDialog from '../../../src/components/StaffTreeDialog.vue'
 
-
 // Mock d3.js since it's not available in test environment
 vi.mock('d3', () => ({
   select: vi.fn().mockReturnValue({

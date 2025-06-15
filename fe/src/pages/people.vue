@@ -462,6 +462,9 @@
     <v-dialog v-model="showStaffViewDialog" max-width="600" persistent>
       <StaffViewDialog
         v-if="selectedStaff"
+        :all-staff="staff"
+        :departments="departments"
+        :organizations="organizations"
         :staff="selectedStaff"
         @close="showStaffViewDialog = false"
       />
@@ -540,18 +543,18 @@
 
   const departmentHeaders: DataTableHeaders = [
     { title: 'Name', key: 'name', sortable: true },
-    { title: 'Organization', key: 'organizationId', sortable: true },
     { title: 'Manager', key: 'managerId', sortable: true },
     { title: 'Description', key: 'description', sortable: true },
+    { title: 'Organization', key: 'organizationId', sortable: true },
     { title: 'Actions', key: 'actions', sortable: false, width: '200px' },
   ]
 
   const staffHeaders: DataTableHeaders = [
     { title: 'Name', key: 'name', sortable: true },
-    { title: 'Email', key: 'email', sortable: true },
     { title: 'Role', key: 'role', sortable: true },
-    { title: 'Organization', key: 'organizationId', sortable: true },
     { title: 'Department', key: 'departmentId', sortable: true },
+    { title: 'Organization', key: 'organizationId', sortable: true },
+    { title: 'Email', key: 'email', sortable: true },
     { title: 'Actions', key: 'actions', sortable: false, width: '200px' },
   ]
 
