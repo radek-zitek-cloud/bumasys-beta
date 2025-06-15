@@ -168,6 +168,7 @@ export class UserService {
    * @param updateData - User update data including ID
    * @returns Promise resolving to the updated safe user object
    * @throws Error if user is not found
+   * @note Email updates are ignored for security - email is used as username for login
    */
   public async updateUser(updateData: UpdateUserInput): Promise<SafeUser> {
     const user = this.findById(updateData.id);
@@ -175,10 +176,20 @@ export class UserService {
       throw new Error('User not found');
     }
 
-    // Update fields if provided
-    if (updateData.email !== undefined) {
-      user.email = updateData.email;
+    // Log warning if email change is attempted
+    if (updateData.email !== undefined && updateData.email !== user.email) {
+      logger.warn(
+        {
+          operation: 'updateUser',
+          userId: updateData.id,
+          currentEmail: user.email,
+          attemptedEmail: updateData.email,
+        },
+        'Email change attempted but ignored - email cannot be changed as it is used for login',
+      );
     }
+
+    // Update fields if provided (excluding email)
     if (updateData.password !== undefined) {
       user.password = await hashPassword(updateData.password);
     }

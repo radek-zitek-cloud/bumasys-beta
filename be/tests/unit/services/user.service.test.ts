@@ -303,6 +303,26 @@ describe('UserService', () => {
         'User not found'
       );
     });
+
+    it('should ignore email changes for security', async () => {
+      const updateData = {
+        id: 'user1',
+        email: 'new@example.com',
+        firstName: 'Updated',
+      };
+
+      const updatedUser = await userService.updateUser(updateData);
+
+      // Email should remain unchanged
+      expect(updatedUser.email).toBe('test@example.com');
+      // Other fields should be updated
+      expect(updatedUser.firstName).toBe('Updated');
+
+      // Verify database shows original email
+      const dbUser = mockDatabase.data.users[0];
+      expect(dbUser.email).toBe('test@example.com');
+      expect(dbUser.firstName).toBe('Updated');
+    });
   });
 
   describe('deleteUser', () => {
