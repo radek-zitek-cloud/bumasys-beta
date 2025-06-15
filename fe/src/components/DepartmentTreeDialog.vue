@@ -21,6 +21,7 @@
         <v-icon class="mb-2" color="error" size="48">mdi-alert-circle</v-icon>
         <p class="text-error">{{ error }}</p>
       </div>
+
       <div v-else>
         <div id="department-tree-container" ref="treeContainer" class="tree-container" />
       </div>
@@ -41,6 +42,7 @@
   import { type TreeNodeData, useD3Tree } from '../composables/useD3Tree'
   import * as departmentService from '../services/departments'
   import * as staffService from '../services/staff'
+
 
   /** Component props */
   const props = defineProps<{
@@ -107,6 +109,9 @@
       // Build tree structure starting from the selected department
       const treeStructure = buildDepartmentTree(departments, staff, props.department)
 
+      // Set loading to false first so the container gets rendered
+      loading.value = false
+
       // Wait for DOM to update and container to be available
       await nextTick()
 
@@ -135,6 +140,7 @@
       if (treeError.value) {
         throw new Error(treeError.value)
       }
+
     } catch (error_) {
       console.error('Error initializing department tree:', error_)
       error.value = error_ instanceof Error ? error_.message : 'Failed to load department structure'

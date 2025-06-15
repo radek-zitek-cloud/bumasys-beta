@@ -28,6 +28,7 @@
     "@testing-library/vue": "^8.1.0",
     "@tsconfig/node22": "^22.0.0",
     "@types/node": "^22.9.0",
+    "@types/raphael": "^2.3.9",
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue/test-utils": "^2.4.4",
     "@vue/tsconfig": "^0.7.0",
