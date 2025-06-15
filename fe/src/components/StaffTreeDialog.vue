@@ -1,7 +1,7 @@
 <!--
   @fileoverview Staff Tree Dialog Component
 
-  This component displays the hierarchical organizational structure using Treant.js.
+  This component displays the hierarchical organizational structure using d3.js.
   It shows staff names and their roles in a graphical tree format.
   Uses the supervisorId relationship to build the hierarchy.
 -->
@@ -36,43 +36,9 @@
 
 <script lang="ts" setup>
   import type { Staff } from '../services/staff'
-  import Tree from 'treant-js'
   import { nextTick, onMounted, ref } from 'vue'
+  import { type TreeNodeData, useD3Tree } from '../composables/useD3Tree'
   import * as staffService from '../services/staff'
-
-  /** Local type definitions for Treant.js */
-  interface TreeConfig {
-    chart?: {
-      container?: string
-      levelSeparation?: number
-      siblingSeparation?: number
-      subTeeSeparation?: number
-      rootOrientation?: 'NORTH' | 'SOUTH' | 'EAST' | 'WEST'
-      nodeAlign?: 'TOP' | 'CENTER' | 'BOTTOM'
-      connectors?: {
-        type?: 'straight' | 'bezier' | 'step'
-        style?: {
-          'stroke-width'?: number
-          'stroke'?: string
-        }
-      }
-      node?: {
-        HTMLclass?: string
-        collapsable?: boolean
-      }
-    }
-    nodeStructure?: TreeNode
-  }
-
-  interface TreeNode {
-    text?: {
-      [key: string]: any
-      name?: string
-      title?: string
-    }
-    HTMLclass?: string
-    children?: TreeNode[]
-  }
 
   /** Component props */
   const props = defineProps<{
@@ -88,6 +54,9 @@
   const loading = ref(true)
   const error = ref<string | null>(null)
   const treeContainer = ref<HTMLElement>()
+
+  /** D3 tree composable */
+  const { createTree, error: treeError } = useD3Tree()
 
   /** Find the root staff member (highest in hierarchy) for the given staff member */
   function findRootStaff (allStaff: Staff[], startingStaff: Staff): Staff {
@@ -106,19 +75,16 @@
   }
 
   /** Build tree structure from staff data */
-  function buildStaffTree (allStaff: Staff[], rootStaff: Staff): TreeNode {
+  function buildStaffTree (allStaff: Staff[], rootStaff: Staff): TreeNodeData {
     // Helper function to build tree recursively
-    function buildNode (staff: Staff): TreeNode {
+    function buildNode (staff: Staff): TreeNodeData {
       const subordinates = allStaff
         .filter(s => s.supervisorId === staff.id)
         .map(subordinate => buildNode(subordinate))
 
       return {
-        text: {
-          name: `${staff.firstName} ${staff.lastName}`,
-          title: staff.role,
-        },
-        HTMLclass: 'staff-node',
+        name: `${staff.firstName} ${staff.lastName}`,
+        title: staff.role,
         children: subordinates.length > 0 ? subordinates : undefined,
       }
     }
@@ -161,35 +127,22 @@
         throw new Error('Tree container not found')
       }
 
-      // Configure Treant.js
-      const config: TreeConfig = {
-        chart: {
-          container: '#staff-tree-container',
-          levelSeparation: 40,
-          siblingSeparation: 20,
-          subTeeSeparation: 30,
-          rootOrientation: 'NORTH',
-          nodeAlign: 'CENTER',
-          connectors: {
-            type: 'straight',
-            style: {
-              'stroke-width': 2,
-              'stroke': '#9C27B0',
-            },
-          },
-          node: {
-            HTMLclass: 'treant-node',
-          },
-        },
-        nodeStructure: treeStructure,
-      }
+      // Create the d3.js tree
+      createTree(treeStructure, {
+        containerSelector: '#staff-tree-container',
+        width: 950,
+        height: 500,
+        nodeColor: '#9C27B0',
+        linkColor: '#9C27B0',
+      })
 
-      // Create the tree
-      new Tree(config)
+      // Check for tree creation errors
+      if (treeError.value) {
+        throw new Error(treeError.value)
+      }
     } catch (error_) {
       console.error('Error initializing staff tree:', error_)
       error.value = error_ instanceof Error ? error_.message : 'Failed to load organization structure'
-    } finally {
       loading.value = false
     }
   }
@@ -201,35 +154,24 @@
 </script>
 
 <style scoped>
-  @import 'treant-js/Treant.css';
-
   .tree-container {
-    min-height: 400px;
+    width: 100%;
+    height: 500px;
+    position: relative;
     overflow: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background: #fafafa;
     padding: 20px;
   }
 
-  :deep(.treant-node) {
-    padding: 12px;
-    border: 2px solid #9C27B0;
-    border-radius: 8px;
-    background: #ffffff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* D3.js tree specific styles */
+  :deep(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  :deep(.node text) {
     font-family: 'Roboto', sans-serif;
-    text-align: center;
-    min-width: 150px;
-  }
-
-  :deep(.staff-node .name) {
-    font-weight: 600;
-    font-size: 14px;
-    color: #9C27B0;
-    margin-bottom: 4px;
-  }
-
-  :deep(.staff-node .title) {
-    font-size: 12px;
-    color: #666;
-    font-style: italic;
   }
 </style>

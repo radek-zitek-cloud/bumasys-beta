@@ -17,8 +17,9 @@
   "dependencies": {
     "@fontsource/roboto": "5.2.5",
     "@mdi/font": "7.4.47",
+    "@types/d3": "^7.4.3",
+    "d3": "^7.9.0",
     "pinia-plugin-persistedstate": "^4.3.0",
-    "treant-js": "^1.0.1",
     "vue": "^3.5.13",
     "vuetify": "^3.8.1"
   },
