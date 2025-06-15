@@ -30,7 +30,7 @@ export async function initializeAppLogger(): Promise<void> {
     
     logInfo('Application logger initialized successfully', {
       loggingLevel: response.config.logging.level,
-      betterStackEnabled: response.config.logging.betterStack.enabled
+      betterStackEnabled: response.config.logging.betterStack?.enabled ?? false
     })
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'

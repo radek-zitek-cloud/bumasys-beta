@@ -31,7 +31,7 @@ describe('ConfigDisplayCard', () => {
     const wrapper = mount(ConfigDisplayCard)
 
     // Should render the card title
-    expect(wrapper.html()).toContain('Backend Configuration')
+    expect(wrapper.html()).toContain('Frontend Configuration')
   })
 
   it('shows loading state initially', () => {
@@ -43,10 +43,42 @@ describe('ConfigDisplayCard', () => {
 
   it('displays configuration data when loaded successfully', async () => {
     const mockConfig = {
-      port: 4000,
-      accessTokenExpiresIn: '15m',
-      refreshTokenExpiresIn: '7d',
-      dbFile: 'database.db',
+      app: {
+        name: 'Test App',
+        version: '1.0.0',
+        theme: 'default'
+      },
+      api: {
+        baseUrl: 'http://localhost:4000',
+        graphqlEndpoint: '/graphql',
+        timeout: 10000
+      },
+      ui: {
+        theme: {
+          dark: false,
+          primaryColor: '#1976d2'
+        },
+        pagination: {
+          defaultPageSize: 10,
+          pageSizeOptions: [5, 10, 25, 50]
+        },
+        table: {
+          sortable: true,
+          filterable: true
+        }
+      },
+      features: {
+        debugMode: false,
+        showConfigCard: true,
+        enableLogging: true
+      },
+      logging: {
+        level: 'info',
+        console: {
+          enabled: true,
+          pretty: true
+        }
+      }
     }
 
     vi.mocked(configService.getConfig).mockResolvedValue({ config: mockConfig })
@@ -58,9 +90,9 @@ describe('ConfigDisplayCard', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
 
     // Should display the formatted JSON
-    expect(wrapper.html()).toContain('4000')
-    expect(wrapper.html()).toContain('15m')
-    expect(wrapper.html()).toContain('database.db')
+    expect(wrapper.html()).toContain('Test App')
+    expect(wrapper.html()).toContain('http://localhost:4000')
+    expect(wrapper.html()).toContain('info')
   })
 
   it('displays error message when config loading fails', async () => {

@@ -25,7 +25,7 @@ export function initializeLogger(config: Config): pino.Logger {
       transmit: {
         // Send logs to BetterStack if configured
         send: (level, logEvent) => {
-          if (config.logging.betterStack.enabled && config.logging.betterStack.sourceToken) {
+          if (config.logging.betterStack?.enabled && config.logging.betterStack?.sourceToken) {
             // In a real implementation, you would send to BetterStack endpoint
             // For now, we'll just log to console as fallback
             console.log(`[${level}]`, logEvent)

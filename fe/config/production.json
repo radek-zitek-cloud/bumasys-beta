@@ -1,3 +1,11 @@
 {
-
+  "api": {
+    "baseUrl": "https://api.production.domain.com"
+  },
+  "features": {
+    "debugMode": false
+  },
+  "logging": {
+    "level": "warn"
+  }
 }

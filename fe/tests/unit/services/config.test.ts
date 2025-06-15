@@ -1,82 +1,45 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { getConfig } from '../../../src/services/config'
-import * as graphqlClient from '../../../src/services/graphql-client'
-
-// Mock the graphqlClient module
-vi.mock('../../../src/services/graphql-client', () => ({
-  graphqlClient: vi.fn(),
-}))
-
-// Mock the auth store
-vi.mock('../../../src/stores/auth', () => ({
-  useAuthStore: vi.fn(() => ({
-    token: 'test-token',
-  })),
-}))
 
 describe('Config Service', () => {
-  it('should call the config query with correct parameters', async () => {
-    const mockResponse = {
-      config: {
-        port: 4000,
-        accessTokenExpiresIn: '15m',
-        refreshTokenExpiresIn: '7d',
-        dbFile: 'database.db',
-        logging: {
-          betterStack: {
-            enabled: false,
-          },
-        },
-      },
-    }
-
-    // Mock the graphqlClient function
-    vi.mocked(graphqlClient.graphqlClient).mockResolvedValue(mockResponse)
-
+  it('should return frontend configuration from local files', async () => {
     const result = await getConfig()
 
-    expect(result).toEqual(mockResponse)
-    expect(graphqlClient.graphqlClient).toHaveBeenCalledWith(
-      expect.stringContaining('query'),
-      {},
-      'test-token',
-    )
-    expect(graphqlClient.graphqlClient).toHaveBeenCalledWith(
-      expect.stringContaining('config'),
-      {},
-      'test-token',
-    )
+    // Should have the config structure
+    expect(result).toHaveProperty('config')
+    expect(result.config).toHaveProperty('app')
+    expect(result.config).toHaveProperty('api')
+    expect(result.config).toHaveProperty('ui')
+    expect(result.config).toHaveProperty('features')
+    expect(result.config).toHaveProperty('logging')
   })
 
-  it('should include all required config fields in the query', async () => {
-    const mockResponse = {
-      config: {
-        port: 4000,
-        accessTokenExpiresIn: '15m',
-        refreshTokenExpiresIn: '7d',
-        dbFile: 'database.db',
-        logging: {
-          betterStack: {
-            enabled: false,
-          },
-        },
-      },
-    }
+  it('should include all frontend config fields', async () => {
+    const result = await getConfig()
+    const config = result.config
 
-    vi.mocked(graphqlClient.graphqlClient).mockResolvedValue(mockResponse)
+    // Verify app configuration
+    expect(config.app).toHaveProperty('name')
+    expect(config.app).toHaveProperty('version')
+    expect(config.app).toHaveProperty('theme')
 
-    await getConfig()
+    // Verify API configuration
+    expect(config.api).toHaveProperty('baseUrl')
+    expect(config.api).toHaveProperty('graphqlEndpoint')
+    expect(config.api).toHaveProperty('timeout')
 
-    const queryCall = vi.mocked(graphqlClient.graphqlClient).mock.calls[0]
-    const query = queryCall[0]
+    // Verify UI configuration
+    expect(config.ui).toHaveProperty('theme')
+    expect(config.ui).toHaveProperty('pagination')
+    expect(config.ui).toHaveProperty('table')
 
-    // Verify all required fields are in the query
-    expect(query).toContain('port')
-    expect(query).toContain('accessTokenExpiresIn')
-    expect(query).toContain('refreshTokenExpiresIn')
-    expect(query).toContain('dbFile')
-    expect(query).toContain('logging')
-    expect(query).toContain('betterStack')
-    expect(query).toContain('enabled')
+    // Verify features configuration
+    expect(config.features).toHaveProperty('debugMode')
+    expect(config.features).toHaveProperty('showConfigCard')
+    expect(config.features).toHaveProperty('enableLogging')
+
+    // Verify logging configuration
+    expect(config.logging).toHaveProperty('level')
+    expect(config.logging).toHaveProperty('console')
   })
 })
