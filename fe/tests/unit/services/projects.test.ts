@@ -1,6 +1,6 @@
+import type { CreateProjectInput, UpdateProjectInput } from '../../../src/services/projects'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as projectService from '../../../src/services/projects'
-import type { CreateProjectInput, UpdateProjectInput } from '../../../src/services/projects'
 
 // Mock the auth store
 vi.mock('../../../src/stores/auth', () => ({
@@ -61,10 +61,10 @@ describe('Project Service', () => {
           method: 'POST',
           headers: expect.objectContaining({
             'Content-Type': 'application/json',
-            Authorization: 'Bearer mock-token',
+            'Authorization': 'Bearer mock-token',
           }),
           body: expect.stringContaining('query'),
-        })
+        }),
       )
     })
 
@@ -109,7 +109,7 @@ describe('Project Service', () => {
         expect.objectContaining({
           method: 'POST',
           body: expect.stringContaining('GetProject'),
-        })
+        }),
       )
     })
 
@@ -161,7 +161,7 @@ describe('Project Service', () => {
         expect.objectContaining({
           method: 'POST',
           body: expect.stringContaining('CreateProject'),
-        })
+        }),
       )
     })
 
@@ -217,7 +217,7 @@ describe('Project Service', () => {
         expect.objectContaining({
           method: 'POST',
           body: expect.stringContaining('UpdateProject'),
-        })
+        }),
       )
     })
 
@@ -253,7 +253,7 @@ describe('Project Service', () => {
         expect.objectContaining({
           method: 'POST',
           body: expect.stringContaining('DeleteProject'),
-        })
+        }),
       )
     })
 

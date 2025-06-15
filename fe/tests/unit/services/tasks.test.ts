@@ -1,6 +1,6 @@
+import type { CreateTaskInput, UpdateTaskInput } from '../../../src/services/tasks'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as taskService from '../../../src/services/tasks'
-import type { CreateTaskInput, UpdateTaskInput } from '../../../src/services/tasks'
 
 // Mock the auth store
 vi.mock('../../../src/stores/auth', () => ({
@@ -60,10 +60,10 @@ describe('Task Service', () => {
           method: 'POST',
           headers: expect.objectContaining({
             'Content-Type': 'application/json',
-            Authorization: 'Bearer mock-token',
+            'Authorization': 'Bearer mock-token',
           }),
           body: expect.stringContaining('GetTasks'),
-        })
+        }),
       )
     })
 
@@ -90,7 +90,7 @@ describe('Task Service', () => {
         expect.any(String),
         expect.objectContaining({
           body: expect.stringContaining('project-1'),
-        })
+        }),
       )
     })
 
@@ -145,7 +145,7 @@ describe('Task Service', () => {
         expect.objectContaining({
           method: 'POST',
           body: expect.stringContaining('GetTask'),
-        })
+        }),
       )
     })
 
@@ -206,7 +206,7 @@ describe('Task Service', () => {
         expect.objectContaining({
           method: 'POST',
           body: expect.stringContaining('CreateTask'),
-        })
+        }),
       )
     })
 
@@ -274,7 +274,7 @@ describe('Task Service', () => {
         expect.objectContaining({
           method: 'POST',
           body: expect.stringContaining('UpdateTask'),
-        })
+        }),
       )
     })
 
@@ -310,7 +310,7 @@ describe('Task Service', () => {
         expect.objectContaining({
           method: 'POST',
           body: expect.stringContaining('DeleteTask'),
-        })
+        }),
       )
     })
 
