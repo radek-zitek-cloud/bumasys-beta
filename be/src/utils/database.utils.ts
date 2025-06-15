@@ -64,6 +64,8 @@ export async function createDatabase(filePath: string): Promise<Database> {
       taskEvaluations: [],
       taskStatusReports: [],
       projectStatusReports: [],
+      teams: [],
+      teamMembers: [],
     };
 
     // Ensure directory exists
@@ -141,6 +143,14 @@ export async function createDatabase(filePath: string): Promise<Database> {
   }
   if (!data.projectStatusReports) {
     data.projectStatusReports = [];
+  }
+
+  // Ensure team arrays exist for backward compatibility
+  if (!data.teams) {
+    data.teams = [];
+  }
+  if (!data.teamMembers) {
+    data.teamMembers = [];
   }
 
   // Return database interface
@@ -243,6 +253,14 @@ export async function validateDatabase(database: Database): Promise<void> {
     data.projectStatusReports = [];
   }
 
+  if (!Array.isArray(data.teams)) {
+    data.teams = [];
+  }
+
+  if (!Array.isArray(data.teamMembers)) {
+    data.teamMembers = [];
+  }
+
   // Clean up expired sessions (sessions older than refresh token expiry)
   const now = new Date();
   const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
@@ -285,6 +303,8 @@ export function getDatabaseStats(database: Database) {
     taskEvaluationCount: data.taskEvaluations.length,
     taskStatusReportCount: data.taskStatusReports.length,
     projectStatusReportCount: data.projectStatusReports.length,
+    teamCount: data.teams.length,
+    teamMemberCount: data.teamMembers.length,
     activeSessions: data.sessions.filter((session) => {
       const sessionDate = new Date(session.createdAt);
       const now = new Date();

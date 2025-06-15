@@ -13,6 +13,7 @@ import {
   OrganizationService,
   DepartmentService,
   StaffService,
+  TeamService,
   StatusService,
   PriorityService,
   ComplexityService,
@@ -31,6 +32,7 @@ let userService: UserService;
 let organizationService: OrganizationService;
 let departmentService: DepartmentService;
 let staffService: StaffService;
+let teamService: TeamService;
 let statusService: StatusService;
 let priorityService: PriorityService;
 let complexityService: ComplexityService;
@@ -47,6 +49,7 @@ let projectStatusReportService: ProjectStatusReportService;
  * @param organization - OrganizationService instance
  * @param department - DepartmentService instance
  * @param staff - StaffService instance
+ * @param team - TeamService instance
  * @param status - StatusService instance
  * @param priority - PriorityService instance
  * @param complexity - ComplexityService instance
@@ -62,6 +65,7 @@ export function setServices(
   organization: OrganizationService,
   department: DepartmentService,
   staff: StaffService,
+  team: TeamService,
   status: StatusService,
   priority: PriorityService,
   complexity: ComplexityService,
@@ -76,6 +80,7 @@ export function setServices(
   organizationService = organization;
   departmentService = department;
   staffService = staff;
+  teamService = team;
   statusService = status;
   priorityService = priority;
   complexityService = complexity;
@@ -400,6 +405,78 @@ export const queryResolvers = {
       throw new Error('Unauthenticated');
     }
     return staffService.findById(id);
+  },
+
+  /**
+   * Get all teams (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param __ - Query arguments (unused)
+   * @param context - GraphQL context containing user info
+   * @returns Array of all teams
+   * @throws Error if user is not authenticated
+   */
+  teams: (_: unknown, __: unknown, { user }: GraphQLContext) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return teamService.getAllTeams();
+  },
+
+  /**
+   * Get a specific team by ID (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing team ID
+   * @param context - GraphQL context containing user info
+   * @returns Team object if found, null otherwise
+   * @throws Error if user is not authenticated
+   */
+  team: (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return teamService.findById(id);
+  },
+
+  /**
+   * Get all team members for a specific team (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing team ID
+   * @param context - GraphQL context containing user info
+   * @returns Array of team members
+   * @throws Error if user is not authenticated
+   */
+  teamMembers: (
+    _: unknown,
+    { teamId }: { teamId: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return teamService.getTeamMembers(teamId);
+  },
+
+  /**
+   * Get a specific team member by ID (requires authentication)
+   * @param _ - Parent object (unused)
+   * @param args - Query arguments containing team member ID
+   * @param context - GraphQL context containing user info
+   * @returns TeamMember object if found, null otherwise
+   * @throws Error if user is not authenticated
+   */
+  teamMember: (
+    _: unknown,
+    { id }: { id: string },
+    { user }: GraphQLContext,
+  ) => {
+    if (!user) {
+      throw new Error('Unauthenticated');
+    }
+    return teamService.findTeamMemberById(id);
   },
 
   /**
@@ -775,6 +852,30 @@ export const staffResolvers = {
   },
   subordinates: (parent: { id: string }) => {
     return staffService.getSubordinates(parent.id);
+  },
+};
+
+/**
+ * Team field resolvers for nested data
+ */
+export const teamResolvers = {
+  lead: (parent: { leadId?: string }) => {
+    return parent.leadId ? staffService.findById(parent.leadId) : null;
+  },
+  members: (parent: { id: string }) => {
+    return teamService.getTeamMembers(parent.id);
+  },
+};
+
+/**
+ * TeamMember field resolvers for nested data
+ */
+export const teamMemberResolvers = {
+  team: (parent: { teamId: string }) => {
+    return teamService.findById(parent.teamId);
+  },
+  staff: (parent: { staffId: string }) => {
+    return staffService.findById(parent.staffId);
   },
 };
 

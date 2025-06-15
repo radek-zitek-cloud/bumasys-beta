@@ -229,6 +229,76 @@ export const typeDefs = gql`
   }
 
   """
+  Team object representing a team in the organization
+  """
+  type Team {
+    """
+    Unique identifier for the team
+    """
+    id: ID!
+
+    """
+    Team name
+    """
+    name: String!
+
+    """
+    Optional description
+    """
+    description: String
+
+    """
+    Optional team lead ID (references staff)
+    """
+    leadId: ID
+
+    """
+    Team lead (if set)
+    """
+    lead: Staff
+
+    """
+    Team members
+    """
+    members: [TeamMember!]!
+  }
+
+  """
+  Team member object representing a staff member's membership in a team
+  """
+  type TeamMember {
+    """
+    Unique identifier for the team member relationship
+    """
+    id: ID!
+
+    """
+    Team ID this membership belongs to
+    """
+    teamId: ID!
+
+    """
+    Staff ID of the team member
+    """
+    staffId: ID!
+
+    """
+    Role of the member in the team
+    """
+    memberRole: String!
+
+    """
+    Team object this membership belongs to
+    """
+    team: Team!
+
+    """
+    Staff member object
+    """
+    staff: Staff!
+  }
+
+  """
   Status reference object
   """
   type Status {
@@ -702,6 +772,28 @@ export const typeDefs = gql`
     staffMember(id: ID!): Staff
 
     """
+    Get all teams (requires authentication)
+    """
+    teams: [Team!]!
+
+    """
+    Get a specific team by ID (requires authentication)
+    Returns null if team not found
+    """
+    team(id: ID!): Team
+
+    """
+    Get all team members for a specific team (requires authentication)
+    """
+    teamMembers(teamId: ID!): [TeamMember!]!
+
+    """
+    Get a specific team member by ID (requires authentication)
+    Returns null if team member not found
+    """
+    teamMember(id: ID!): TeamMember
+
+    """
     Get all statuses (requires authentication)
     """
     statuses: [Status!]!
@@ -953,6 +1045,60 @@ export const typeDefs = gql`
     Delete a staff member by ID (requires authentication)
     """
     deleteStaff(id: ID!): Boolean!
+
+    """
+    Create a new team (requires authentication)
+    """
+    createTeam(
+      name: String!
+      description: String
+      leadId: ID
+    ): Team!
+
+    """
+    Update an existing team (requires authentication)
+    """
+    updateTeam(
+      id: ID!
+      name: String
+      description: String
+      leadId: ID
+    ): Team!
+
+    """
+    Delete a team by ID (requires authentication)
+    """
+    deleteTeam(id: ID!): Boolean!
+
+    """
+    Add a staff member to a team (requires authentication)
+    """
+    addTeamMember(
+      teamId: ID!
+      staffId: ID!
+      memberRole: String!
+    ): TeamMember!
+
+    """
+    Update a team member's role (requires authentication)
+    """
+    updateTeamMember(
+      id: ID!
+      memberRole: String
+    ): TeamMember!
+
+    """
+    Remove a team member by ID (requires authentication)
+    """
+    removeTeamMember(id: ID!): Boolean!
+
+    """
+    Remove a staff member from a team (requires authentication)
+    """
+    removeStaffFromTeam(
+      teamId: ID!
+      staffId: ID!
+    ): Boolean!
 
     """
     Create a new status (requires authentication)

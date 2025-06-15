@@ -10,6 +10,7 @@ export { UserService } from './user.service';
 export { OrganizationService } from './organization.service';
 export { DepartmentService } from './department.service';
 export { StaffService } from './staff.service';
+export { TeamService } from './team.service';
 export { StatusService } from './status.service';
 export { PriorityService } from './priority.service';
 export { ComplexityService } from './complexity.service';

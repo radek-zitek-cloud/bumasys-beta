@@ -91,6 +91,10 @@ export interface Database {
     taskStatusReports: TaskStatusReport[];
     /** Array of all project status reports */
     projectStatusReports: ProjectStatusReport[];
+    /** Array of all teams */
+    teams: Team[];
+    /** Array of all team member relationships */
+    teamMembers: TeamMember[];
   };
   /** Write current data to persistent storage */
   write(): Promise<void>;
@@ -761,4 +765,80 @@ export interface UpdateProjectStatusReportInput {
   reportDate?: string;
   /** New status summary (optional) */
   statusSummary?: string;
+}
+
+/**
+ * Represents a team in the system
+ */
+export interface Team {
+  /** Unique identifier for the team */
+  id: string;
+  /** Team name */
+  name: string;
+  /** Optional description */
+  description?: string;
+  /** Optional team lead ID (references staff) */
+  leadId?: string;
+}
+
+/**
+ * Represents a team member relationship
+ */
+export interface TeamMember {
+  /** Unique identifier for the team member relationship */
+  id: string;
+  /** Team ID this membership belongs to */
+  teamId: string;
+  /** Staff ID of the team member */
+  staffId: string;
+  /** Role of the member in the team */
+  memberRole: string;
+}
+
+/**
+ * Input parameters for creating a team
+ */
+export interface CreateTeamInput {
+  /** Team name */
+  name: string;
+  /** Optional description */
+  description?: string;
+  /** Optional team lead ID (references staff) */
+  leadId?: string;
+}
+
+/**
+ * Input parameters for updating a team
+ */
+export interface UpdateTeamInput {
+  /** Team ID to update */
+  id: string;
+  /** New name (optional) */
+  name?: string;
+  /** New description (optional) */
+  description?: string;
+  /** New team lead ID (optional) */
+  leadId?: string;
+}
+
+/**
+ * Input parameters for creating a team member
+ */
+export interface CreateTeamMemberInput {
+  /** Team ID this membership belongs to */
+  teamId: string;
+  /** Staff ID of the team member */
+  staffId: string;
+  /** Role of the member in the team */
+  memberRole: string;
+}
+
+/**
+ * Input parameters for updating a team member
+ */
+export interface UpdateTeamMemberInput {
+  /** Team member ID to update */
+  id: string;
+  /** New member role (optional) */
+  memberRole?: string;
 }
