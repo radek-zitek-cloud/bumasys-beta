@@ -177,6 +177,15 @@
             <template #item.actions="{ item }">
               <div class="d-flex gap-1">
                 <v-btn
+                  icon="mdi-file-tree"
+                  size="small"
+                  variant="text"
+                  @click="openDepartmentTreeDialog(item)"
+                >
+                  <v-icon>mdi-file-tree</v-icon>
+                  <v-tooltip activator="parent" location="top">View Department Structure</v-tooltip>
+                </v-btn>
+                <v-btn
                   icon="mdi-eye"
                   size="small"
                   variant="text"
@@ -296,6 +305,15 @@
             <!-- Actions Column -->
             <template #item.actions="{ item }">
               <div class="d-flex gap-1">
+                <v-btn
+                  icon="mdi-account-supervisor"
+                  size="small"
+                  variant="text"
+                  @click="openStaffTreeDialog(item)"
+                >
+                  <v-icon>mdi-account-supervisor</v-icon>
+                  <v-tooltip activator="parent" location="top">View Organization Structure</v-tooltip>
+                </v-btn>
                 <v-btn
                   icon="mdi-eye"
                   size="small"
@@ -443,6 +461,23 @@
       />
     </v-dialog>
 
+    <!-- Tree Structure Dialogs -->
+    <v-dialog v-model="showDepartmentTreeDialog" max-width="1200" persistent>
+      <DepartmentTreeDialog
+        v-if="selectedDepartment"
+        :department="selectedDepartment"
+        @close="showDepartmentTreeDialog = false"
+      />
+    </v-dialog>
+
+    <v-dialog v-model="showStaffTreeDialog" max-width="1200" persistent>
+      <StaffTreeDialog
+        v-if="selectedStaff"
+        :staff="selectedStaff"
+        @close="showStaffTreeDialog = false"
+      />
+    </v-dialog>
+
     <!-- Snackbar for notifications -->
     <v-snackbar
       v-model="snackbar.show"
@@ -464,6 +499,7 @@
   import DepartmentCreateDialog from '../components/DepartmentCreateDialog.vue'
   import DepartmentDeleteDialog from '../components/DepartmentDeleteDialog.vue'
   import DepartmentEditDialog from '../components/DepartmentEditDialog.vue'
+  import DepartmentTreeDialog from '../components/DepartmentTreeDialog.vue'
   import DepartmentViewDialog from '../components/DepartmentViewDialog.vue'
   import OrganizationCreateDialog from '../components/OrganizationCreateDialog.vue'
   import OrganizationDeleteDialog from '../components/OrganizationDeleteDialog.vue'
@@ -472,6 +508,7 @@
   import StaffCreateDialog from '../components/StaffCreateDialog.vue'
   import StaffDeleteDialog from '../components/StaffDeleteDialog.vue'
   import StaffEditDialog from '../components/StaffEditDialog.vue'
+  import StaffTreeDialog from '../components/StaffTreeDialog.vue'
   import StaffViewDialog from '../components/StaffViewDialog.vue'
   import * as departmentService from '../services/departments'
   import * as organizationService from '../services/organizations'
@@ -490,7 +527,7 @@
     { title: 'Name', key: 'name', sortable: true },
     { title: 'Organization', key: 'organizationId', sortable: true },
     { title: 'Description', key: 'description', sortable: true },
-    { title: 'Actions', key: 'actions', sortable: false, width: '150px' },
+    { title: 'Actions', key: 'actions', sortable: false, width: '200px' },
   ]
 
   const staffHeaders: DataTableHeaders = [
@@ -499,7 +536,7 @@
     { title: 'Role', key: 'role', sortable: true },
     { title: 'Organization', key: 'organizationId', sortable: true },
     { title: 'Department', key: 'departmentId', sortable: true },
-    { title: 'Actions', key: 'actions', sortable: false, width: '150px' },
+    { title: 'Actions', key: 'actions', sortable: false, width: '200px' },
   ]
 
   /** Reactive data */
@@ -533,6 +570,8 @@
   const showStaffEditDialog = ref(false)
   const showStaffViewDialog = ref(false)
   const showStaffDeleteDialog = ref(false)
+  const showDepartmentTreeDialog = ref(false)
+  const showStaffTreeDialog = ref(false)
 
   /** Data table configuration */
   const itemsPerPage = ref(10)
@@ -686,6 +725,11 @@
     showDepartmentDeleteDialog.value = true
   }
 
+  function openDepartmentTreeDialog (department: Department) {
+    selectedDepartment.value = department
+    showDepartmentTreeDialog.value = true
+  }
+
   async function handleDepartmentCreated (departmentData: CreateDepartmentInput) {
     try {
       const { createDepartment } = await departmentService.createDepartment(departmentData)
@@ -746,6 +790,11 @@
   function openStaffDeleteDialog (staffMember: Staff) {
     selectedStaff.value = staffMember
     showStaffDeleteDialog.value = true
+  }
+
+  function openStaffTreeDialog (staffMember: Staff) {
+    selectedStaff.value = staffMember
+    showStaffTreeDialog.value = true
   }
 
   async function handleStaffCreated (staffData: CreateStaffInput) {
