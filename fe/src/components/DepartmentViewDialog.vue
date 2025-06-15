@@ -51,7 +51,7 @@
             variant="outlined"
           />
         </v-col>
-        <v-col v-if="department.parentDepartmentId" cols="6">
+        <v-col v-if="department.parentDepartmentId" cols="12">
           <v-text-field
             label="Parent Department ID"
             :model-value="department.parentDepartmentId"
@@ -60,7 +60,7 @@
             variant="outlined"
           />
         </v-col>
-        <v-col v-if="managerDisplay" cols="6">
+        <v-col v-if="managerDisplay" cols="12">
           <v-text-field
             label="Manager"
             :model-value="managerDisplay"

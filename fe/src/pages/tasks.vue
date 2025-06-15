@@ -98,6 +98,21 @@
               </div>
             </template>
 
+            <!-- Actual Dates Column -->
+            <template #item.actualDates="{ item }">
+              <div class="text-body-2">
+                <div v-if="item.actualStartDate">
+                  Start: {{ formatDate(item.actualStartDate) }}
+                </div>
+                <div v-if="item.actualEndDate">
+                  End: {{ formatDate(item.actualEndDate) }}
+                </div>
+                <span v-if="!item.actualStartDate && !item.actualEndDate" class="text-caption text-medium-emphasis">
+                  No dates set
+                </span>
+              </div>
+            </template>
+
             <!-- Status Column -->
             <template #item.status="{ item }">
               <v-chip
@@ -232,44 +247,6 @@
               <span v-else class="text-caption text-medium-emphasis">No parent</span>
             </template>
 
-            <!-- Evaluator Column -->
-            <template #item.evaluator="{ item }">
-              <span v-if="item.evaluator" class="text-body-2">
-                {{ item.evaluator.firstName }} {{ item.evaluator.lastName }}
-              </span>
-              <span v-else class="text-caption text-medium-emphasis">No evaluator</span>
-            </template>
-
-            <!-- Status/Priority/Complexity Column -->
-            <template #item.attributes="{ item }">
-              <div class="d-flex flex-column gap-1">
-                <v-chip
-                  v-if="item.status"
-                  color="info"
-                  size="x-small"
-                  variant="outlined"
-                >
-                  {{ item.status.name }}
-                </v-chip>
-                <v-chip
-                  v-if="item.priority"
-                  color="warning"
-                  size="x-small"
-                  variant="outlined"
-                >
-                  {{ item.priority.name }}
-                </v-chip>
-                <v-chip
-                  v-if="item.complexity"
-                  color="success"
-                  size="x-small"
-                  variant="outlined"
-                >
-                  {{ item.complexity.name }}
-                </v-chip>
-              </div>
-            </template>
-
             <!-- Planned Dates Column -->
             <template #item.plannedDates="{ item }">
               <div class="text-body-2">
@@ -280,6 +257,21 @@
                   End: {{ formatDate(item.plannedEndDate) }}
                 </div>
                 <span v-if="!item.plannedStartDate && !item.plannedEndDate" class="text-caption text-medium-emphasis">
+                  No dates set
+                </span>
+              </div>
+            </template>
+
+            <!-- Actual Dates Column -->
+            <template #item.actualDates="{ item }">
+              <div class="text-body-2">
+                <div v-if="item.actualStartDate">
+                  Start: {{ formatDate(item.actualStartDate) }}
+                </div>
+                <div v-if="item.actualEndDate">
+                  End: {{ formatDate(item.actualEndDate) }}
+                </div>
+                <span v-if="!item.actualStartDate && !item.actualEndDate" class="text-caption text-medium-emphasis">
                   No dates set
                 </span>
               </div>
@@ -471,6 +463,7 @@
     { title: 'Description', key: 'description', sortable: false },
     { title: 'Lead Staff', key: 'leadStaff', sortable: false },
     { title: 'Planned Dates', key: 'plannedDates', sortable: false },
+    { title: 'Actual Dates', key: 'actualDates', sortable: false },
     { title: 'Status', key: 'status', sortable: false },
     { title: 'Actions', key: 'actions', sortable: false, width: '120' },
   ]
@@ -479,9 +472,8 @@
     { title: 'Name', key: 'name', sortable: true },
     { title: 'Project', key: 'project', sortable: false },
     { title: 'Parent Task', key: 'parentTask', sortable: false },
-    { title: 'Evaluator', key: 'evaluator', sortable: false },
-    { title: 'Attributes', key: 'attributes', sortable: false },
     { title: 'Planned Dates', key: 'plannedDates', sortable: false },
+    { title: 'Actual Dates', key: 'actualDates', sortable: false },
     { title: 'Actions', key: 'actions', sortable: false, width: '120' },
   ]
 
@@ -511,9 +503,7 @@
       filtered = filtered.filter(task =>
         task.name.toLowerCase().includes(search)
         || task.description?.toLowerCase().includes(search)
-        || task.project?.name?.toLowerCase().includes(search)
-        || task.evaluator?.firstName?.toLowerCase().includes(search)
-        || task.evaluator?.lastName?.toLowerCase().includes(search),
+        || task.project?.name?.toLowerCase().includes(search),
       )
     }
 
