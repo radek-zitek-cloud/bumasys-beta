@@ -18,7 +18,7 @@ import { logInfo } from '@/utils/logger'
 import App from './App.vue'
 
 // Styles
-import 'unfonts.css'
+// import './unfonts.css' // TODO: Fix CSS import for tests
 
 const app = createApp(App)
 

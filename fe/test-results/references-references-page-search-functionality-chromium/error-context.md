@@ -1,0 +1,118 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - button
+  - text: Fulcrum
+  - button
+  - button
+- navigation:
+  - listbox:
+    - link "Home Return to home page":
+      - /url: /
+    - separator
+    - link "Organization Manage organizations, departments and staff":
+      - /url: /people
+    - link "Teams Manage teams and team members":
+      - /url: /teams
+    - link "Projects Manage projects and tasks":
+      - /url: /tasks
+    - link "Budget Manage budget":
+      - /url: /budget
+    - separator
+    - link "References Manage reference data":
+      - /url: /references
+    - link "Users Manage system users":
+      - /url: /users
+- main:
+  - heading "Reference Data Management" [level=1]
+  - paragraph: Manage system reference data including status, priority, and complexity values
+  - text: Status (0)
+  - button "Add Status"
+  - text: Search statuses...
+  - textbox "Search statuses... Search statuses..."
+  - table:
+    - rowgroup:
+      - row "Name Actions":
+        - cell "Name"
+        - cell "Actions"
+    - rowgroup:
+      - row "No statuses found":
+        - cell "No statuses found"
+  - separator
+  - text: "Items per page:"
+  - combobox:
+    - text: "10"
+    - textbox "Open": "10"
+  - text: 0-0 of 0
+  - navigation "Pagination Navigation":
+    - list:
+      - listitem:
+        - button "First page" [disabled]
+      - listitem:
+        - button "Previous page" [disabled]
+      - listitem:
+        - button "Next page" [disabled]
+      - listitem:
+        - button "Last page" [disabled]
+  - text: Priority (0)
+  - button "Add Priority"
+  - text: Search priorities...
+  - textbox "Search priorities... Search priorities..."
+  - table:
+    - rowgroup:
+      - row "Name Actions":
+        - cell "Name"
+        - cell "Actions"
+    - rowgroup:
+      - row "No priorities found":
+        - cell "No priorities found"
+  - separator
+  - text: "Items per page:"
+  - combobox:
+    - text: "10"
+    - textbox "Open": "10"
+  - text: 0-0 of 0
+  - navigation "Pagination Navigation":
+    - list:
+      - listitem:
+        - button "First page" [disabled]
+      - listitem:
+        - button "Previous page" [disabled]
+      - listitem:
+        - button "Next page" [disabled]
+      - listitem:
+        - button "Last page" [disabled]
+  - text: Complexity (0)
+  - button "Add Complexity"
+  - text: Search complexities...
+  - textbox "Search complexities... Search complexities..."
+  - table:
+    - rowgroup:
+      - row "Name Actions":
+        - cell "Name"
+        - cell "Actions"
+    - rowgroup:
+      - row "No complexities found":
+        - cell "No complexities found"
+  - separator
+  - text: "Items per page:"
+  - combobox:
+    - text: "10"
+    - textbox "Open": "10"
+  - text: 0-0 of 0
+  - navigation "Pagination Navigation":
+    - list:
+      - listitem:
+        - button "First page" [disabled]
+      - listitem:
+        - button "Previous page" [disabled]
+      - listitem:
+        - button "Next page" [disabled]
+      - listitem:
+        - button "Last page" [disabled]
+- contentinfo:
+  - link "Vuetify Documentation":
+    - /url: https://vuetifyjs.com/
+  - text: "Backend: ready | © 2025 Radek Zitek"
+```

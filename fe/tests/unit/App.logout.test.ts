@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest'
+import { resolve } from 'node:path'
 
 // Simple unit test to verify the logout navigation logic exists
 describe('App Logout Navigation Logic', () => {
   it('should verify logout function includes navigation to home page', async () => {
     // Read the App.vue file and verify it contains the navigation logic
     const fs = await import('node:fs/promises')
-    const appVueContent = await fs.readFile('/home/runner/work/bumasys-beta/bumasys-beta/fe/src/App.vue', 'utf8')
+    const appVuePath = resolve(__dirname, '../../src/App.vue')
+    const appVueContent = await fs.readFile(appVuePath, 'utf8')
 
     // Verify the basic structure exists
     expect(appVueContent).toContain('async function handleLogout')

@@ -1,0 +1,127 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - button
+  - text: Fulcrum
+  - button
+  - button
+- navigation:
+  - listbox:
+    - link "Home Return to home page":
+      - /url: /
+    - separator
+    - link "Organization Manage organizations, departments and staff":
+      - /url: /people
+    - link "Teams Manage teams and team members":
+      - /url: /teams
+    - link "Projects Manage projects and tasks":
+      - /url: /tasks
+    - link "Budget Manage budget":
+      - /url: /budget
+    - separator
+    - link "References Manage reference data":
+      - /url: /references
+    - link "Users Manage system users":
+      - /url: /users
+- main:
+  - heading "Organization Management" [level=1]
+  - paragraph: Manage organizations, departments, and staff members
+  - text: Organizations (0)
+  - button "Add Organization"
+  - text: Search organizations...
+  - textbox "Search organizations... Search organizations..."
+  - table:
+    - rowgroup:
+      - row "Name Description Actions":
+        - cell "Name"
+        - cell "Description"
+        - cell "Actions"
+    - rowgroup:
+      - row "No organizations found":
+        - cell "No organizations found"
+  - separator
+  - text: "Items per page:"
+  - combobox:
+    - text: "10"
+    - textbox "Open": "10"
+  - text: 0-0 of 0
+  - navigation "Pagination Navigation":
+    - list:
+      - listitem:
+        - button "First page" [disabled]
+      - listitem:
+        - button "Previous page" [disabled]
+      - listitem:
+        - button "Next page" [disabled]
+      - listitem:
+        - button "Last page" [disabled]
+  - text: Departments (0)
+  - button "Add Department"
+  - text: Search departments...
+  - textbox "Search departments... Search departments..."
+  - table:
+    - rowgroup:
+      - row "Name Manager Description Organization Actions":
+        - cell "Name"
+        - cell "Manager"
+        - cell "Description"
+        - cell "Organization"
+        - cell "Actions"
+    - rowgroup:
+      - row "No departments found":
+        - cell "No departments found"
+  - separator
+  - text: "Items per page:"
+  - combobox:
+    - text: "10"
+    - textbox "Open": "10"
+  - text: 0-0 of 0
+  - navigation "Pagination Navigation":
+    - list:
+      - listitem:
+        - button "First page" [disabled]
+      - listitem:
+        - button "Previous page" [disabled]
+      - listitem:
+        - button "Next page" [disabled]
+      - listitem:
+        - button "Last page" [disabled]
+  - text: Staff Members (0)
+  - button "Add Staff Member"
+  - text: Search staff...
+  - textbox "Search staff... Search staff..."
+  - table:
+    - rowgroup:
+      - row "Name Role Department Organization Email Actions":
+        - cell "Name"
+        - cell "Role"
+        - cell "Department"
+        - cell "Organization"
+        - cell "Email"
+        - cell "Actions"
+    - rowgroup:
+      - row "No staff members found":
+        - cell "No staff members found"
+  - separator
+  - text: "Items per page:"
+  - combobox:
+    - text: "10"
+    - textbox "Open": "10"
+  - text: 0-0 of 0
+  - navigation "Pagination Navigation":
+    - list:
+      - listitem:
+        - button "First page" [disabled]
+      - listitem:
+        - button "Previous page" [disabled]
+      - listitem:
+        - button "Next page" [disabled]
+      - listitem:
+        - button "Last page" [disabled]
+- contentinfo:
+  - link "Vuetify Documentation":
+    - /url: https://vuetifyjs.com/
+  - text: "Backend: ready | © 2025 Radek Zitek"
+- status: Failed to load staff
+```
