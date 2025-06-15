@@ -20,6 +20,7 @@
 
 import { useAuthStore } from '../stores/auth'
 import { graphqlClient } from './graphql-client'
+import { logInfo, logError, logDebug } from '../utils/logger'
 
 /** User interface matching the backend schema */
 export interface User {
@@ -53,46 +54,69 @@ export interface UpdateUserInput {
  * Fetch all users from the system.
  * Requires authentication.
  */
-export function getUsers (): Promise<{ users: User[] }> {
-  const store = useAuthStore()
-  return graphqlClient<{ users: User[] }>(
-    `
-      query {
-        users {
-          id
-          email
-          firstName
-          lastName
-          note
+export async function getUsers (): Promise<{ users: User[] }> {
+  try {
+    const store = useAuthStore()
+    logDebug('Fetching all users')
+    
+    const result = await graphqlClient<{ users: User[] }>(
+      `
+        query {
+          users {
+            id
+            email
+            firstName
+            lastName
+            note
+          }
         }
-      }
-    `,
-    {},
-    store.token,
-  )
+      `,
+      {},
+      store.token,
+    )
+    
+    logInfo('Users fetched successfully', { count: result.users.length })
+    return result
+  } catch (error) {
+    logError('Failed to fetch users', error)
+    throw error
+  }
 }
 
 /**
  * Fetch a specific user by ID.
  * Requires authentication.
  */
-export function getUser (id: string): Promise<{ user: User | null }> {
-  const store = useAuthStore()
-  return graphqlClient<{ user: User | null }>(
-    `
-      query ($id: ID!) {
-        user(id: $id) {
-          id
-          email
-          firstName
-          lastName
-          note
+export async function getUser (id: string): Promise<{ user: User | null }> {
+  try {
+    const store = useAuthStore()
+    logDebug('Fetching user by ID', { userId: id })
+    
+    const result = await graphqlClient<{ user: User | null }>(
+      `
+        query ($id: ID!) {
+          user(id: $id) {
+            id
+            email
+            firstName
+            lastName
+            note
+          }
         }
-      }
-    `,
-    { id },
-    store.token,
-  )
+      `,
+      { id },
+      store.token,
+    )
+    
+    logInfo('User fetched successfully', { 
+      userId: id, 
+      found: !!result.user 
+    })
+    return result
+  } catch (error) {
+    logError('Failed to fetch user', { error, userId: id })
+    throw error
+  }
 }
 
 /**
