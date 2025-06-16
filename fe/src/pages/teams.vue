@@ -695,7 +695,6 @@
       if (selectedTeamForMembers.value) {
         await loadTeamMembers(selectedTeamForMembers.value.id)
       }
-      await loadAllTeamMembers()
     } catch (error) {
       console.error('Failed to add team member:', error)
       notify(
@@ -717,7 +716,6 @@
       if (selectedTeamForMembers.value) {
         await loadTeamMembers(selectedTeamForMembers.value.id)
       }
-      await loadAllTeamMembers()
     } catch (error) {
       console.error('Failed to update team member:', error)
       notify(
@@ -741,7 +739,6 @@
       if (selectedTeamForMembers.value) {
         await loadTeamMembers(selectedTeamForMembers.value.id)
       }
-      await loadAllTeamMembers()
     } catch (error) {
       console.error('Failed to remove team member:', error)
       notify(
