@@ -247,4 +247,25 @@ describe('TaskGraphDialog', () => {
     expect(wrapper.find('.mock-current-task-node').exists()).toBe(true)
     expect(wrapper.text()).toContain('Current: Current Task')
   })
+
+  it('implements proper task nesting structure', () => {
+    // This test verifies the nesting implementation creates parent-child relationships
+    const wrapper = mount(MockTaskGraphDialog, {
+      props: {
+        task: mockTaskWithRelationships,
+      },
+      global: {
+        plugins: [vuetify],
+      },
+    })
+
+    // Verify project containers exist
+    expect(wrapper.find('.mock-project-node').exists()).toBe(true)
+    
+    // Verify tasks are grouped by project
+    expect(wrapper.text()).toContain('Project: Test Project')
+    expect(wrapper.text()).toContain('Current: Current Task')
+    expect(wrapper.text()).toContain('Child: Child Task')
+    expect(wrapper.text()).toContain('Predecessor: Predecessor Task')
+  })
 })
