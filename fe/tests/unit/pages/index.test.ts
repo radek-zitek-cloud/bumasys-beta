@@ -16,7 +16,7 @@ describe('Index Page', () => {
       name: 'IndexPage',
       template: '<div>Welcome to Fulcrum</div>',
     }
-    
+
     expect(mockPageComponent.name).toBe('IndexPage')
     expect(mockPageComponent.template).toContain('Welcome to Fulcrum')
   })
@@ -28,7 +28,7 @@ describe('Index Page', () => {
       hasNavigation: true,
       hasContent: true,
     }
-    
+
     expect(pageStructure.hasContainer).toBe(true)
     expect(pageStructure.hasNavigation).toBe(true)
     expect(pageStructure.hasContent).toBe(true)

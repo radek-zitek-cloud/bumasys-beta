@@ -30,7 +30,7 @@ async function initializeApp () {
   console.log('📊 Environment:', import.meta.env.MODE)
   console.log('🔧 API Base URL:', import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000')
   console.log('🔒 BetterStack Configured:', !!import.meta.env.VITE_BETTERSTACK_TOKEN)
-  
+
   try {
     logInfo('Starting application initialization...')
 

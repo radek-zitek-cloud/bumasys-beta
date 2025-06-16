@@ -17,8 +17,8 @@ describe('OrganizationCreateDialog', () => {
           'v-textarea': { template: '<textarea class="v-textarea"></textarea>', props: ['label', 'modelValue'] },
           'v-btn': { template: '<button class="v-btn"><slot /></button>', props: ['color', 'loading'] },
           'v-spacer': { template: '<div class="v-spacer"></div>' },
-        }
-      }
+        },
+      },
     })
 
     expect(wrapper.find('.v-card').exists()).toBe(true)
@@ -41,13 +41,13 @@ describe('OrganizationCreateDialog', () => {
           'v-textarea': { template: '<textarea class="v-textarea"></textarea>' },
           'v-btn': { template: '<button class="v-btn" @click="$emit(\'click\')"><slot /></button>' },
           'v-spacer': { template: '<div class="v-spacer"></div>' },
-        }
-      }
+        },
+      },
     })
 
     // Emit cancel event directly
     await wrapper.vm.$emit('cancel')
-    
+
     expect(wrapper.emitted('cancel')).toBeTruthy()
   })
 
@@ -61,20 +61,20 @@ describe('OrganizationCreateDialog', () => {
           'v-card-actions': { template: '<div class="v-card-actions"><slot /></div>' },
           'v-row': { template: '<div class="v-row"><slot /></div>' },
           'v-col': { template: '<div class="v-col"><slot /></div>' },
-          'v-text-field': { 
-            template: '<input class="v-text-field" v-model="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />', 
+          'v-text-field': {
+            template: '<input class="v-text-field" v-model="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
             props: ['modelValue'],
-            emits: ['update:modelValue']
+            emits: ['update:modelValue'],
           },
-          'v-textarea': { 
+          'v-textarea': {
             template: '<textarea class="v-textarea" v-model="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)"></textarea>',
             props: ['modelValue'],
-            emits: ['update:modelValue']
+            emits: ['update:modelValue'],
           },
           'v-btn': { template: '<button class="v-btn" :disabled="disabled"><slot /></button>', props: ['disabled'] },
           'v-spacer': { template: '<div class="v-spacer"></div>' },
-        }
-      }
+        },
+      },
     })
 
     // Check that the component handles validation
@@ -96,13 +96,13 @@ describe('OrganizationCreateDialog', () => {
           'v-textarea': { template: '<textarea class="v-textarea"></textarea>' },
           'v-btn': { template: '<button class="v-btn"><slot /></button>' },
           'v-spacer': { template: '<div class="v-spacer"></div>' },
-        }
-      }
+        },
+      },
     })
 
     // Test that the component can emit created event
     await wrapper.vm.$emit('created', { name: 'Test Org', description: 'Test Description' })
-    
+
     expect(wrapper.emitted('created')).toBeTruthy()
     expect(wrapper.emitted('created')![0]).toEqual([{ name: 'Test Org', description: 'Test Description' }])
   })

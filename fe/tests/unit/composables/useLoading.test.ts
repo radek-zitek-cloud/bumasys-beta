@@ -3,7 +3,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { useLoading, useGlobalLoading } from '../../../src/composables/useLoading'
+import { useGlobalLoading, useLoading } from '../../../src/composables/useLoading'
 
 describe('useLoading composable', () => {
   beforeEach(() => {
@@ -69,15 +69,15 @@ describe('useLoading composable', () => {
       const { loading, withLoading } = useLoading()
 
       const asyncOperation = vi.fn().mockResolvedValue('success')
-      
+
       expect(loading.value).toBe(false)
 
       const promise = withLoading(asyncOperation)
-      
+
       expect(loading.value).toBe(true)
-      
+
       const result = await promise
-      
+
       expect(loading.value).toBe(false)
       expect(result).toBe('success')
       expect(asyncOperation).toHaveBeenCalled()
@@ -88,12 +88,12 @@ describe('useLoading composable', () => {
 
       const testError = new Error('Operation failed')
       const asyncOperation = vi.fn().mockRejectedValue(testError)
-      
+
       expect(loading.value).toBe(false)
       expect(error.value).toBeNull()
 
       await expect(withLoading(asyncOperation)).rejects.toThrow('Operation failed')
-      
+
       expect(loading.value).toBe(false)
       expect(error.value).toBe(testError)
     })

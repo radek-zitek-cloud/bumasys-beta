@@ -2,7 +2,7 @@
  * @fileoverview Tests for Vue Router configuration
  */
 
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createRouter, createWebHistory } from 'vue-router'
 
 // Mock logger utils
@@ -99,10 +99,10 @@ describe('Router Configuration', () => {
   it('should handle navigation between routes', async () => {
     await testRouter.push('/')
     expect(testRouter.currentRoute.value.path).toBe('/')
-    
+
     await testRouter.push('/users')
     expect(testRouter.currentRoute.value.path).toBe('/users')
-    
+
     await testRouter.push('/tasks')
     expect(testRouter.currentRoute.value.path).toBe('/tasks')
   })
@@ -114,7 +114,7 @@ describe('Router Configuration', () => {
   it('should handle programmatic navigation', async () => {
     await testRouter.push({ name: 'users' })
     expect(testRouter.currentRoute.value.name).toBe('users')
-    
+
     await testRouter.push({ name: 'tasks' })
     expect(testRouter.currentRoute.value.name).toBe('tasks')
   })

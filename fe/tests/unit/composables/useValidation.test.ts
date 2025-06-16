@@ -241,7 +241,7 @@ describe('useValidation composable', () => {
 
       const isEven = createValidator(
         (value: number) => value % 2 === 0,
-        'Number must be even'
+        'Number must be even',
       )
 
       expect(isEven(2)).toBe(true)
@@ -255,7 +255,7 @@ describe('useValidation composable', () => {
 
       const isPositive = createValidator(
         (value: number) => value > 0,
-        'Must be positive'
+        'Must be positive',
       )
 
       expect(isPositive(1)).toBe(true)

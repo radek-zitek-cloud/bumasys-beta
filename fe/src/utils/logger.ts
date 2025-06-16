@@ -1,7 +1,7 @@
 import type { Config } from '../services/config'
-import frontendConfig from './config'
-import pino from 'pino'
 import { Logtail } from '@logtail/browser'
+import pino from 'pino'
+import frontendConfig from './config'
 
 /**
  * Frontend Pino logger utility
@@ -17,7 +17,7 @@ let logtailInstance: Logtail | null = null
 /**
  * Initialize Logtail instance for BetterStack integration
  */
-function initializeLogtail(token: string, endpoint?: string): Logtail {
+function initializeLogtail (token: string, endpoint?: string): Logtail {
   if (!logtailInstance) {
     const options = endpoint ? { endpoint } : {}
     logtailInstance = new Logtail(token, options)
@@ -28,7 +28,7 @@ function initializeLogtail(token: string, endpoint?: string): Logtail {
 /**
  * Send logs to BetterStack using Logtail
  */
-async function sendToLogtail(logtail: Logtail, level: string, logEvent: any): Promise<void> {
+async function sendToLogtail (logtail: Logtail, level: string, logEvent: any): Promise<void> {
   try {
     const message = logEvent.messages?.[0] || logEvent.msg || ''
     const logData = {
@@ -42,20 +42,25 @@ async function sendToLogtail(logtail: Logtail, level: string, logEvent: any): Pr
 
     // Use Logtail's built-in methods based on level
     switch (level.toLowerCase()) {
-      case 'debug':
+      case 'debug': {
         await logtail.debug(message, logData)
         break
-      case 'info':
+      }
+      case 'info': {
         await logtail.info(message, logData)
         break
-      case 'warn':
+      }
+      case 'warn': {
         await logtail.warn(message, logData)
         break
-      case 'error':
+      }
+      case 'error': {
         await logtail.error(message, logData)
         break
-      default:
+      }
+      default: {
         await logtail.info(message, logData)
+      }
     }
   } catch (error) {
     // Only log Logtail errors once to avoid spam
@@ -78,17 +83,17 @@ export function initializeLogger (config: Config): pino.Logger {
   // Try backend config first, fallback to frontend config
   const betterStackConfig = config.logging.betterStack || frontendConfig.logging.betterStack
   const token = betterStackConfig ? ((betterStackConfig as any)?.sourceToken || (betterStackConfig as any)?.token) : null
-  
+
   let logtail: Logtail | null = null
-  
+
   // Initialize Logtail if BetterStack is configured
   if (betterStackConfig?.enabled && token) {
     try {
       const endpoint = betterStackConfig?.endpoint
       logtail = initializeLogtail(token, endpoint)
-      console.log('✅ BetterStack/Logtail integration initialized successfully', { 
+      console.log('✅ BetterStack/Logtail integration initialized successfully', {
         endpoint: endpoint || 'default',
-        hasToken: !!token 
+        hasToken: !!token,
       })
     } catch (error) {
       console.warn('❌ Failed to initialize BetterStack/Logtail:', error)
@@ -121,7 +126,7 @@ export function initializeLogger (config: Config): pino.Logger {
 /**
  * Create console-only logger options
  */
-function createConsoleLoggerOptions(config: Config): pino.LoggerOptions {
+function createConsoleLoggerOptions (config: Config): pino.LoggerOptions {
   return {
     level: config.logging.level || frontendConfig.logging.level || 'debug',
     browser: {
@@ -146,21 +151,21 @@ export function getLogger (): pino.Logger {
     // Check if frontend config has BetterStack enabled
     const betterStackConfig = frontendConfig.logging.betterStack
     const token = betterStackConfig?.token
-    
+
     let fallbackLogtail: Logtail | null = null
-    
+
     if (betterStackConfig?.enabled && token) {
       try {
         const endpoint = betterStackConfig?.endpoint
         fallbackLogtail = initializeLogtail(token, endpoint)
-        console.log('✅ Fallback BetterStack/Logtail initialized', { 
-          endpoint: endpoint || 'default' 
+        console.log('✅ Fallback BetterStack/Logtail initialized', {
+          endpoint: endpoint || 'default',
         })
       } catch (error) {
         console.warn('❌ Failed to initialize fallback Logtail:', error)
       }
     }
-    
+
     loggerInstance = pino({
       level: frontendConfig.logging.level || 'debug',
       browser: {

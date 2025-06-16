@@ -1,8 +1,8 @@
 import type { Config } from '../services/config'
 import { computed, ref } from 'vue'
 import { getConfig } from '../services/config'
-import { getLogger, initializeLogger, logError, logInfo, logWarn } from '../utils/logger'
 import frontendConfig from '../utils/config'
+import { getLogger, initializeLogger, logError, logInfo, logWarn } from '../utils/logger'
 
 /**
  * Composable for managing application logging
@@ -26,18 +26,21 @@ export async function initializeAppLogger (): Promise<void> {
       logging: {
         level: frontendConfig.logging.level,
         enabled: frontendConfig.logging.enabled,
-        betterStack: frontendConfig.logging.betterStack ? {
-          enabled: frontendConfig.logging.betterStack.enabled,
-          endpoint: frontendConfig.logging.betterStack.endpoint,
-          hasToken: !!frontendConfig.logging.betterStack.token,
-          tokenPreview: frontendConfig.logging.betterStack.token ? 
-            `${frontendConfig.logging.betterStack.token.substring(0, 8)}...` : 'Not set'
-        } : 'Not configured'
-      }
+        betterStack: frontendConfig.logging.betterStack
+          ? {
+              enabled: frontendConfig.logging.betterStack.enabled,
+              endpoint: frontendConfig.logging.betterStack.endpoint,
+              hasToken: !!frontendConfig.logging.betterStack.token,
+              tokenPreview: frontendConfig.logging.betterStack.token
+                ? `${frontendConfig.logging.betterStack.token.slice(0, 8)}...`
+                : 'Not set',
+            }
+          : 'Not configured',
+      },
     })
     if (import.meta.env.MODE === 'development') {
       console.log('Raw environment variables (dev mode only):')
-      console.log('VITE_BETTERSTACK_TOKEN:', import.meta.env.VITE_BETTERSTACK_TOKEN ? `${import.meta.env.VITE_BETTERSTACK_TOKEN.substring(0, 8)}...` : 'Not set')
+      console.log('VITE_BETTERSTACK_TOKEN:', import.meta.env.VITE_BETTERSTACK_TOKEN ? `${import.meta.env.VITE_BETTERSTACK_TOKEN.slice(0, 8)}...` : 'Not set')
       console.log('VITE_BETTERSTACK_ENDPOINT:', import.meta.env.VITE_BETTERSTACK_ENDPOINT)
       console.log('VITE_BETTERSTACK_ENABLED:', import.meta.env.VITE_BETTERSTACK_ENABLED)
     }
@@ -54,31 +57,37 @@ export async function initializeAppLogger (): Promise<void> {
       logging: {
         level: response.config.logging.level,
         console: response.config.logging.console,
-        betterStack: response.config.logging.betterStack ? {
-          enabled: response.config.logging.betterStack.enabled,
-          endpoint: response.config.logging.betterStack.endpoint,
-          hasToken: !!(response.config.logging.betterStack as any)?.sourceToken,
-          tokenPreview: (response.config.logging.betterStack as any)?.sourceToken ? 
-            `${(response.config.logging.betterStack as any).sourceToken.substring(0, 8)}...` : 'Not set'
-        } : 'Not configured'
-      }
+        betterStack: response.config.logging.betterStack
+          ? {
+              enabled: response.config.logging.betterStack.enabled,
+              endpoint: response.config.logging.betterStack.endpoint,
+              hasToken: !!(response.config.logging.betterStack as any)?.sourceToken,
+              tokenPreview: (response.config.logging.betterStack as any)?.sourceToken
+                ? `${(response.config.logging.betterStack as any).sourceToken.slice(0, 8)}...`
+                : 'Not set',
+            }
+          : 'Not configured',
+      },
     })
     console.groupEnd()
 
     // Determine final configuration
     const finalBetterStackConfig = response.config.logging.betterStack || frontendConfig.logging.betterStack
-    const hasToken = finalBetterStackConfig ? 
-      !!(finalBetterStackConfig as any)?.sourceToken || !!(finalBetterStackConfig as any)?.token : false
-    
+    const hasToken = finalBetterStackConfig
+      ? !!(finalBetterStackConfig as any)?.sourceToken || !!(finalBetterStackConfig as any)?.token
+      : false
+
     console.group('⚙️ Final Logger Configuration')
     console.log('Active Configuration:', {
       source: response.config.logging.betterStack ? 'Backend API' : 'Frontend Environment',
       level: response.config.logging.level || frontendConfig.logging.level,
-      betterStack: finalBetterStackConfig ? {
-        enabled: finalBetterStackConfig.enabled,
-        endpoint: finalBetterStackConfig.endpoint,
-        configured: hasToken
-      } : 'Not configured'
+      betterStack: finalBetterStackConfig
+        ? {
+            enabled: finalBetterStackConfig.enabled,
+            endpoint: finalBetterStackConfig.endpoint,
+            configured: hasToken,
+          }
+        : 'Not configured',
     })
     console.groupEnd()
 
@@ -90,20 +99,20 @@ export async function initializeAppLogger (): Promise<void> {
       loggingLevel: response.config.logging.level || frontendConfig.logging.level,
       betterStackEnabled: finalBetterStackConfig?.enabled ?? false,
       betterStackConfigured: hasToken,
-      configurationSource: response.config.logging.betterStack ? 'backend' : 'frontend'
+      configurationSource: response.config.logging.betterStack ? 'backend' : 'frontend',
     })
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     initializationError.value = errorMessage
-    
+
     console.group('❌ Logger Initialization Error')
     console.error('Backend config fetch failed, using frontend fallback:', error)
     console.log('Fallback Frontend Config:', {
       logging: frontendConfig.logging,
-      betterStackConfigured: !!frontendConfig.logging.betterStack?.token
+      betterStackConfigured: !!frontendConfig.logging.betterStack?.token,
     })
     console.groupEnd()
-    
+
     logError('Failed to initialize application logger', error)
 
     // Continue with fallback logger

@@ -290,6 +290,16 @@
                   <v-tooltip activator="parent" location="top">View Details</v-tooltip>
                 </v-btn>
                 <v-btn
+                  color="primary"
+                  icon="mdi-cog"
+                  size="small"
+                  variant="text"
+                  @click="openTaskManagementPage(item)"
+                >
+                  <v-icon>mdi-cog</v-icon>
+                  <v-tooltip activator="parent" location="top">Manage Task</v-tooltip>
+                </v-btn>
+                <v-btn
                   icon="mdi-pencil"
                   size="small"
                   variant="text"
@@ -399,8 +409,12 @@
 
   import type { CreateTaskInput, Task, UpdateTaskInput } from '../services/tasks'
   import { computed, onMounted, ref } from 'vue'
+  import { useRouter } from 'vue-router'
   import { createProject, deleteProject, getProjects, updateProject } from '../services/projects'
   import { createTask, deleteTask, getTasks, updateTask } from '../services/tasks'
+
+  // Router for navigation
+  const router = useRouter()
 
   // Reactive data
   const projects = ref<Project[]>([])
@@ -610,6 +624,11 @@
   function openTaskDeleteDialog (task: Task) {
     selectedTask.value = task
     showTaskDeleteDialog.value = true
+  }
+
+  // Task management page navigation
+  function openTaskManagementPage (task: Task) {
+    router.push(`/task-management/${task.id}`)
   }
 
   // Project CRUD handlers

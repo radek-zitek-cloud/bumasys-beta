@@ -5,7 +5,7 @@
  * to replace the previous direct d3.js implementation.
  */
 
-import { ref, computed, type Component } from 'vue'
+import { type Component, computed, ref } from 'vue'
 import VueTree, { type VueTreeProps } from 'vue3-d3-tree'
 
 export interface TreeNodeData {

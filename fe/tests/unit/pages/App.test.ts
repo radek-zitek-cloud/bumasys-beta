@@ -18,7 +18,7 @@ describe('App Component', () => {
       hasTheme: true,
       hasGlobalStyles: true,
     }
-    
+
     expect(mockAppComponent.name).toBe('App')
     expect(mockAppComponent.hasRouter).toBe(true)
     expect(mockAppComponent.hasTheme).toBe(true)
@@ -32,7 +32,7 @@ describe('App Component', () => {
       hasRouterView: true,
       hasThemeProvider: true,
     }
-    
+
     expect(appStructure.hasVuetifyApp).toBe(true)
     expect(appStructure.hasRouterView).toBe(true)
     expect(appStructure.hasThemeProvider).toBe(true)
@@ -45,7 +45,7 @@ describe('App Component', () => {
       pluginsRegistered: true,
       routerReady: true,
     }
-    
+
     expect(appLifecycle.mounted).toBe(true)
     expect(appLifecycle.pluginsRegistered).toBe(true)
     expect(appLifecycle.routerReady).toBe(true)

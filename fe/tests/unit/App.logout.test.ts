@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import { resolve } from 'node:path'
+import { describe, expect, it } from 'vitest'
 
 // Simple unit test to verify the logout navigation logic exists
 describe('App Logout Navigation Logic', () => {

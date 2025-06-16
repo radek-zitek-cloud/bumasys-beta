@@ -1,6 +1,6 @@
 declare module 'vue3-d3-tree' {
-  import { DefineComponent } from 'vue'
-  
+  import type { DefineComponent } from 'vue'
+
   export interface VueTreeProps {
     data: any
     direction?: 'vertical' | 'horizontal'
@@ -22,7 +22,7 @@ declare module 'vue3-d3-tree' {
   }
 
   export interface VueTreeSlots {
-    node?: (props: { data: any; index: number }) => any
+    node?: (props: { data: any, index: number }) => any
   }
 
   const VueTree: DefineComponent<VueTreeProps, {}, {}, {}, {}, {}, {}, VueTreeSlots>
