@@ -31,8 +31,22 @@
       <!-- Task Details Card -->
       <v-card v-if="task" class="mb-6">
         <v-card-title class="bg-primary">
-          <v-icon class="mr-2">mdi-clipboard-text</v-icon>
-          Task Details: {{ task?.name || 'Loading...' }}
+          <div class="d-flex justify-space-between align-center w-100">
+            <div class="d-flex align-center">
+              <v-icon class="mr-2">mdi-clipboard-text</v-icon>
+              Task Details: {{ task?.name || 'Loading...' }}
+            </div>
+            <v-btn
+              color="white"
+              icon="mdi-graph"
+              size="small"
+              variant="text"
+              @click="openTaskGraphDialog"
+            >
+              <v-icon>mdi-graph</v-icon>
+              <v-tooltip activator="parent" location="bottom">Display Graph</v-tooltip>
+            </v-btn>
+          </div>
         </v-card-title>
         <v-card-text>
           <v-row class="pt-4">
@@ -482,6 +496,15 @@
       />
     </v-dialog>
 
+    <!-- Task Graph Dialog -->
+    <v-dialog v-model="showTaskGraphDialog" fullscreen persistent>
+      <TaskGraphDialog
+        v-if="task"
+        :task="task"
+        @close="showTaskGraphDialog = false"
+      />
+    </v-dialog>
+
     <!-- Snackbar for notifications -->
     <v-snackbar
       v-model="snackbar.show"
@@ -516,11 +539,12 @@
   // Import dialog components
   import TaskAssigneeCreateDialog from '../../components/tasks/TaskAssigneeCreateDialog.vue'
   import TaskChildCreateDialog from '../../components/tasks/TaskChildCreateDialog.vue'
+  import TaskGraphDialog from '../../components/tasks/TaskGraphDialog.vue'
   import TaskPredecessorCreateDialog from '../../components/tasks/TaskPredecessorCreateDialog.vue'
   import TaskProgressCreateDialog from '../../components/tasks/TaskProgressCreateDialog.vue'
   import TaskProgressEditDialog from '../../components/tasks/TaskProgressEditDialog.vue'
-  import TaskStatusReportCreateDialog from '../../components/tasks/TaskStatusReportCreateDialog.vue'
 
+  import TaskStatusReportCreateDialog from '../../components/tasks/TaskStatusReportCreateDialog.vue'
   import TaskStatusReportEditDialog from '../../components/tasks/TaskStatusReportEditDialog.vue'
   import { getComplexities } from '../../services/complexity'
   import { getPriorities } from '../../services/priority'
@@ -573,6 +597,7 @@
   const showProgressReportEditDialog = ref(false)
   const showStatusReportCreateDialog = ref(false)
   const showStatusReportEditDialog = ref(false)
+  const showTaskGraphDialog = ref(false)
 
   // Selected items for editing
   const selectedProgressReport = ref<TaskProgress | null>(null)
@@ -603,6 +628,10 @@
   // Dialog functions
   function openAssigneeCreateDialog () {
     showAssigneeCreateDialog.value = true
+  }
+
+  function openTaskGraphDialog () {
+    showTaskGraphDialog.value = true
   }
 
   async function handleAssigneeCreated (staffId: string) {

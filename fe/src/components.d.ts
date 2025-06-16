@@ -54,6 +54,7 @@ declare module 'vue' {
     TaskCreateDialog: typeof import('./components/projects/TaskCreateDialog.vue')['default']
     TaskDeleteDialog: typeof import('./components/projects/TaskDeleteDialog.vue')['default']
     TaskEditDialog: typeof import('./components/projects/TaskEditDialog.vue')['default']
+    TaskGraphDialog: typeof import('./components/tasks/TaskGraphDialog.vue')['default']
     TaskPredecessorCreateDialog: typeof import('./components/tasks/TaskPredecessorCreateDialog.vue')['default']
     TaskProgressCreateDialog: typeof import('./components/tasks/TaskProgressCreateDialog.vue')['default']
     TaskProgressEditDialog: typeof import('./components/tasks/TaskProgressEditDialog.vue')['default']
