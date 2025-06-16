@@ -420,6 +420,72 @@
       </v-btn>
     </div>
 
+    <!-- Task Management Dialogs -->
+    <v-dialog v-model="showAssigneeCreateDialog" max-width="500" persistent>
+      <TaskAssigneeCreateDialog
+        :available-staff="availableStaff"
+        :current-assignees="assignees"
+        @cancel="showAssigneeCreateDialog = false"
+        @created="handleAssigneeCreated"
+      />
+    </v-dialog>
+
+    <v-dialog v-model="showPredecessorCreateDialog" max-width="600" persistent>
+      <TaskPredecessorCreateDialog
+        :available-tasks="availableTasks"
+        :current-predecessors="predecessors"
+        :current-task-id="taskId"
+        @cancel="showPredecessorCreateDialog = false"
+        @created="handlePredecessorCreated"
+      />
+    </v-dialog>
+
+    <v-dialog v-model="showChildTaskCreateDialog" max-width="700" persistent>
+      <TaskChildCreateDialog
+        :parent-task-id="taskId"
+        :project-id="task?.projectId || ''"
+        :available-statuses="availableStatuses"
+        :available-priorities="availablePriorities"
+        :available-complexities="availableComplexities"
+        @cancel="showChildTaskCreateDialog = false"
+        @created="handleChildTaskCreated"
+      />
+    </v-dialog>
+
+    <v-dialog v-model="showProgressReportCreateDialog" max-width="500" persistent>
+      <TaskProgressCreateDialog
+        :task-id="taskId"
+        @cancel="showProgressReportCreateDialog = false"
+        @created="handleProgressReportCreated"
+      />
+    </v-dialog>
+
+    <v-dialog v-model="showProgressReportEditDialog" max-width="500" persistent>
+      <TaskProgressEditDialog
+        v-if="selectedProgressReport"
+        :progress-report="selectedProgressReport"
+        @cancel="showProgressReportEditDialog = false"
+        @updated="handleProgressReportUpdated"
+      />
+    </v-dialog>
+
+    <v-dialog v-model="showStatusReportCreateDialog" max-width="600" persistent>
+      <TaskStatusReportCreateDialog
+        :task-id="taskId"
+        @cancel="showStatusReportCreateDialog = false"
+        @created="handleStatusReportCreated"
+      />
+    </v-dialog>
+
+    <v-dialog v-model="showStatusReportEditDialog" max-width="600" persistent>
+      <TaskStatusReportEditDialog
+        v-if="selectedStatusReport"
+        :status-report="selectedStatusReport"
+        @cancel="showStatusReportEditDialog = false"
+        @updated="handleStatusReportUpdated"
+      />
+    </v-dialog>
+
     <!-- Snackbar for notifications -->
     <v-snackbar
       v-model="snackbar.show"
@@ -439,12 +505,22 @@
   import { computed, onMounted, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   
+  // Import dialog components
+  import TaskAssigneeCreateDialog from '../../components/tasks/TaskAssigneeCreateDialog.vue'
+  import TaskPredecessorCreateDialog from '../../components/tasks/TaskPredecessorCreateDialog.vue'
+  import TaskChildCreateDialog from '../../components/tasks/TaskChildCreateDialog.vue'
+  import TaskProgressCreateDialog from '../../components/tasks/TaskProgressCreateDialog.vue'
+  import TaskProgressEditDialog from '../../components/tasks/TaskProgressEditDialog.vue'
+  import TaskStatusReportCreateDialog from '../../components/tasks/TaskStatusReportCreateDialog.vue'
+  import TaskStatusReportEditDialog from '../../components/tasks/TaskStatusReportEditDialog.vue'
+  
   // Import services and types
   import type { 
     Task, 
     Staff, 
     TaskProgress, 
     TaskStatusReport,
+    CreateTaskInput,
     CreateTaskProgressInput,
     UpdateTaskProgressInput,
     CreateTaskStatusReportInput,
@@ -456,6 +532,7 @@
     removeStaffFromTask,
     addTaskPredecessor,
     removeTaskPredecessor,
+    createTask,
     createTaskProgress,
     updateTaskProgress,
     deleteTaskProgress,
@@ -465,6 +542,9 @@
     getTasks
   } from '../../services/tasks'
   import { getStaff } from '../../services/staff'
+  import { getStatuses } from '../../services/status'
+  import { getPriorities } from '../../services/priority'
+  import { getComplexities } from '../../services/complexity'
 
   // Router and route
   const router = useRouter()
@@ -485,6 +565,22 @@
   // Available data for dropdowns
   const availableStaff = ref<Staff[]>([])
   const availableTasks = ref<Task[]>([])
+  const availableStatuses = ref<Array<{ id: string; name: string }>>([])
+  const availablePriorities = ref<Array<{ id: string; name: string }>>([])
+  const availableComplexities = ref<Array<{ id: string; name: string }>>([])
+
+  // Dialog visibility state
+  const showAssigneeCreateDialog = ref(false)
+  const showPredecessorCreateDialog = ref(false)
+  const showChildTaskCreateDialog = ref(false)
+  const showProgressReportCreateDialog = ref(false)
+  const showProgressReportEditDialog = ref(false)
+  const showStatusReportCreateDialog = ref(false)
+  const showStatusReportEditDialog = ref(false)
+
+  // Selected items for editing
+  const selectedProgressReport = ref<TaskProgress | null>(null)
+  const selectedStatusReport = ref<TaskStatusReport | null>(null)
 
   // Snackbar for notifications
   const snackbar = ref({
@@ -508,9 +604,21 @@
     router.push('/tasks')
   }
 
-  // Dialog functions (placeholders for now - will implement dialogs next)
+  // Dialog functions
   function openAssigneeCreateDialog() {
-    showNotification('Assignee creation dialog - coming soon', false)
+    showAssigneeCreateDialog.value = true
+  }
+
+  async function handleAssigneeCreated(staffId: string) {
+    try {
+      await assignStaffToTask(taskId.value, staffId)
+      showNotification('Assignee added successfully')
+      showAssigneeCreateDialog.value = false
+      await loadTaskData()
+    } catch (error) {
+      console.error('Failed to add assignee:', error)
+      showNotification(`Failed to add assignee: ${(error as Error).message}`, false)
+    }
   }
 
   async function openAssigneeDeleteDialog(assignee: Staff) {
@@ -525,7 +633,19 @@
   }
 
   function openPredecessorCreateDialog() {
-    showNotification('Predecessor creation dialog - coming soon', false)
+    showPredecessorCreateDialog.value = true
+  }
+
+  async function handlePredecessorCreated(predecessorTaskId: string) {
+    try {
+      await addTaskPredecessor(taskId.value, predecessorTaskId)
+      showNotification('Predecessor added successfully')
+      showPredecessorCreateDialog.value = false
+      await loadTaskData()
+    } catch (error) {
+      console.error('Failed to add predecessor:', error)
+      showNotification(`Failed to add predecessor: ${(error as Error).message}`, false)
+    }
   }
 
   async function openPredecessorDeleteDialog(predecessor: Task) {
@@ -540,7 +660,19 @@
   }
 
   function openChildTaskCreateDialog() {
-    showNotification('Child task creation dialog - coming soon', false)
+    showChildTaskCreateDialog.value = true
+  }
+
+  async function handleChildTaskCreated(taskData: CreateTaskInput) {
+    try {
+      const { createTask: newTask } = await createTask(taskData)
+      showNotification(`Child task "${newTask.name}" created successfully`)
+      showChildTaskCreateDialog.value = false
+      await loadTaskData()
+    } catch (error) {
+      console.error('Failed to create child task:', error)
+      showNotification(`Failed to create child task: ${(error as Error).message}`, false)
+    }
   }
 
   function openChildTaskDeleteDialog(childTask: Task) {
@@ -548,11 +680,37 @@
   }
 
   function openProgressReportCreateDialog() {
-    showNotification('Progress report creation dialog - coming soon', false)
+    showProgressReportCreateDialog.value = true
+  }
+
+  async function handleProgressReportCreated(progressData: CreateTaskProgressInput) {
+    try {
+      await createTaskProgress(progressData)
+      showNotification('Progress report created successfully')
+      showProgressReportCreateDialog.value = false
+      await loadTaskData()
+    } catch (error) {
+      console.error('Failed to create progress report:', error)
+      showNotification(`Failed to create progress report: ${(error as Error).message}`, false)
+    }
   }
 
   function openProgressReportEditDialog(report: TaskProgress) {
-    showNotification(`Edit progress report from ${formatDate(report.reportDate)} - coming soon`, false)
+    selectedProgressReport.value = report
+    showProgressReportEditDialog.value = true
+  }
+
+  async function handleProgressReportUpdated(progressData: UpdateTaskProgressInput) {
+    try {
+      await updateTaskProgress(progressData)
+      showNotification('Progress report updated successfully')
+      showProgressReportEditDialog.value = false
+      selectedProgressReport.value = null
+      await loadTaskData()
+    } catch (error) {
+      console.error('Failed to update progress report:', error)
+      showNotification(`Failed to update progress report: ${(error as Error).message}`, false)
+    }
   }
 
   async function openProgressReportDeleteDialog(report: TaskProgress) {
@@ -567,11 +725,37 @@
   }
 
   function openStatusReportCreateDialog() {
-    showNotification('Status report creation dialog - coming soon', false)
+    showStatusReportCreateDialog.value = true
+  }
+
+  async function handleStatusReportCreated(statusData: CreateTaskStatusReportInput) {
+    try {
+      await createTaskStatusReport(statusData)
+      showNotification('Status report created successfully')
+      showStatusReportCreateDialog.value = false
+      await loadTaskData()
+    } catch (error) {
+      console.error('Failed to create status report:', error)
+      showNotification(`Failed to create status report: ${(error as Error).message}`, false)
+    }
   }
 
   function openStatusReportEditDialog(report: TaskStatusReport) {
-    showNotification(`Edit status report from ${formatDate(report.reportDate)} - coming soon`, false)
+    selectedStatusReport.value = report
+    showStatusReportEditDialog.value = true
+  }
+
+  async function handleStatusReportUpdated(statusData: UpdateTaskStatusReportInput) {
+    try {
+      await updateTaskStatusReport(statusData)
+      showNotification('Status report updated successfully')
+      showStatusReportEditDialog.value = false
+      selectedStatusReport.value = null
+      await loadTaskData()
+    } catch (error) {
+      console.error('Failed to update status report:', error)
+      showNotification(`Failed to update status report: ${(error as Error).message}`, false)
+    }
   }
 
   async function openStatusReportDeleteDialog(report: TaskStatusReport) {
@@ -617,13 +801,19 @@
   // Load available staff and tasks for dropdowns
   async function loadDropdownData() {
     try {
-      const [staffResponse, tasksResponse] = await Promise.all([
+      const [staffResponse, tasksResponse, statusesResponse, prioritiesResponse, complexitiesResponse] = await Promise.all([
         getStaff(),
-        getTasks()
+        getTasks(),
+        getStatuses(),
+        getPriorities(),
+        getComplexities()
       ])
       
       availableStaff.value = staffResponse.staff || []
       availableTasks.value = tasksResponse.tasks || []
+      availableStatuses.value = statusesResponse.statuses || []
+      availablePriorities.value = prioritiesResponse.priorities || []
+      availableComplexities.value = complexitiesResponse.complexities || []
     } catch (error) {
       console.error('Failed to load dropdown data:', error)
     }
