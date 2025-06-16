@@ -2,6 +2,92 @@
 
 ## Change Log
 
+### 2025-01-16 - Task Graph Display Feature Implementation
+
+#### Root Cause Analysis:
+The system needed a graphical display of task relationships to improve task management visibility. The issue requested a "Display Graph" button on the task management page that would open a dialog showing task relationships using Vue Flow. This was a new feature implementation rather than a bug fix.
+
+#### Impact of Changes:
+- **New Feature Added**: Task Graph visualization using Vue Flow library
+- **Enhanced User Experience**: Users can now visualize task relationships in a graphical format
+- **Consistent UI Pattern**: New dialog follows the same design patterns as existing dialogs (StaffTreeDialog, DepartmentTreeDialog)
+- **Minimal Scope**: Initially displays only the current task as a single node (as requested)
+- **Future Extensible**: Architecture supports future expansion to show predecessors, successors, and child tasks
+
+#### New Features Added:
+- **Task Graph Dialog**: New Vue Flow-based component for displaying task relationships
+- **Display Graph Button**: Added button to task management page header with proper tooltip
+- **Vue Flow Integration**: Installed and configured Vue Flow library for graph visualization
+
+#### Technical Changes:
+
+**New Dependencies Added:**
+- `@vue-flow/core`: Core Vue Flow library for graph visualization
+- `@vue-flow/controls`: Additional controls for Vue Flow
+- `@vue-flow/minimap`: Minimap component for Vue Flow
+
+**New Files Created:**
+- `fe/src/components/tasks/TaskGraphDialog.vue`: Main task graph dialog component
+- `fe/tests/unit/components/TaskGraphDialog.test.ts`: Unit tests for the component
+
+**Modified Files:**
+- `fe/src/pages/task-management/[id].vue`: Added Display Graph button and dialog integration
+- `fe/package.json`: Added Vue Flow dependencies
+- `fe/src/components.d.ts`: Auto-generated component declarations
+
+**Code Changes:**
+```diff
+// In task management page header:
++ <v-btn
++   color="white"
++   icon="mdi-graph"
++   size="small"
++   variant="text"
++   @click="openTaskGraphDialog"
++ >
++   <v-icon>mdi-graph</v-icon>
++   <v-tooltip activator="parent" location="bottom">Display Graph</v-tooltip>
++ </v-btn>
+
+// New dialog component:
++ <v-dialog v-model="showTaskGraphDialog" fullscreen persistent>
++   <TaskGraphDialog
++     v-if="task"
++     :task="task"
++     @close="showTaskGraphDialog = false"
++   />
++ </v-dialog>
+```
+
+#### Implementation Details:
+- **Single Node Display**: Initially shows only the current task as a single node with task name and project
+- **Responsive Design**: Dialog takes most of the screen space (90vw x 80vh)
+- **Consistent Styling**: Follows Vuetify design patterns with primary colors
+- **Error Handling**: Includes loading states and error handling
+- **Vue Flow Features**: Includes zoom, pan, and basic interactivity
+
+#### Testing:
+- **Unit Tests**: Created comprehensive unit tests for component functionality
+- **Build Verification**: All builds and type checking pass successfully
+- **Lint Compliance**: Code follows project linting standards
+
+#### Documentation Updates:
+- Updated WORKLOG.md with comprehensive change documentation
+- Component includes detailed JSDoc comments
+- Code follows established patterns from similar components
+
+#### TODOs and Follow-up Tasks:
+- Future enhancement: Add predecessor/successor task nodes
+- Future enhancement: Add child task nodes
+- Future enhancement: Add interactive node actions
+- Future enhancement: Add different node types/colors for different task statuses
+- Future enhancement: Add edge connections between related tasks
+
+#### Potential Issues or Risks Identified:
+- Vue Flow requires ResizeObserver which may not be available in all test environments
+- Component may need performance optimization for large task graphs in future
+- Current implementation is basic; complex graphs may require additional UI/UX considerations
+
 ### 2025-01-16 - Teams Participants Filtering Bug Fix
 
 #### Root Cause Analysis:
