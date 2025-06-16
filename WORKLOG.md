@@ -2,9 +2,7 @@
 
 ## Change Log
 
-<<<<<<< HEAD
 ### 2025-06-16 - WORKLOG Split into Date-Based Files
-=======
 ### 2025-01-03 - Enhanced Task Graph Dialog with Project, Predecessor, and Child Task Visualization
 
 #### Root Cause Analysis:
@@ -109,7 +107,6 @@ The TaskGraphDialog component was displaying only a single task node without sho
 ---
 
 ### 2025-06-16 - Task Status Report and Progress Report Creator Staff Implementation
->>>>>>> c38dfea04a351f1a5efe1b39a55e5aca83e87a97
 
 #### Root Cause Analysis:
 The main WORKLOG.md file had grown very large with entries spanning multiple dates, making it difficult to navigate and find specific changes. The file contained comprehensive daily entries that would benefit from better organization by date for improved maintainability and readability.
