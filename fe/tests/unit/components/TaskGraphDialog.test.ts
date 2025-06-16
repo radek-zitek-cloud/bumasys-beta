@@ -1,13 +1,13 @@
 /**
  * TaskGraphDialog Component Test
- * 
+ *
  * Tests the basic functionality of the TaskGraphDialog component
  */
 
-import { describe, it, expect } from 'vitest'
-import { mount } from '@vue/test-utils'
-import { createVuetify } from 'vuetify'
 import type { Task } from '../../../src/services/tasks'
+import { mount } from '@vue/test-utils'
+import { describe, expect, it } from 'vitest'
+import { createVuetify } from 'vuetify'
 
 const vuetify = createVuetify()
 
@@ -31,7 +31,7 @@ const mockTask: Task = {
   priorityId: 'priority-1',
   complexityId: 'complexity-1',
   createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString()
+  updatedAt: new Date().toISOString(),
 }
 
 // Simple mock component for testing without the actual Vue Flow
@@ -60,18 +60,18 @@ const MockTaskGraphDialog = {
         </v-btn>
       </v-card-actions>
     </v-card>
-  `
+  `,
 }
 
 describe('TaskGraphDialog', () => {
   it('renders the component with task name', () => {
     const wrapper = mount(MockTaskGraphDialog, {
       props: {
-        task: mockTask
+        task: mockTask,
       },
       global: {
-        plugins: [vuetify]
-      }
+        plugins: [vuetify],
+      },
     })
 
     expect(wrapper.exists()).toBe(true)
@@ -82,11 +82,11 @@ describe('TaskGraphDialog', () => {
   it('displays graph content area', async () => {
     const wrapper = mount(MockTaskGraphDialog, {
       props: {
-        task: mockTask
+        task: mockTask,
       },
       global: {
-        plugins: [vuetify]
-      }
+        plugins: [vuetify],
+      },
     })
 
     expect(wrapper.find('.graph-content').exists()).toBe(true)
@@ -96,11 +96,11 @@ describe('TaskGraphDialog', () => {
   it('emits close event when close button is clicked', async () => {
     const wrapper = mount(MockTaskGraphDialog, {
       props: {
-        task: mockTask
+        task: mockTask,
       },
       global: {
-        plugins: [vuetify]
-      }
+        plugins: [vuetify],
+      },
     })
 
     const closeButton = wrapper.find('button')
@@ -111,13 +111,13 @@ describe('TaskGraphDialog', () => {
   it('displays the correct task information', async () => {
     const wrapper = mount(MockTaskGraphDialog, {
       props: {
-        task: mockTask
+        task: mockTask,
       },
       global: {
-        plugins: [vuetify]
-      }
+        plugins: [vuetify],
+      },
     })
-    
+
     expect(wrapper.text()).toContain('Test Task')
     expect(wrapper.text()).toContain('Mock Graph Content for Test Task')
   })
