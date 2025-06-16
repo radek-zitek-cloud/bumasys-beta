@@ -1,13 +1,21 @@
 /**
  * TaskGraphDialog Component Test
  *
+<<<<<<< HEAD
+ * Tests the basic functionality of the TaskGraphDialog component
+=======
  * Tests the enhanced functionality of the TaskGraphDialog component
  * including support for project, predecessor, and child task relationships
+>>>>>>> c38dfea04a351f1a5efe1b39a55e5aca83e87a97
  */
 
 import type { Task } from '../../../src/services/tasks'
 import { mount } from '@vue/test-utils'
+<<<<<<< HEAD
+import { describe, expect, it } from 'vitest'
+=======
 import { describe, expect, it, vi } from 'vitest'
+>>>>>>> c38dfea04a351f1a5efe1b39a55e5aca83e87a97
 import { createVuetify } from 'vuetify'
 
 const vuetify = createVuetify()
@@ -27,15 +35,19 @@ const mockTaskWithRelationships: Task = {
   complexity: { id: 'complexity-1', name: 'Medium' },
   project: { id: 'project-1', name: 'Test Project' },
   projectId: 'project-1',
-  plannedStartDate: undefined,
-  plannedEndDate: undefined,
-  actualStartDate: undefined,
-  actualEndDate: undefined,
-  parentTaskId: undefined,
-  evaluatorId: undefined,
+  plannedStartDate: null,
+  plannedEndDate: null,
+  actualStartDate: null,
+  actualEndDate: null,
+  parentTaskId: null,
+  evaluatorId: null,
   statusId: 'status-1',
   priorityId: 'priority-1',
   complexityId: 'complexity-1',
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+<<<<<<< HEAD
+=======
   predecessors: [
     {
       id: 'predecessor-1',
@@ -55,6 +67,7 @@ const mockTaskWithRelationships: Task = {
       status: { id: 'status-2', name: 'Pending' },
     },
   ],
+>>>>>>> c38dfea04a351f1a5efe1b39a55e5aca83e87a97
 }
 
 // Basic mock task without relationships
@@ -67,15 +80,17 @@ const mockBasicTask: Task = {
   complexity: { id: 'complexity-1', name: 'Medium' },
   project: { id: 'project-1', name: 'Test Project' },
   projectId: 'project-1',
-  plannedStartDate: undefined,
-  plannedEndDate: undefined,
-  actualStartDate: undefined,
-  actualEndDate: undefined,
-  parentTaskId: undefined,
-  evaluatorId: undefined,
+  plannedStartDate: null,
+  plannedEndDate: null,
+  actualStartDate: null,
+  actualEndDate: null,
+  parentTaskId: null,
+  evaluatorId: null,
   statusId: 'status-1',
   priorityId: 'priority-1',
   complexityId: 'complexity-1',
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 }
 
 // Enhanced mock component that better simulates the real component behavior
@@ -145,7 +160,11 @@ describe('TaskGraphDialog', () => {
   it('renders the component with task name', () => {
     const wrapper = mount(MockTaskGraphDialog, {
       props: {
+<<<<<<< HEAD
+        task: mockTask,
+=======
         task: mockBasicTask,
+>>>>>>> c38dfea04a351f1a5efe1b39a55e5aca83e87a97
       },
       global: {
         plugins: [vuetify],
@@ -160,7 +179,11 @@ describe('TaskGraphDialog', () => {
   it('displays graph content area', async () => {
     const wrapper = mount(MockTaskGraphDialog, {
       props: {
+<<<<<<< HEAD
+        task: mockTask,
+=======
         task: mockBasicTask,
+>>>>>>> c38dfea04a351f1a5efe1b39a55e5aca83e87a97
       },
       global: {
         plugins: [vuetify],
@@ -174,7 +197,11 @@ describe('TaskGraphDialog', () => {
   it('emits close event when close button is clicked', async () => {
     const wrapper = mount(MockTaskGraphDialog, {
       props: {
+<<<<<<< HEAD
+        task: mockTask,
+=======
         task: mockBasicTask,
+>>>>>>> c38dfea04a351f1a5efe1b39a55e5aca83e87a97
       },
       global: {
         plugins: [vuetify],
@@ -189,13 +216,22 @@ describe('TaskGraphDialog', () => {
   it('displays project node when task has project information', () => {
     const wrapper = mount(MockTaskGraphDialog, {
       props: {
+<<<<<<< HEAD
+        task: mockTask,
+=======
         task: mockTaskWithRelationships,
+>>>>>>> c38dfea04a351f1a5efe1b39a55e5aca83e87a97
       },
       global: {
         plugins: [vuetify],
       },
     })
 
+<<<<<<< HEAD
+    expect(wrapper.text()).toContain('Test Task')
+    expect(wrapper.text()).toContain('Mock Graph Content for Test Task')
+  })
+=======
     expect(wrapper.find('.mock-project-node').exists()).toBe(true)
     expect(wrapper.text()).toContain('Project: Test Project')
   })
@@ -243,4 +279,5 @@ describe('TaskGraphDialog', () => {
     expect(wrapper.find('.mock-current-task-node').exists()).toBe(true)
     expect(wrapper.text()).toContain('Current: Current Task')
   })
+>>>>>>> c38dfea04a351f1a5efe1b39a55e5aca83e87a97
 })
