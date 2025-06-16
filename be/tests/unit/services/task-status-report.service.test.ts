@@ -103,7 +103,7 @@ describe('TaskStatusReportService', () => {
       const result = await service.getAllTaskStatusReports('task-1');
 
       expect(result).toHaveLength(2);
-      expect(result.every(report => report.taskId === 'task-1')).toBe(true);
+      expect(result.every((report) => report.taskId === 'task-1')).toBe(true);
       expect(result[0].id).toBe('report-1');
       expect(result[1].id).toBe('report-2');
     });
@@ -159,7 +159,7 @@ describe('TaskStatusReportService', () => {
       };
 
       await expect(service.createTaskStatusReport(reportData)).rejects.toThrow(
-        'Task not found'
+        'Task not found',
       );
       expect(mockDb.data.taskStatusReports).toHaveLength(3);
       expect(mockDb.write).not.toHaveBeenCalled();
@@ -184,7 +184,9 @@ describe('TaskStatusReportService', () => {
     });
 
     it('should update only provided fields', async () => {
-      const originalReport = mockDb.data.taskStatusReports.find(r => r.id === 'report-1')!;
+      const originalReport = mockDb.data.taskStatusReports.find(
+        (r) => r.id === 'report-1',
+      )!;
       const originalDate = originalReport.reportDate;
 
       const updateData: UpdateTaskStatusReportInput = {
@@ -206,7 +208,7 @@ describe('TaskStatusReportService', () => {
       };
 
       await expect(service.updateTaskStatusReport(updateData)).rejects.toThrow(
-        'Task status report not found'
+        'Task status report not found',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -220,16 +222,18 @@ describe('TaskStatusReportService', () => {
 
       expect(result).toBe(true);
       expect(mockDb.data.taskStatusReports).toHaveLength(initialCount - 1);
-      expect(mockDb.data.taskStatusReports.find(r => r.id === 'report-1')).toBeUndefined();
+      expect(
+        mockDb.data.taskStatusReports.find((r) => r.id === 'report-1'),
+      ).toBeUndefined();
       expect(mockDb.write).toHaveBeenCalledTimes(1);
     });
 
     it('should throw error when report not found', async () => {
       const initialCount = mockDb.data.taskStatusReports.length;
 
-      await expect(service.deleteTaskStatusReport('non-existent')).rejects.toThrow(
-        'Task status report not found'
-      );
+      await expect(
+        service.deleteTaskStatusReport('non-existent'),
+      ).rejects.toThrow('Task status report not found');
       expect(mockDb.data.taskStatusReports).toHaveLength(initialCount);
       expect(mockDb.write).not.toHaveBeenCalled();
     });

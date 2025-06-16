@@ -129,7 +129,7 @@ describe('PriorityService', () => {
       };
 
       await expect(service.createPriority(priorityData)).rejects.toThrow(
-        'Priority name already exists'
+        'Priority name already exists',
       );
       expect(mockDb.data.priorities).toHaveLength(3);
       expect(mockDb.write).not.toHaveBeenCalled();
@@ -141,7 +141,7 @@ describe('PriorityService', () => {
       };
 
       await expect(service.createPriority(priorityData)).rejects.toThrow(
-        'Priority name already exists'
+        'Priority name already exists',
       );
       expect(mockDb.data.priorities).toHaveLength(3);
       expect(mockDb.write).not.toHaveBeenCalled();
@@ -170,7 +170,7 @@ describe('PriorityService', () => {
       };
 
       await expect(service.updatePriority(updateData)).rejects.toThrow(
-        'Priority not found'
+        'Priority not found',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -182,7 +182,7 @@ describe('PriorityService', () => {
       };
 
       await expect(service.updatePriority(updateData)).rejects.toThrow(
-        'Priority name already exists'
+        'Priority name already exists',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -209,7 +209,9 @@ describe('PriorityService', () => {
 
       expect(result).toBe(true);
       expect(mockDb.data.priorities).toHaveLength(initialCount - 1);
-      expect(mockDb.data.priorities.find(p => p.id === 'priority-3')).toBeUndefined();
+      expect(
+        mockDb.data.priorities.find((p) => p.id === 'priority-3'),
+      ).toBeUndefined();
       expect(mockDb.write).toHaveBeenCalledTimes(1);
     });
 
@@ -217,7 +219,7 @@ describe('PriorityService', () => {
       const initialCount = mockDb.data.priorities.length;
 
       await expect(service.deletePriority('non-existent')).rejects.toThrow(
-        'Priority not found'
+        'Priority not found',
       );
       expect(mockDb.data.priorities).toHaveLength(initialCount);
       expect(mockDb.write).not.toHaveBeenCalled();
@@ -227,7 +229,7 @@ describe('PriorityService', () => {
       const initialCount = mockDb.data.priorities.length;
 
       await expect(service.deletePriority('priority-1')).rejects.toThrow(
-        'Cannot delete priority: it is being used by tasks'
+        'Cannot delete priority: it is being used by tasks',
       );
       expect(mockDb.data.priorities).toHaveLength(initialCount);
       expect(mockDb.write).not.toHaveBeenCalled();

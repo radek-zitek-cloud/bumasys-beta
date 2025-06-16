@@ -94,7 +94,9 @@ describe('TaskProgressService', () => {
       const result = await service.getAllTaskProgress('task-1');
 
       expect(result).toHaveLength(2);
-      expect(result.every(progress => progress.taskId === 'task-1')).toBe(true);
+      expect(result.every((progress) => progress.taskId === 'task-1')).toBe(
+        true,
+      );
       expect(result[0].id).toBe('progress-1');
       expect(result[1].id).toBe('progress-2');
     });
@@ -154,7 +156,7 @@ describe('TaskProgressService', () => {
       };
 
       await expect(service.createTaskProgress(progressData)).rejects.toThrow(
-        'Task not found'
+        'Task not found',
       );
       expect(mockDb.data.taskProgress).toHaveLength(3);
       expect(mockDb.write).not.toHaveBeenCalled();
@@ -169,7 +171,7 @@ describe('TaskProgressService', () => {
       };
 
       await expect(service.createTaskProgress(progressData)).rejects.toThrow(
-        'Progress percentage must be between 0 and 100'
+        'Progress percentage must be between 0 and 100',
       );
       expect(mockDb.data.taskProgress).toHaveLength(3);
       expect(mockDb.write).not.toHaveBeenCalled();
@@ -184,7 +186,7 @@ describe('TaskProgressService', () => {
       };
 
       await expect(service.createTaskProgress(progressData)).rejects.toThrow(
-        'Progress percentage must be between 0 and 100'
+        'Progress percentage must be between 0 and 100',
       );
       expect(mockDb.data.taskProgress).toHaveLength(3);
       expect(mockDb.write).not.toHaveBeenCalled();
@@ -239,7 +241,9 @@ describe('TaskProgressService', () => {
     });
 
     it('should update only provided fields', async () => {
-      const originalProgress = mockDb.data.taskProgress.find(p => p.id === 'progress-1')!;
+      const originalProgress = mockDb.data.taskProgress.find(
+        (p) => p.id === 'progress-1',
+      )!;
       const originalDate = originalProgress.reportDate;
       const originalPercent = originalProgress.progressPercent;
 
@@ -263,7 +267,7 @@ describe('TaskProgressService', () => {
       };
 
       await expect(service.updateTaskProgress(updateData)).rejects.toThrow(
-        'Task progress report not found'
+        'Task progress report not found',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -275,7 +279,7 @@ describe('TaskProgressService', () => {
       };
 
       await expect(service.updateTaskProgress(updateData)).rejects.toThrow(
-        'Progress percentage must be between 0 and 100'
+        'Progress percentage must be between 0 and 100',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -287,7 +291,7 @@ describe('TaskProgressService', () => {
       };
 
       await expect(service.updateTaskProgress(updateData)).rejects.toThrow(
-        'Progress percentage must be between 0 and 100'
+        'Progress percentage must be between 0 and 100',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -325,7 +329,9 @@ describe('TaskProgressService', () => {
 
       expect(result).toBe(true);
       expect(mockDb.data.taskProgress).toHaveLength(initialCount - 1);
-      expect(mockDb.data.taskProgress.find(p => p.id === 'progress-1')).toBeUndefined();
+      expect(
+        mockDb.data.taskProgress.find((p) => p.id === 'progress-1'),
+      ).toBeUndefined();
       expect(mockDb.write).toHaveBeenCalledTimes(1);
     });
 
@@ -333,7 +339,7 @@ describe('TaskProgressService', () => {
       const initialCount = mockDb.data.taskProgress.length;
 
       await expect(service.deleteTaskProgress('non-existent')).rejects.toThrow(
-        'Task progress report not found'
+        'Task progress report not found',
       );
       expect(mockDb.data.taskProgress).toHaveLength(initialCount);
       expect(mockDb.write).not.toHaveBeenCalled();

@@ -17,11 +17,7 @@ import type {
   UpdateComplexityInput,
 } from '../types';
 import logger from '../utils/logger';
-import {
-  StatusService,
-  PriorityService,
-  ComplexityService,
-} from '../services';
+import { StatusService, PriorityService, ComplexityService } from '../services';
 
 /**
  * Service instances - will be set during application initialization
@@ -50,7 +46,6 @@ export function setServices(
  * GraphQL Query resolvers for reference data
  */
 export const referenceDataQueryResolvers = {
-
   /**
    * Get all statuses (requires authentication)
    * @param _ - Parent object (unused)
@@ -150,7 +145,6 @@ export const referenceDataQueryResolvers = {
  * GraphQL Mutation resolvers for reference data
  */
 export const referenceDataMutationResolvers = {
-
   // Status mutations
   /**
    * Create a new status

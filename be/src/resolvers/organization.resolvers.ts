@@ -10,7 +10,11 @@ import type {
   CreateOrganizationInput,
   UpdateOrganizationInput,
 } from '../types';
-import { OrganizationService, DepartmentService, StaffService } from '../services';
+import {
+  OrganizationService,
+  DepartmentService,
+  StaffService,
+} from '../services';
 import logger from '../utils/logger';
 
 let organizationService: OrganizationService;

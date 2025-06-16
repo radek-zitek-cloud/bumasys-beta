@@ -7,13 +7,8 @@
 
 import type { GraphQLContext } from '../types';
 import logger from '../utils/logger';
-import type {
-  CreateStaffInput,
-  UpdateStaffInput,
-} from '../types';
-import type {
-  StaffService,
-} from '../services';
+import type { CreateStaffInput, UpdateStaffInput } from '../types';
+import type { StaffService } from '../services';
 
 /**
  * Service instances - will be set during application initialization

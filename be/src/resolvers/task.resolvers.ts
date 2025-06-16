@@ -475,7 +475,10 @@ export const taskMutationResolvers = {
    */
   addTaskPredecessor: async (
     _: unknown,
-    { taskId, predecessorTaskId }: { taskId: string; predecessorTaskId: string },
+    {
+      taskId,
+      predecessorTaskId,
+    }: { taskId: string; predecessorTaskId: string },
     { user }: GraphQLContext,
   ) => {
     if (!user) {
@@ -494,7 +497,10 @@ export const taskMutationResolvers = {
    */
   removeTaskPredecessor: async (
     _: unknown,
-    { taskId, predecessorTaskId }: { taskId: string; predecessorTaskId: string },
+    {
+      taskId,
+      predecessorTaskId,
+    }: { taskId: string; predecessorTaskId: string },
     { user }: GraphQLContext,
   ) => {
     if (!user) {

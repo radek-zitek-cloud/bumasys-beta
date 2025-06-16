@@ -1,6 +1,6 @@
 /**
  * @fileoverview Unit tests for UserService
- * 
+ *
  * Tests user management functionality including user creation, updates,
  * deletion, retrieval, and password management.
  */
@@ -18,9 +18,13 @@ jest.mock('../../../src/utils/logger', () => ({
 
 jest.mock('../../../src/services/auth.service', () => ({
   hashPassword: jest.fn().mockResolvedValue('hashed-password'),
-  comparePassword: jest.fn().mockImplementation((plain, hashed) => 
-    Promise.resolve(plain === 'correct-password' && hashed === 'hashed-password')
-  ),
+  comparePassword: jest
+    .fn()
+    .mockImplementation((plain, hashed) =>
+      Promise.resolve(
+        plain === 'correct-password' && hashed === 'hashed-password',
+      ),
+    ),
 }));
 
 describe('UserService', () => {
@@ -130,7 +134,7 @@ describe('UserService', () => {
           password: 'hashed-password',
           firstName: 'User',
           lastName: 'Two',
-        }
+        },
       );
     });
 
@@ -206,7 +210,7 @@ describe('UserService', () => {
       };
 
       await expect(userService.createUser(registerInput)).rejects.toThrow(
-        'Email in use'
+        'Email in use',
       );
     });
 
@@ -302,7 +306,7 @@ describe('UserService', () => {
       };
 
       await expect(userService.updateUser(updateData)).rejects.toThrow(
-        'User not found'
+        'User not found',
       );
     });
 
@@ -339,13 +343,13 @@ describe('UserService', () => {
           id: 'user2',
           email: 'user2@example.com',
           password: 'hashed-password',
-        }
+        },
       );
 
       // Add related sessions
       mockDatabase.data.sessions.push(
         { token: 'token1', userId: 'user1', createdAt: '2024-01-01' },
-        { token: 'token2', userId: 'user2', createdAt: '2024-01-01' }
+        { token: 'token2', userId: 'user2', createdAt: '2024-01-01' },
       );
     });
 
@@ -380,7 +384,7 @@ describe('UserService', () => {
       const result = await userService.changePassword(
         'user1',
         'correct-password',
-        'new-password'
+        'new-password',
       );
 
       expect(result).toBe(true);
@@ -390,13 +394,17 @@ describe('UserService', () => {
 
     it('should throw error for incorrect old password', async () => {
       await expect(
-        userService.changePassword('user1', 'wrong-password', 'new-password')
+        userService.changePassword('user1', 'wrong-password', 'new-password'),
       ).rejects.toThrow('Invalid credentials');
     });
 
     it('should throw error if user not found', async () => {
       await expect(
-        userService.changePassword('nonexistent-user', 'old-password', 'new-password')
+        userService.changePassword(
+          'nonexistent-user',
+          'old-password',
+          'new-password',
+        ),
       ).rejects.toThrow('User not found');
     });
   });

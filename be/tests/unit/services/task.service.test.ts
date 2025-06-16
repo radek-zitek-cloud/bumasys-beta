@@ -3,21 +3,21 @@
  */
 
 import { TaskService } from '../../../src/services/task.service';
-import type { 
-  Database, 
-  Task, 
-  CreateTaskInput, 
-  UpdateTaskInput, 
-  Project, 
-  Staff, 
-  Status, 
-  Priority, 
+import type {
+  Database,
+  Task,
+  CreateTaskInput,
+  UpdateTaskInput,
+  Project,
+  Staff,
+  Status,
+  Priority,
   Complexity,
   TaskAssignee,
   TaskPredecessor,
   TaskEvaluation,
   TaskProgress,
-  TaskStatusReport
+  TaskStatusReport,
 } from '../../../src/types';
 
 describe('TaskService', () => {
@@ -125,7 +125,7 @@ describe('TaskService', () => {
   describe('getAllTasks', () => {
     it('should return all tasks when no filter is provided', async () => {
       const result = await taskService.getAllTasks();
-      
+
       expect(result).toHaveLength(2);
       expect(result).toContain(mockTask);
       expect(result).toContain(mockParentTask);
@@ -133,18 +133,22 @@ describe('TaskService', () => {
 
     it('should filter tasks by project ID', async () => {
       // Add task from different project
-      const otherProjectTask: Task = { ...mockTask, id: 'task-2', projectId: 'project-2' };
+      const otherProjectTask: Task = {
+        ...mockTask,
+        id: 'task-2',
+        projectId: 'project-2',
+      };
       mockDb.data.tasks.push(otherProjectTask);
-      
+
       const result = await taskService.getAllTasks('project-1');
-      
+
       expect(result).toHaveLength(2);
-      expect(result.every(task => task.projectId === 'project-1')).toBe(true);
+      expect(result.every((task) => task.projectId === 'project-1')).toBe(true);
     });
 
     it('should return empty array when no tasks match project filter', async () => {
       const result = await taskService.getAllTasks('project-nonexistent');
-      
+
       expect(result).toHaveLength(0);
     });
   });
@@ -152,13 +156,13 @@ describe('TaskService', () => {
   describe('findById', () => {
     it('should return task when found by ID', async () => {
       const result = await taskService.findById('task-1');
-      
+
       expect(result).toEqual(mockTask);
     });
 
     it('should return null when task not found by ID', async () => {
       const result = await taskService.findById('nonexistent');
-      
+
       expect(result).toBeNull();
     });
   });
@@ -203,56 +207,81 @@ describe('TaskService', () => {
 
     it('should throw error when project not found', async () => {
       const invalidInput = { ...createTaskInput, projectId: 'project-invalid' };
-      
-      await expect(taskService.createTask(invalidInput)).rejects.toThrow('Project not found');
+
+      await expect(taskService.createTask(invalidInput)).rejects.toThrow(
+        'Project not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when parent task not found', async () => {
       const invalidInput = { ...createTaskInput, parentTaskId: 'task-invalid' };
-      
-      await expect(taskService.createTask(invalidInput)).rejects.toThrow('Parent task not found');
+
+      await expect(taskService.createTask(invalidInput)).rejects.toThrow(
+        'Parent task not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when parent task belongs to different project', async () => {
       // Add parent task from different project
-      const otherProjectParent: Task = { ...mockParentTask, id: 'task-other-parent', projectId: 'project-2' };
+      const otherProjectParent: Task = {
+        ...mockParentTask,
+        id: 'task-other-parent',
+        projectId: 'project-2',
+      };
       mockDb.data.tasks.push(otherProjectParent);
-      
-      const invalidInput = { ...createTaskInput, parentTaskId: 'task-other-parent' };
-      
+
+      const invalidInput = {
+        ...createTaskInput,
+        parentTaskId: 'task-other-parent',
+      };
+
       await expect(taskService.createTask(invalidInput)).rejects.toThrow(
-        'Parent task must belong to the same project'
+        'Parent task must belong to the same project',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when evaluator not found', async () => {
       const invalidInput = { ...createTaskInput, evaluatorId: 'staff-invalid' };
-      
-      await expect(taskService.createTask(invalidInput)).rejects.toThrow('Evaluator not found');
+
+      await expect(taskService.createTask(invalidInput)).rejects.toThrow(
+        'Evaluator not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when status not found', async () => {
       const invalidInput = { ...createTaskInput, statusId: 'status-invalid' };
-      
-      await expect(taskService.createTask(invalidInput)).rejects.toThrow('Status not found');
+
+      await expect(taskService.createTask(invalidInput)).rejects.toThrow(
+        'Status not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when priority not found', async () => {
-      const invalidInput = { ...createTaskInput, priorityId: 'priority-invalid' };
-      
-      await expect(taskService.createTask(invalidInput)).rejects.toThrow('Priority not found');
+      const invalidInput = {
+        ...createTaskInput,
+        priorityId: 'priority-invalid',
+      };
+
+      await expect(taskService.createTask(invalidInput)).rejects.toThrow(
+        'Priority not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when complexity not found', async () => {
-      const invalidInput = { ...createTaskInput, complexityId: 'complexity-invalid' };
-      
-      await expect(taskService.createTask(invalidInput)).rejects.toThrow('Complexity not found');
+      const invalidInput = {
+        ...createTaskInput,
+        complexityId: 'complexity-invalid',
+      };
+
+      await expect(taskService.createTask(invalidInput)).rejects.toThrow(
+        'Complexity not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
@@ -262,9 +291,9 @@ describe('TaskService', () => {
         plannedStartDate: '2024-02-15',
         plannedEndDate: '2024-02-01',
       };
-      
+
       await expect(taskService.createTask(invalidInput)).rejects.toThrow(
-        'Planned start date must be before planned end date'
+        'Planned start date must be before planned end date',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -275,9 +304,9 @@ describe('TaskService', () => {
         actualStartDate: '2024-02-15',
         actualEndDate: '2024-02-01',
       };
-      
+
       await expect(taskService.createTask(invalidInput)).rejects.toThrow(
-        'Actual start date must be before actual end date'
+        'Actual start date must be before actual end date',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -297,9 +326,9 @@ describe('TaskService', () => {
         actualStartDate: undefined,
         actualEndDate: undefined,
       };
-      
+
       const result = await taskService.createTask(minimalInput);
-      
+
       expect(result.name).toBe('Minimal Task');
       expect(result.projectId).toBe('project-1');
       expect(result.parentTaskId).toBeUndefined();
@@ -325,44 +354,60 @@ describe('TaskService', () => {
 
     it('should throw error when task not found', async () => {
       const invalidUpdate = { ...updateTaskInput, id: 'task-invalid' };
-      
-      await expect(taskService.updateTask(invalidUpdate)).rejects.toThrow('Task not found');
+
+      await expect(taskService.updateTask(invalidUpdate)).rejects.toThrow(
+        'Task not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when parent task not found', async () => {
-      const invalidUpdate = { ...updateTaskInput, parentTaskId: 'task-invalid' };
-      
-      await expect(taskService.updateTask(invalidUpdate)).rejects.toThrow('Parent task not found');
+      const invalidUpdate = {
+        ...updateTaskInput,
+        parentTaskId: 'task-invalid',
+      };
+
+      await expect(taskService.updateTask(invalidUpdate)).rejects.toThrow(
+        'Parent task not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when parent task belongs to different project', async () => {
       // Add task from different project
-      const otherProjectTask: Task = { ...mockTask, id: 'task-other', projectId: 'project-2' };
+      const otherProjectTask: Task = {
+        ...mockTask,
+        id: 'task-other',
+        projectId: 'project-2',
+      };
       mockDb.data.tasks.push(otherProjectTask);
-      
+
       const invalidUpdate = { ...updateTaskInput, parentTaskId: 'task-other' };
-      
+
       await expect(taskService.updateTask(invalidUpdate)).rejects.toThrow(
-        'Parent task must belong to the same project'
+        'Parent task must belong to the same project',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when task tries to be its own parent', async () => {
       const invalidUpdate = { ...updateTaskInput, parentTaskId: 'task-1' };
-      
+
       await expect(taskService.updateTask(invalidUpdate)).rejects.toThrow(
-        'Task cannot be its own parent'
+        'Task cannot be its own parent',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when evaluator not found', async () => {
-      const invalidUpdate = { ...updateTaskInput, evaluatorId: 'staff-invalid' };
-      
-      await expect(taskService.updateTask(invalidUpdate)).rejects.toThrow('Evaluator not found');
+      const invalidUpdate = {
+        ...updateTaskInput,
+        evaluatorId: 'staff-invalid',
+      };
+
+      await expect(taskService.updateTask(invalidUpdate)).rejects.toThrow(
+        'Evaluator not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
@@ -372,9 +417,9 @@ describe('TaskService', () => {
         ...updateTaskInput,
         plannedEndDate: '2023-12-31', // Before existing start date of 2024-01-01
       };
-      
+
       await expect(taskService.updateTask(invalidDateUpdate)).rejects.toThrow(
-        'Planned start date must be before planned end date'
+        'Planned start date must be before planned end date',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -394,9 +439,9 @@ describe('TaskService', () => {
         actualStartDate: '2024-02-01',
         actualEndDate: '2024-02-10',
       };
-      
+
       const result = await taskService.updateTask(fullUpdate);
-      
+
       expect(result).toMatchObject(fullUpdate);
       expect(mockDb.write).toHaveBeenCalled();
     });
@@ -405,8 +450,14 @@ describe('TaskService', () => {
   describe('deleteTask', () => {
     beforeEach(() => {
       // Add some related data to test cleanup
-      const taskAssignee: TaskAssignee = { taskId: 'task-1', staffId: 'staff-1' };
-      const taskPredecessor: TaskPredecessor = { taskId: 'task-1', predecessorTaskId: 'task-parent' };
+      const taskAssignee: TaskAssignee = {
+        taskId: 'task-1',
+        staffId: 'staff-1',
+      };
+      const taskPredecessor: TaskPredecessor = {
+        taskId: 'task-1',
+        predecessorTaskId: 'task-parent',
+      };
       const taskEvaluation: TaskEvaluation = {
         id: 'eval-1',
         taskId: 'task-1',
@@ -442,19 +493,21 @@ describe('TaskService', () => {
       expect(result).toBe(true);
       expect(mockDb.data.tasks).toHaveLength(1);
       expect(mockDb.data.tasks[0]).toEqual(mockParentTask);
-      
+
       // Check that related data was cleaned up
       expect(mockDb.data.taskAssignees).toHaveLength(0);
       expect(mockDb.data.taskPredecessors).toHaveLength(0);
       expect(mockDb.data.taskEvaluations).toHaveLength(0);
       expect(mockDb.data.taskProgress).toHaveLength(0);
       expect(mockDb.data.taskStatusReports).toHaveLength(0);
-      
+
       expect(mockDb.write).toHaveBeenCalled();
     });
 
     it('should throw error when task not found', async () => {
-      await expect(taskService.deleteTask('task-invalid')).rejects.toThrow('Task not found');
+      await expect(taskService.deleteTask('task-invalid')).rejects.toThrow(
+        'Task not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
@@ -463,7 +516,7 @@ describe('TaskService', () => {
       mockDb.data.tasks[1].parentTaskId = 'task-1';
 
       await expect(taskService.deleteTask('task-1')).rejects.toThrow(
-        'Cannot delete task: it has child tasks'
+        'Cannot delete task: it has child tasks',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -483,23 +536,27 @@ describe('TaskService', () => {
     });
 
     it('should throw error when task not found', async () => {
-      await expect(taskService.assignStaffToTask('task-invalid', 'staff-1')).rejects.toThrow('Task not found');
+      await expect(
+        taskService.assignStaffToTask('task-invalid', 'staff-1'),
+      ).rejects.toThrow('Task not found');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when staff not found', async () => {
-      await expect(taskService.assignStaffToTask('task-1', 'staff-invalid')).rejects.toThrow('Staff member not found');
+      await expect(
+        taskService.assignStaffToTask('task-1', 'staff-invalid'),
+      ).rejects.toThrow('Staff member not found');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when staff already assigned', async () => {
       // First assignment
       await taskService.assignStaffToTask('task-1', 'staff-1');
-      
+
       // Try to assign again
-      await expect(taskService.assignStaffToTask('task-1', 'staff-1')).rejects.toThrow(
-        'Staff member already assigned to this task'
-      );
+      await expect(
+        taskService.assignStaffToTask('task-1', 'staff-1'),
+      ).rejects.toThrow('Staff member already assigned to this task');
     });
   });
 
@@ -518,13 +575,18 @@ describe('TaskService', () => {
     });
 
     it('should throw error when assignment not found', async () => {
-      await expect(taskService.removeStaffFromTask('task-1', 'staff-invalid')).rejects.toThrow('Assignment not found');
+      await expect(
+        taskService.removeStaffFromTask('task-1', 'staff-invalid'),
+      ).rejects.toThrow('Assignment not found');
     });
   });
 
   describe('addTaskPredecessor', () => {
     it('should add task predecessor successfully', async () => {
-      const result = await taskService.addTaskPredecessor('task-1', 'task-parent');
+      const result = await taskService.addTaskPredecessor(
+        'task-1',
+        'task-parent',
+      );
 
       expect(result).toBe(true);
       expect(mockDb.data.taskPredecessors).toHaveLength(1);
@@ -536,30 +598,34 @@ describe('TaskService', () => {
     });
 
     it('should throw error when task not found', async () => {
-      await expect(taskService.addTaskPredecessor('task-invalid', 'task-parent')).rejects.toThrow('Task not found');
+      await expect(
+        taskService.addTaskPredecessor('task-invalid', 'task-parent'),
+      ).rejects.toThrow('Task not found');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when predecessor task not found', async () => {
-      await expect(taskService.addTaskPredecessor('task-1', 'task-invalid')).rejects.toThrow('Predecessor task not found');
+      await expect(
+        taskService.addTaskPredecessor('task-1', 'task-invalid'),
+      ).rejects.toThrow('Predecessor task not found');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when task tries to be its own predecessor', async () => {
-      await expect(taskService.addTaskPredecessor('task-1', 'task-1')).rejects.toThrow(
-        'Task cannot be its own predecessor'
-      );
+      await expect(
+        taskService.addTaskPredecessor('task-1', 'task-1'),
+      ).rejects.toThrow('Task cannot be its own predecessor');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when predecessor relationship already exists', async () => {
       // First addition
       await taskService.addTaskPredecessor('task-1', 'task-parent');
-      
+
       // Try to add again
-      await expect(taskService.addTaskPredecessor('task-1', 'task-parent')).rejects.toThrow(
-        'Predecessor relationship already exists'
-      );
+      await expect(
+        taskService.addTaskPredecessor('task-1', 'task-parent'),
+      ).rejects.toThrow('Predecessor relationship already exists');
     });
   });
 
@@ -570,7 +636,10 @@ describe('TaskService', () => {
     });
 
     it('should remove task predecessor successfully', async () => {
-      const result = await taskService.removeTaskPredecessor('task-1', 'task-parent');
+      const result = await taskService.removeTaskPredecessor(
+        'task-1',
+        'task-parent',
+      );
 
       expect(result).toBe(true);
       expect(mockDb.data.taskPredecessors).toHaveLength(0);
@@ -578,18 +647,22 @@ describe('TaskService', () => {
     });
 
     it('should throw error when predecessor relationship not found', async () => {
-      await expect(taskService.removeTaskPredecessor('task-1', 'task-invalid')).rejects.toThrow(
-        'Predecessor relationship not found'
-      );
+      await expect(
+        taskService.removeTaskPredecessor('task-1', 'task-invalid'),
+      ).rejects.toThrow('Predecessor relationship not found');
     });
   });
 
   describe('getTaskAssignees', () => {
     beforeEach(async () => {
       // Add multiple staff and assignments
-      const staff2: Staff = { ...mockStaff, id: 'staff-2', email: 'jane@test.com' };
+      const staff2: Staff = {
+        ...mockStaff,
+        id: 'staff-2',
+        email: 'jane@test.com',
+      };
       mockDb.data.staff.push(staff2);
-      
+
       await taskService.assignStaffToTask('task-1', 'staff-1');
       await taskService.assignStaffToTask('task-1', 'staff-2');
     });
@@ -598,8 +671,8 @@ describe('TaskService', () => {
       const result = await taskService.getTaskAssignees('task-1');
 
       expect(result).toHaveLength(2);
-      expect(result.map(s => s.id)).toContain('staff-1');
-      expect(result.map(s => s.id)).toContain('staff-2');
+      expect(result.map((s) => s.id)).toContain('staff-1');
+      expect(result.map((s) => s.id)).toContain('staff-2');
     });
 
     it('should return empty array for task with no assignees', async () => {
@@ -662,9 +735,9 @@ describe('TaskService', () => {
           plannedEndDate: '2024-02-28',
           actualStartDate: undefined,
           actualEndDate: undefined,
-        }
+        },
       ];
-      
+
       // Make task-1 a child of task-parent
       mockDb.data.tasks[0].parentTaskId = 'task-parent';
     });

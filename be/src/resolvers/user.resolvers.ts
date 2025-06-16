@@ -5,11 +5,7 @@
  * including user queries, user CRUD operations, and user administration.
  */
 
-import type { 
-  GraphQLContext,
-  RegisterInput,
-  UpdateUserInput,
-} from '../types';
+import type { GraphQLContext, RegisterInput, UpdateUserInput } from '../types';
 import logger from '../utils/logger';
 import { UserService } from '../services';
 

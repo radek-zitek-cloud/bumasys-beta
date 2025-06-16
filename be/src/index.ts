@@ -72,8 +72,8 @@ interface AppInstances {
 export async function createApp(): Promise<AppInstances> {
   logger.info('Starting application initialization...');
   logger.trace('TRACE');
-  logger.debug("DEBUG");
-  logger.info ("INFO");
+  logger.debug('DEBUG');
+  logger.info('INFO');
   logger.warn('WARN');
   logger.error('ERROR');
   logger.fatal('FATAL');

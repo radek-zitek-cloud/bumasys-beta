@@ -5,7 +5,6 @@
  * and provides initialization functions for setting up services.
  */
 
-
 import {
   referenceDataQueryResolvers,
   referenceDataMutationResolvers,
@@ -94,32 +93,36 @@ import GraphQLJSON from 'graphql-type-json';
  */
 export const resolvers = {
   JSON: GraphQLJSON,
-  Query: { 
-    ...referenceDataQueryResolvers, 
-    ...healthResolvers, 
-    ...authResolvers, 
+  Query: {
+    ...referenceDataQueryResolvers,
+    ...healthResolvers,
+    ...authResolvers,
     ...userResolvers,
     ...organizationQueryResolvers,
     ...departmentQueryResolvers,
     ...staffQueryResolvers,
     ...teamQueryResolvers,
     ...projectQueryResolvers,
-    ...taskQueryResolvers
+    ...taskQueryResolvers,
   },
-  Mutation: { 
-    ...referenceDataMutationResolvers, 
-    ...authMutationResolvers, 
+  Mutation: {
+    ...referenceDataMutationResolvers,
+    ...authMutationResolvers,
     ...userMutationResolvers,
     ...organizationMutationResolvers,
     ...departmentMutationResolvers,
     ...staffMutationResolvers,
     ...teamMutationResolvers,
     ...projectMutationResolvers,
-    ...taskMutationResolvers
+    ...taskMutationResolvers,
   },
   Organization: organizationFieldResolvers,
   Department: departmentFieldResolvers,
-  Staff: { ...staffFieldResolvers, ...staffOrganizationFieldResolvers, ...staffDepartmentFieldResolvers },
+  Staff: {
+    ...staffFieldResolvers,
+    ...staffOrganizationFieldResolvers,
+    ...staffDepartmentFieldResolvers,
+  },
   Team: teamFieldResolvers,
   TeamMember: teamMemberFieldResolvers,
   Project: projectFieldResolvers,
@@ -167,11 +170,7 @@ export function initializeResolvers(
   taskStatusReportService: TaskStatusReportService,
   projectStatusReportService: ProjectStatusReportService,
 ): void {
-  setReferenceDataServices(
-    statusService,
-    priorityService,
-    complexityService,
-  );
+  setReferenceDataServices(statusService, priorityService, complexityService);
   setHealthServices(userService);
   setAuthServices(userService, authService);
   setUserServices(userService);
