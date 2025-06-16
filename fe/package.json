@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@fontsource/roboto": "5.2.5",
+    "@logtail/browser": "^0.5.4",
     "@logtail/pino": "^0.5.5",
     "@mdi/font": "7.4.47",
     "@types/config": "^3.3.5",
