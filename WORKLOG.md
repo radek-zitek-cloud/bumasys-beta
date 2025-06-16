@@ -2,6 +2,101 @@
 
 ## Change Log
 
+### 2025-06-16 - UI Creator Field Implementation for Task Reports (Completed Issue #102)
+
+#### Root Cause Analysis:
+The backend creator field functionality was already implemented, but the UI components lacked the necessary fields for manual creator selection. Users needed a way to select the report creator from eligible staff members (those assigned to the task or the evaluator) with automatic preset based on their email.
+
+#### Impact of Changes:
+- **Enhanced User Experience**: Added intuitive creator selection dropdowns in report creation dialogs
+- **Smart Auto-Assignment**: Automatically presets creator when user email matches eligible staff
+- **Manual Override Capability**: Users can manually select a different eligible creator
+- **Consistent UI Patterns**: Follows established dialog component design patterns
+- **Type Safety**: Full TypeScript support with proper interface definitions
+- **Comprehensive Testing**: Unit tests validate all creator field functionality
+
+#### Technical Implementation:
+
+**Frontend Interface Updates:**
+- Enhanced `CreateTaskStatusReportInput` and `CreateTaskProgressInput` to include `creatorId?: string`
+- Updated `TaskStatusReport` and `TaskProgress` interfaces to include creator information
+- Modified GraphQL mutations to pass `creatorId` parameter to backend
+
+**UI Component Enhancements:**
+```vue
+<!-- Creator Selection Dropdown -->
+<v-select
+  v-model="form.creatorId"
+  clearable
+  item-title="displayName"
+  item-value="id"
+  :items="staffOptions"
+  label="Creator"
+  prepend-icon="mdi-account-supervisor"
+  variant="outlined"
+/>
+```
+
+**Eligible Staff Logic:**
+- Created computed property to identify eligible staff (assignees + evaluator)
+- Prevents duplicate entries when evaluator is also assigned to task
+- Formats staff display as "FirstName LastName (email)" for clarity
+
+**Auto-Preset Functionality:**
+```typescript
+function presetCreator() {
+  if (!authStore.user?.email || !props.eligibleStaff) return
+  
+  const matchingStaff = props.eligibleStaff.find(staff => 
+    staff.email.toLowerCase() === authStore.user?.email.toLowerCase()
+  )
+  
+  if (matchingStaff) {
+    form.creatorId = matchingStaff.id
+  }
+}
+```
+
+**Component Props Enhancement:**
+- Added `eligibleStaff?: Staff[]` prop to both dialog components
+- Updated task management page to pass eligible staff data
+- Maintained backward compatibility with existing usage
+
+#### New Features Added:
+- **Manual Creator Selection**: Dropdown allowing selection from eligible staff members
+- **Smart Auto-Preset**: Automatically selects creator when user email matches staff
+- **Visual Guidance**: Helper text explaining creator selection rules
+- **Eligible Staff Filtering**: Only shows staff assigned to task or evaluator
+- **Email-Based Matching**: Case-insensitive email matching for auto-assignment
+
+#### Code Quality Improvements:
+- **Comprehensive Unit Tests**: Created test suite validating all creator field functionality
+- **Linting Compliance**: Fixed style issues in modified files
+- **Type Safety**: Full TypeScript integration with proper interfaces
+- **Error Handling**: Graceful handling of missing or invalid creator data
+
+#### Testing Coverage:
+- Creator dropdown display validation
+- Auto-preset logic based on user email matching
+- Form submission with creator data inclusion
+- Staff options formatting verification
+- Edge cases for non-matching emails
+
+#### Files Modified:
+- `fe/src/services/tasks.ts` - Interface and GraphQL mutation updates
+- `fe/src/components/tasks/TaskStatusReportCreateDialog.vue` - Creator field UI
+- `fe/src/components/tasks/TaskProgressCreateDialog.vue` - Creator field UI  
+- `fe/src/pages/task-management/[id].vue` - Eligible staff logic and prop passing
+- `fe/tests/unit/components/TaskStatusReportCreateDialog.creator.test.ts` - Unit tests
+
+#### User Experience Impact:
+- **Seamless Workflow**: Most users will have creator auto-selected based on their email
+- **Flexibility**: Manual override available when needed
+- **Clear Guidance**: Helper text explains selection criteria
+- **Consistent Design**: Matches other form elements in the application
+
+This implementation successfully bridges the gap between the existing backend creator functionality and the frontend user interface, providing an intuitive and user-friendly way to manage report creators while maintaining all business rules and validation logic.
+
 ### 2025-01-03 - Enhanced Task Graph Dialog with Project, Predecessor, and Child Task Visualization
 
 #### Root Cause Analysis:
