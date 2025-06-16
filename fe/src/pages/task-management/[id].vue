@@ -27,7 +27,7 @@
 
     <!-- Page Header with Task Details -->
     <div class="mb-6">
-      <h1 class="text-h4 mb-2">Task Management</h1>
+      <h1 class="text-h5 mb-2">Task Management</h1>
       <p class="text-subtitle-1 text-medium-emphasis mb-4">
         Manage all aspects of task: {{ task?.name || 'Loading...' }}
       </p>
@@ -39,68 +39,68 @@
           Task Details
         </v-card-title>
         <v-card-text>
-          <v-row>
+            <v-row class="pt-4">
             <!-- Basic Info -->
             <v-col cols="12" md="6">
               <v-text-field
-                label="Task Name"
-                :model-value="task.name"
-                prepend-icon="mdi-clipboard-text"
-                readonly
-                variant="outlined"
+              label="Task Name"
+              :model-value="task.name"
+              prepend-icon="mdi-clipboard-text"
+              readonly
+              variant="outlined"
               />
             </v-col>
             <v-col cols="12" md="6">
               <v-text-field
-                label="Project"
-                :model-value="task.project?.name || 'Unknown'"
-                prepend-icon="mdi-clipboard-outline"
-                readonly
-                variant="outlined"
+              label="Project"
+              :model-value="task.project?.name || 'Unknown'"
+              prepend-icon="mdi-clipboard-outline"
+              readonly
+              variant="outlined"
               />
             </v-col>
             
             <!-- Description -->
             <v-col cols="12">
               <v-textarea
-                label="Description"
-                :model-value="task.description || 'No description provided'"
-                prepend-icon="mdi-text-box"
-                readonly
-                rows="2"
-                variant="outlined"
+              label="Description"
+              :model-value="task.description || 'No description provided'"
+              prepend-icon="mdi-text-box"
+              readonly
+              rows="2"
+              variant="outlined"
               />
             </v-col>
             
             <!-- Status Info -->
             <v-col cols="12" md="4">
               <v-text-field
-                label="Status"
-                :model-value="task.status?.name || 'Not set'"
-                prepend-icon="mdi-flag"
-                readonly
-                variant="outlined"
+              label="Status"
+              :model-value="task.status?.name || 'Not set'"
+              prepend-icon="mdi-flag"
+              readonly
+              variant="outlined"
               />
             </v-col>
             <v-col cols="12" md="4">
               <v-text-field
-                label="Priority"
-                :model-value="task.priority?.name || 'Not set'"
-                prepend-icon="mdi-priority-high"
-                readonly
-                variant="outlined"
+              label="Priority"
+              :model-value="task.priority?.name || 'Not set'"
+              prepend-icon="mdi-priority-high"
+              readonly
+              variant="outlined"
               />
             </v-col>
             <v-col cols="12" md="4">
               <v-text-field
-                label="Complexity"
-                :model-value="task.complexity?.name || 'Not set'"
-                prepend-icon="mdi-chart-line"
-                readonly
-                variant="outlined"
+              label="Complexity"
+              :model-value="task.complexity?.name || 'Not set'"
+              prepend-icon="mdi-chart-line"
+              readonly
+              variant="outlined"
               />
             </v-col>
-          </v-row>
+            </v-row>
         </v-card-text>
       </v-card>
     </div>
