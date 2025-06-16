@@ -3,11 +3,11 @@
 
   This page provides comprehensive management of a specific task including:
   - Task assignees (CRUD operations)
-  - Task predecessors (CRUD operations)
+  - Task predecessors (CRUD operations) 
   - Child tasks (CRUD operations)
   - Progress reports (CRUD operations)
   - Status reports (CRUD operations)
-
+  
   Follows the design patterns established in the user management interface.
 -->
 
@@ -31,7 +31,7 @@
       <p class="text-subtitle-1 text-medium-emphasis mb-4">
         Manage all aspects of task: {{ task?.name || 'Loading...' }}
       </p>
-
+      
       <!-- Task Details Card -->
       <v-card v-if="task" class="mb-6">
         <v-card-title class="bg-primary">
@@ -59,7 +59,7 @@
                 variant="outlined"
               />
             </v-col>
-
+            
             <!-- Description -->
             <v-col cols="12">
               <v-textarea
@@ -71,7 +71,7 @@
                 variant="outlined"
               />
             </v-col>
-
+            
             <!-- Status Info -->
             <v-col cols="12" md="4">
               <v-text-field
@@ -438,43 +438,38 @@
 <script lang="ts" setup>
   import { computed, onMounted, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
-
-  // Task management interface (placeholder until we implement the service functions)
-  interface Task {
-    id: string
-    name: string
-    description?: string
-    project?: { name: string }
-    status?: { name: string }
-    priority?: { name: string }
-    complexity?: { name: string }
-  }
-
-  interface Staff {
-    id: string
-    firstName: string
-    lastName: string
-    role: string
-    department?: { name: string }
-  }
-
-  interface TaskProgress {
-    id: string
-    reportDate: string
-    progressPercent: number
-    notes?: string
-  }
-
-  interface TaskStatusReport {
-    id: string
-    reportDate: string
-    statusSummary?: string
-  }
+  
+  // Import services and types
+  import type { 
+    Task, 
+    Staff, 
+    TaskProgress, 
+    TaskStatusReport,
+    CreateTaskProgressInput,
+    UpdateTaskProgressInput,
+    CreateTaskStatusReportInput,
+    UpdateTaskStatusReportInput
+  } from '../../services/tasks'
+  import { 
+    getTaskWithManagementData,
+    assignStaffToTask,
+    removeStaffFromTask,
+    addTaskPredecessor,
+    removeTaskPredecessor,
+    createTaskProgress,
+    updateTaskProgress,
+    deleteTaskProgress,
+    createTaskStatusReport,
+    updateTaskStatusReport,
+    deleteTaskStatusReport,
+    getTasks
+  } from '../../services/tasks'
+  import { getStaff } from '../../services/staff'
 
   // Router and route
   const router = useRouter()
   const route = useRoute()
-
+  
   // Task ID from route params
   const taskId = computed(() => (route.params as { id: string }).id)
 
@@ -487,6 +482,10 @@
   const statusReports = ref<TaskStatusReport[]>([])
   const loading = ref(false)
 
+  // Available data for dropdowns
+  const availableStaff = ref<Staff[]>([])
+  const availableTasks = ref<Task[]>([])
+
   // Snackbar for notifications
   const snackbar = ref({
     show: false,
@@ -495,114 +494,118 @@
   })
 
   // Utility functions
-  function formatDate (dateString: string): string {
+  function formatDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString()
   }
 
-  function showNotification (message: string, isSuccess = true) {
+  function showNotification(message: string, isSuccess = true) {
     snackbar.value.message = message
     snackbar.value.color = isSuccess ? 'success' : 'error'
     snackbar.value.show = true
   }
 
-  function goBackToTasks () {
+  function goBackToTasks() {
     router.push('/tasks')
   }
 
-  // Dialog functions (placeholders for now)
-  function openAssigneeCreateDialog () {
+  // Dialog functions (placeholders for now - will implement dialogs next)
+  function openAssigneeCreateDialog() {
     showNotification('Assignee creation dialog - coming soon', false)
   }
 
-  function openAssigneeDeleteDialog (assignee: Staff) {
-    showNotification(`Remove assignee ${assignee.firstName} ${assignee.lastName} - coming soon`, false)
+  async function openAssigneeDeleteDialog(assignee: Staff) {
+    try {
+      await removeStaffFromTask(taskId.value, assignee.id)
+      showNotification(`Removed assignee ${assignee.firstName} ${assignee.lastName}`)
+      await loadTaskData()
+    } catch (error) {
+      console.error('Failed to remove assignee:', error)
+      showNotification(`Failed to remove assignee: ${(error as Error).message}`, false)
+    }
   }
 
-  function openPredecessorCreateDialog () {
+  function openPredecessorCreateDialog() {
     showNotification('Predecessor creation dialog - coming soon', false)
   }
 
-  function openPredecessorDeleteDialog (predecessor: Task) {
-    showNotification(`Remove predecessor ${predecessor.name} - coming soon`, false)
+  async function openPredecessorDeleteDialog(predecessor: Task) {
+    try {
+      await removeTaskPredecessor(taskId.value, predecessor.id)
+      showNotification(`Removed predecessor ${predecessor.name}`)
+      await loadTaskData()
+    } catch (error) {
+      console.error('Failed to remove predecessor:', error)
+      showNotification(`Failed to remove predecessor: ${(error as Error).message}`, false)
+    }
   }
 
-  function openChildTaskCreateDialog () {
+  function openChildTaskCreateDialog() {
     showNotification('Child task creation dialog - coming soon', false)
   }
 
-  function openChildTaskDeleteDialog (childTask: Task) {
+  function openChildTaskDeleteDialog(childTask: Task) {
     showNotification(`Remove child task ${childTask.name} - coming soon`, false)
   }
 
-  function openProgressReportCreateDialog () {
+  function openProgressReportCreateDialog() {
     showNotification('Progress report creation dialog - coming soon', false)
   }
 
-  function openProgressReportEditDialog (report: TaskProgress) {
+  function openProgressReportEditDialog(report: TaskProgress) {
     showNotification(`Edit progress report from ${formatDate(report.reportDate)} - coming soon`, false)
   }
 
-  function openProgressReportDeleteDialog (report: TaskProgress) {
-    showNotification(`Delete progress report from ${formatDate(report.reportDate)} - coming soon`, false)
+  async function openProgressReportDeleteDialog(report: TaskProgress) {
+    try {
+      await deleteTaskProgress(report.id)
+      showNotification('Progress report deleted')
+      await loadTaskData()
+    } catch (error) {
+      console.error('Failed to delete progress report:', error)
+      showNotification(`Failed to delete progress report: ${(error as Error).message}`, false)
+    }
   }
 
-  function openStatusReportCreateDialog () {
+  function openStatusReportCreateDialog() {
     showNotification('Status report creation dialog - coming soon', false)
   }
 
-  function openStatusReportEditDialog (report: TaskStatusReport) {
+  function openStatusReportEditDialog(report: TaskStatusReport) {
     showNotification(`Edit status report from ${formatDate(report.reportDate)} - coming soon`, false)
   }
 
-  function openStatusReportDeleteDialog (report: TaskStatusReport) {
-    showNotification(`Delete status report from ${formatDate(report.reportDate)} - coming soon`, false)
+  async function openStatusReportDeleteDialog(report: TaskStatusReport) {
+    try {
+      await deleteTaskStatusReport(report.id)
+      showNotification('Status report deleted')
+      await loadTaskData()
+    } catch (error) {
+      console.error('Failed to delete status report:', error)
+      showNotification(`Failed to delete status report: ${(error as Error).message}`, false)
+    }
   }
 
-  // Data loading function (placeholder)
-  async function loadTaskData () {
+  // Data loading function
+  async function loadTaskData() {
     loading.value = true
     try {
-      // TODO: Replace with actual service calls
-      // For now, create mock data to show the UI structure
-      task.value = {
-        id: taskId.value,
-        name: 'Sample Task Name',
-        description: 'This is a sample task description to show how the interface looks.',
-        project: { name: 'Sample Project' },
-        status: { name: 'In Progress' },
-        priority: { name: 'High' },
-        complexity: { name: 'Medium' },
+      // Load the task with all management data
+      const { task: taskData } = await getTaskWithManagementData(taskId.value)
+      
+      if (!taskData) {
+        showNotification('Task not found', false)
+        router.push('/tasks')
+        return
       }
 
-      // Mock some sample data
-      assignees.value = [
-        {
-          id: '1',
-          firstName: 'John',
-          lastName: 'Doe',
-          role: 'Developer',
-          department: { name: 'Engineering' },
-        },
-      ]
+      task.value = taskData
+      assignees.value = taskData.assignees || []
+      predecessors.value = taskData.predecessors || []
+      childTasks.value = taskData.childTasks || []
+      progressReports.value = taskData.progressReports || []
+      statusReports.value = taskData.statusReports || []
 
-      progressReports.value = [
-        {
-          id: '1',
-          reportDate: '2024-01-15',
-          progressPercent: 75,
-          notes: 'Good progress on main features',
-        },
-      ]
-
-      statusReports.value = [
-        {
-          id: '1',
-          reportDate: '2024-01-10',
-          statusSummary: 'All milestones on track',
-        },
-      ]
-
-      showNotification('Task data loaded (mock data for now)')
+      showNotification('Task data loaded successfully')
     } catch (error) {
       console.error('Failed to load task data:', error)
       showNotification('Failed to load task data', false)
@@ -611,8 +614,26 @@
     }
   }
 
+  // Load available staff and tasks for dropdowns
+  async function loadDropdownData() {
+    try {
+      const [staffResponse, tasksResponse] = await Promise.all([
+        getStaff(),
+        getTasks()
+      ])
+      
+      availableStaff.value = staffResponse.staff || []
+      availableTasks.value = tasksResponse.tasks || []
+    } catch (error) {
+      console.error('Failed to load dropdown data:', error)
+    }
+  }
+
   // Load data on mount
-  onMounted(() => {
-    loadTaskData()
+  onMounted(async () => {
+    await Promise.all([
+      loadTaskData(),
+      loadDropdownData()
+    ])
   })
 </script>
