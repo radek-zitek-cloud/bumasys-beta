@@ -27,16 +27,12 @@
 
     <!-- Page Header with Task Details -->
     <div class="mb-6">
-      <h1 class="text-h5 mb-2">Task Management</h1>
-      <p class="text-subtitle-1 text-medium-emphasis mb-4">
-        Manage all aspects of task: {{ task?.name || 'Loading...' }}
-      </p>
       
       <!-- Task Details Card -->
       <v-card v-if="task" class="mb-6">
         <v-card-title class="bg-primary">
           <v-icon class="mr-2">mdi-clipboard-text</v-icon>
-          Task Details
+          Task Details: {{ task?.name || 'Loading...' }}
         </v-card-title>
         <v-card-text>
             <v-row class="pt-4">
