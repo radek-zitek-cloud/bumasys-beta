@@ -465,6 +465,7 @@
     <v-dialog v-model="showProgressReportCreateDialog" max-width="500" persistent>
       <TaskProgressCreateDialog
         :task-id="taskId"
+        :eligible-staff="eligibleStaff"
         @cancel="showProgressReportCreateDialog = false"
         @created="handleProgressReportCreated"
       />
@@ -482,6 +483,7 @@
     <v-dialog v-model="showStatusReportCreateDialog" max-width="600" persistent>
       <TaskStatusReportCreateDialog
         :task-id="taskId"
+        :eligible-staff="eligibleStaff"
         @cancel="showStatusReportCreateDialog = false"
         @created="handleStatusReportCreated"
       />
@@ -588,6 +590,38 @@
   const availableStatuses = ref<Array<{ id: string, name: string }>>([])
   const availablePriorities = ref<Array<{ id: string, name: string }>>([])
   const availableComplexities = ref<Array<{ id: string, name: string }>>([])
+
+  // Eligible staff for report creation (assigned to task + evaluator)
+  const eligibleStaff = computed(() => {
+    if (!task.value) return []
+    
+    const eligible: Staff[] = []
+    
+    // Add all assigned staff
+    assignees.value.forEach(staff => {
+      if (!eligible.find(s => s.id === staff.id)) {
+        eligible.push(staff)
+      }
+    })
+    
+    // Add evaluator if available
+    if (task.value.evaluator) {
+      const evaluator: Staff = {
+        id: task.value.evaluator.id,
+        firstName: task.value.evaluator.firstName,
+        lastName: task.value.evaluator.lastName,
+        email: task.value.evaluator.email,
+        role: 'Evaluator', // We don't have the actual role, but this is descriptive
+        department: undefined
+      }
+      
+      if (!eligible.find(s => s.id === evaluator.id)) {
+        eligible.push(evaluator)
+      }
+    }
+    
+    return eligible
+  })
 
   // Dialog visibility state
   const showAssigneeCreateDialog = ref(false)
