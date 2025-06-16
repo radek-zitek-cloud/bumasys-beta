@@ -86,7 +86,7 @@ const mockBasicTask: Task = {
 const MockTaskGraphDialog = {
   props: ['task'],
   emits: ['close'],
-  setup(props: { task: Task }) {
+  setup (props: { task: Task }) {
     return {
       loading: false,
       error: null,

@@ -464,8 +464,8 @@
 
     <v-dialog v-model="showProgressReportCreateDialog" max-width="500" persistent>
       <TaskProgressCreateDialog
-        :task-id="taskId"
         :eligible-staff="eligibleStaff"
+        :task-id="taskId"
         @cancel="showProgressReportCreateDialog = false"
         @created="handleProgressReportCreated"
       />
@@ -482,8 +482,8 @@
 
     <v-dialog v-model="showStatusReportCreateDialog" max-width="600" persistent>
       <TaskStatusReportCreateDialog
-        :task-id="taskId"
         :eligible-staff="eligibleStaff"
+        :task-id="taskId"
         @cancel="showStatusReportCreateDialog = false"
         @created="handleStatusReportCreated"
       />
@@ -594,16 +594,16 @@
   // Eligible staff for report creation (assigned to task + evaluator)
   const eligibleStaff = computed(() => {
     if (!task.value) return []
-    
+
     const eligible: Staff[] = []
-    
+
     // Add all assigned staff
-    assignees.value.forEach(staff => {
-      if (!eligible.find(s => s.id === staff.id)) {
+    for (const staff of assignees.value) {
+      if (!eligible.some(s => s.id === staff.id)) {
         eligible.push(staff)
       }
-    })
-    
+    }
+
     // Add evaluator if available
     if (task.value.evaluator) {
       const evaluator: Staff = {
@@ -612,14 +612,14 @@
         lastName: task.value.evaluator.lastName,
         email: task.value.evaluator.email,
         role: 'Evaluator', // We don't have the actual role, but this is descriptive
-        department: undefined
+        department: undefined,
       }
-      
-      if (!eligible.find(s => s.id === evaluator.id)) {
+
+      if (!eligible.some(s => s.id === evaluator.id)) {
         eligible.push(evaluator)
       }
     }
-    
+
     return eligible
   })
 

@@ -91,7 +91,7 @@
 
 <script lang="ts" setup>
   import type { CreateTaskStatusReportInput, Staff } from '../../services/tasks'
-  import { reactive, ref, computed, onMounted } from 'vue'
+  import { computed, onMounted, reactive, ref } from 'vue'
   import { useAuthStore } from '../../stores/auth'
 
   /** Component props */
@@ -125,18 +125,18 @@
     return props.eligibleStaff.map(staff => ({
       id: staff.id,
       displayName: `${staff.firstName} ${staff.lastName} (${staff.email})`,
-      email: staff.email
+      email: staff.email,
     }))
   })
 
   /** Preset creator based on logged-in user email */
   function presetCreator () {
     if (!authStore.user?.email || !props.eligibleStaff) return
-    
-    const matchingStaff = props.eligibleStaff.find(staff => 
-      staff.email.toLowerCase() === authStore.user?.email.toLowerCase()
+
+    const matchingStaff = props.eligibleStaff.find(staff =>
+      staff.email.toLowerCase() === authStore.user?.email.toLowerCase(),
     )
-    
+
     if (matchingStaff) {
       form.creatorId = matchingStaff.id
     }
