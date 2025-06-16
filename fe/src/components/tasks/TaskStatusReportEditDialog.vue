@@ -41,6 +41,23 @@
             />
           </v-col>
 
+          <!-- Creator -->
+          <v-col cols="12">
+            <v-select
+              v-model="form.creatorId"
+              clearable
+              item-title="displayName"
+              item-value="id"
+              :items="staffOptions"
+              label="Creator"
+              prepend-icon="mdi-account-supervisor"
+              variant="outlined"
+            />
+            <div class="text-caption text-medium-emphasis mt-1">
+              Select the staff member who created this report.
+            </div>
+          </v-col>
+
           <!-- Info Alert -->
           <v-col cols="12">
             <v-alert
@@ -73,12 +90,13 @@
 </template>
 
 <script lang="ts" setup>
-  import type { TaskStatusReport, UpdateTaskStatusReportInput } from '../../services/tasks'
-  import { reactive, ref, watch } from 'vue'
+  import type { TaskStatusReport, UpdateTaskStatusReportInput, Staff } from '../../services/tasks'
+  import { computed, reactive, ref, watch } from 'vue'
 
   /** Component props */
   const props = defineProps<{
     statusReport: TaskStatusReport
+    eligibleStaff: Staff[]
   }>()
 
   /** Component events */
@@ -91,7 +109,16 @@
   const form = reactive({
     reportDate: '',
     statusSummary: '',
+    creatorId: '' as string | null,
   })
+
+  /** Staff options with display names */
+  const staffOptions = computed(() => 
+    props.eligibleStaff.map(staff => ({
+      ...staff,
+      displayName: `${staff.firstName} ${staff.lastName} (${staff.email})`,
+    }))
+  )
 
   /** Processing state for the submit button */
   const processing = ref(false)
@@ -101,6 +128,7 @@
     if (report) {
       form.reportDate = report.reportDate.split('T')[0] // Convert to YYYY-MM-DD format
       form.statusSummary = report.statusSummary || ''
+      form.creatorId = report.creatorId || null
     }
   }, { immediate: true })
 
@@ -132,6 +160,7 @@
         id: props.statusReport.id,
         reportDate: form.reportDate,
         statusSummary: form.statusSummary,
+        creatorId: form.creatorId || undefined,
       }
 
       // Emit the status report data to parent for actual API call

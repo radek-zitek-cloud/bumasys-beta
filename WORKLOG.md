@@ -2,6 +2,135 @@
 
 ## Change Log
 
+### 2025-06-16 - Enhanced Report Editing & Display with Creator Management and Progress Sorting
+
+#### Root Cause Analysis:
+The task management system needed several improvements in how reports are handled:
+1. Edit dialogs for both progress and status reports lacked creator selection functionality
+2. Progress reports needed better display format with all key information on one line
+3. Progress reports needed to be sorted by completion percentage in descending order
+4. Creator field was missing from edit operations in both backend and frontend
+
+#### Impact of Changes:
+- **Enhanced Report Editing**: Users can now change the creator when editing reports
+- **Improved Progress Display**: Progress reports show all key information in a compact single line format
+- **Better Data Organization**: Progress reports are automatically sorted by completion percentage (highest first)
+- **Consistent UX**: Edit dialogs now match create dialogs in functionality
+- **Full Creator Management**: Both create and edit operations support creator assignment
+
+#### New Features Added:
+- **Creator Selection in Edit Dialogs**: Both progress and status report edit dialogs now include creator dropdown
+- **Enhanced Progress Display**: Format changed to "Report from: [date] | [notes] | [creator] | [%] complete"
+- **Progress Report Sorting**: Reports automatically sorted by completion percentage (descending)
+- **Status Report Sorting**: Reports sorted by date (newest first)
+- **Backend Creator Updates**: Full support for updating creator in both report types
+
+#### Technical Implementation:
+
+**Backend Enhancements:**
+- Added `creatorId` field to `UpdateTaskProgressInput` interface
+- Added `creatorId` field to `UpdateTaskStatusReportInput` interface  
+- Enhanced task-progress service to handle creator updates
+- Enhanced task-status-report service to handle creator updates
+- Maintained backward compatibility with existing data
+
+**Frontend Improvements:**
+- Added `eligibleStaff` prop to both edit dialog components
+- Enhanced edit dialogs with creator selection dropdowns
+- Added sorted computed properties for both report types
+- Updated display templates to use sorted data
+- Implemented single-line progress report format
+- Added proper TypeScript interfaces and validation
+
+**UI/UX Enhancements:**
+- **Progress Reports**: Compact single-line format with all key information
+- **Sorted Lists**: Progress by percentage (desc), Status by date (desc)  
+- **Creator Selection**: Dropdown with formatted names and emails
+- **Visual Consistency**: Matching styles between create and edit dialogs
+- **Responsive Design**: Proper handling of long text content
+
+#### Files Modified:
+
+**Backend:**
+- `be/src/types/index.ts` - Added creatorId to update interfaces
+- `be/src/services/task-progress.service.ts` - Enhanced with creator update support
+- `be/src/services/task-status-report.service.ts` - Enhanced with creator update support
+
+**Frontend:**
+- `fe/src/services/tasks.ts` - Updated interfaces with creatorId field
+- `fe/src/pages/task-management/[id].vue` - Enhanced display and sorting
+- `fe/src/components/tasks/TaskProgressEditDialog.vue` - Added creator selection
+- `fe/src/components/tasks/TaskStatusReportEditDialog.vue` - Added creator selection
+
+#### Code Quality:
+- **Type Safety**: Proper TypeScript interfaces with nullable creator handling
+- **Backward Compatibility**: Graceful handling of existing reports without creators
+- **Validation**: Form validation maintains data integrity
+- **Error Handling**: Proper null/undefined checks for creator fields
+- **Testing**: All existing tests continue to pass
+
+#### User Experience Impact:
+- **Comprehensive Editing**: Users can modify all report fields including creator
+- **Better Organization**: Progress reports sorted by completion helps prioritize high-progress tasks
+- **Compact Display**: Single-line format shows more information in less space
+- **Consistent Interface**: Edit and create operations have matching functionality
+- **Clear Information**: All key report details visible at a glance
+
+### 2025-06-16 - Enhanced Progress and Status Report Lists UI
+
+#### Root Cause Analysis:
+The progress reports and status reports lists in the task management page needed better visual hierarchy, improved information display, and more modern design patterns. The original lists had minimal styling and didn't make optimal use of available space or provide clear visual separation between different types of information.
+
+#### Impact of Changes:
+- **Improved Visual Hierarchy**: Better spacing, typography, and layout structure
+- **Enhanced Information Display**: More prominent creator information using chips
+- **Better UX**: Clearer visual separation between reports and improved readability
+- **Modern Design**: Updated to follow contemporary UI patterns with chips and better spacing
+- **Consistent Styling**: Unified approach across both progress and status report lists
+
+#### New Features Added:
+- **Enhanced Layout**: Larger avatars (40px) with better spacing and margins
+- **Chip-based Information Display**: Creator and progress/date information shown in styled chips
+- **Visual Separators**: Border-bottom on list items for clear separation
+- **Improved Typography**: Better text hierarchy with proper emphasis levels
+- **Color-coded Information**: Different chip colors for different types of information
+
+#### UI/UX Improvements:
+
+**Progress Reports List:**
+- Larger warning-colored avatar with percentage display
+- Report title shows "Report from [date]" for better context
+- Notes displayed with proper emphasis (high for content, medium for placeholders)
+- Creator information in outlined primary chip with account icon
+- Progress percentage in success-colored chip with trending-up icon
+- Better spacing and padding throughout
+
+**Status Reports List:**
+- Larger info-colored avatar with flag icon
+- Report title shows "Status Report from [date]" for clarity
+- Status summary with proper text emphasis
+- Creator information in outlined primary chip
+- Report date in info-colored chip with calendar-clock icon
+- Consistent styling with progress reports
+
+#### Technical Implementation:
+- Enhanced list styling with `pa-0` class for better control
+- Added `py-3` padding and `border-b` for visual separation
+- Improved `flex-grow-1` layout for better space utilization
+- Used `v-chip` components for better information hierarchy
+- Added color coding: primary for creators, success for progress, info for dates
+- Maintained existing functionality while improving visual presentation
+
+#### Files Modified:
+- `fe/src/pages/task-management/[id].vue` - Enhanced both progress and status report list layouts
+
+#### Design Improvements:
+- **Better Visual Weight**: Larger avatars and improved spacing create better visual balance
+- **Information Hierarchy**: Primary information (title) is more prominent, secondary info (chips) is clearly grouped
+- **Consistent Patterns**: Both lists follow the same design patterns for consistency
+- **Accessibility**: Better contrast and visual separation for improved readability
+- **Responsive Design**: Chips wrap gracefully on smaller screens with `flex-wrap`
+
 ### 2025-01-16 - Creator Display in Task Report Lists (Completed Issue #104)
 
 #### Root Cause Analysis:

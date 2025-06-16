@@ -691,6 +691,8 @@ export interface UpdateTaskProgressInput {
   progressPercent?: number;
   /** New notes (optional) */
   notes?: string;
+  /** Creator staff ID (optional) */
+  creatorId?: string;
 }
 
 /**
@@ -749,6 +751,8 @@ export interface UpdateTaskStatusReportInput {
   reportDate?: string;
   /** New status summary (optional) */
   statusSummary?: string;
+  /** Creator staff ID (optional) */
+  creatorId?: string;
 }
 
 /**

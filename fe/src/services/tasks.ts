@@ -108,6 +108,7 @@ export interface UpdateTaskProgressInput {
   reportDate?: string
   progressPercent?: number
   notes?: string
+  creatorId?: string
 }
 
 /** Interface for creating a new task status report */
@@ -123,6 +124,7 @@ export interface UpdateTaskStatusReportInput {
   id: string
   reportDate?: string
   statusSummary?: string
+  creatorId?: string
 }
 
 /** Interface for creating a new task */

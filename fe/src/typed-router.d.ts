@@ -22,6 +22,7 @@ declare module 'vue-router/auto-routes' {
     '/budget': RouteRecordInfo<'/budget', '/budget', Record<never, never>, Record<never, never>>,
     '/people': RouteRecordInfo<'/people', '/people', Record<never, never>, Record<never, never>>,
     '/people-original': RouteRecordInfo<'/people-original', '/people-original', Record<never, never>, Record<never, never>>,
+    '/people-refactored': RouteRecordInfo<'/people-refactored', '/people-refactored', Record<never, never>, Record<never, never>>,
     '/references': RouteRecordInfo<'/references', '/references', Record<never, never>, Record<never, never>>,
     '/task-management/[id]': RouteRecordInfo<'/task-management/[id]', '/task-management/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/tasks': RouteRecordInfo<'/tasks', '/tasks', Record<never, never>, Record<never, never>>,

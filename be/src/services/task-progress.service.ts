@@ -161,6 +161,9 @@ export class TaskProgressService {
     if (updateData.notes !== undefined) {
       existingProgress.notes = updateData.notes;
     }
+    if (updateData.creatorId !== undefined) {
+      existingProgress.creatorId = updateData.creatorId;
+    }
 
     await this.db.write();
     return existingProgress;

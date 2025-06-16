@@ -144,6 +144,9 @@ export class TaskStatusReportService {
     if (updateData.statusSummary !== undefined) {
       existingReport.statusSummary = updateData.statusSummary;
     }
+    if (updateData.creatorId !== undefined) {
+      existingReport.creatorId = updateData.creatorId;
+    }
 
     await this.db.write();
     return existingReport;

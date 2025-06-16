@@ -292,7 +292,7 @@
             <div class="d-flex justify-space-between align-center w-100">
               <span>
                 <v-icon class="mr-2">mdi-chart-line</v-icon>
-                Progress Reports ({{ progressReports.length }})
+                Progress Reports ({{ sortedProgressReports.length }})
               </span>
               <v-btn
                 color="primary"
@@ -306,34 +306,37 @@
             </div>
           </v-card-title>
           <v-card-text>
-            <div v-if="progressReports.length === 0" class="text-center text-medium-emphasis py-4">
+            <div v-if="sortedProgressReports.length === 0" class="text-center text-medium-emphasis py-4">
               No progress reports yet
             </div>
-            <v-list v-else>
+            <v-list v-else class="pa-0">
               <v-list-item
-                v-for="report in progressReports"
+                v-for="report in sortedProgressReports"
                 :key="report.id"
-                class="px-0"
+                class="px-0 py-3 border-b"
+                elevation="0"
               >
                 <template #prepend>
-                  <v-avatar color="warning" size="32">
-                    <span class="text-white font-weight-bold">{{ report.progressPercent }}%</span>
+                  <v-avatar color="warning" size="40" class="mr-3">
+                    <span class="text-white font-weight-bold text-body-2">{{ report.progressPercent }}%</span>
                   </v-avatar>
                 </template>
-                <v-list-item-title>{{ formatDate(report.reportDate) }}</v-list-item-title>
-                <v-list-item-subtitle>
-                  <div>{{ report.notes || 'No notes' }}</div>
-                  <div v-if="report.creator" class="text-caption text-medium-emphasis">
-                    <v-icon class="mr-1" size="12">mdi-account</v-icon>
-                    Creator: {{ report.creator.firstName }} {{ report.creator.lastName }}
-                  </div>
-                </v-list-item-subtitle>
+                
+                <div class="flex-grow-1">
+                  <v-list-item-title class="text-body-1 font-weight-medium mb-1">
+                    Report from: {{ formatDate(report.reportDate) }} | {{ report.notes || 'No notes' }} | 
+                    <span v-if="report.creator">{{ report.creator.firstName }} {{ report.creator.lastName }}</span>
+                    <span v-else>Unknown creator</span> | {{ report.progressPercent }}% complete
+                  </v-list-item-title>
+                </div>
+
                 <template #append>
                   <div class="d-flex gap-1">
                     <v-btn
                       icon="mdi-pencil"
                       size="small"
                       variant="text"
+                      color="primary"
                       @click="openProgressReportEditDialog(report)"
                     >
                       <v-icon>mdi-pencil</v-icon>
@@ -364,7 +367,7 @@
             <div class="d-flex justify-space-between align-center w-100">
               <span>
                 <v-icon class="mr-2">mdi-flag</v-icon>
-                Status Reports ({{ statusReports.length }})
+                Status Reports ({{ sortedStatusReports.length }})
               </span>
               <v-btn
                 color="primary"
@@ -378,34 +381,62 @@
             </div>
           </v-card-title>
           <v-card-text>
-            <div v-if="statusReports.length === 0" class="text-center text-medium-emphasis py-4">
+            <div v-if="sortedStatusReports.length === 0" class="text-center text-medium-emphasis py-4">
               No status reports yet
             </div>
-            <v-list v-else>
+            <v-list v-else class="pa-0">
               <v-list-item
-                v-for="report in statusReports"
+                v-for="report in sortedStatusReports"
                 :key="report.id"
-                class="px-0"
+                class="px-0 py-3 border-b"
+                elevation="0"
               >
                 <template #prepend>
-                  <v-avatar color="info" size="32">
-                    <v-icon>mdi-flag</v-icon>
+                  <v-avatar color="info" size="40" class="mr-3">
+                    <v-icon size="20">mdi-flag</v-icon>
                   </v-avatar>
                 </template>
-                <v-list-item-title>{{ formatDate(report.reportDate) }}</v-list-item-title>
-                <v-list-item-subtitle>
-                  <div>{{ report.statusSummary || 'No summary' }}</div>
-                  <div v-if="report.creator" class="text-caption text-medium-emphasis">
-                    <v-icon class="mr-1" size="12">mdi-account</v-icon>
-                    Creator: {{ report.creator.firstName }} {{ report.creator.lastName }}
-                  </div>
-                </v-list-item-subtitle>
+                
+                <div class="flex-grow-1">
+                  <v-list-item-title class="text-body-1 font-weight-medium mb-1">
+                    Status Report from {{ formatDate(report.reportDate) }}
+                  </v-list-item-title>
+                  
+                  <v-list-item-subtitle class="mb-2">
+                    <div class="text-body-2 mb-2" :class="report.statusSummary ? 'text-high-emphasis' : 'text-medium-emphasis'">
+                      {{ report.statusSummary || 'No status summary provided' }}
+                    </div>
+                    
+                    <div class="d-flex align-center gap-2 flex-wrap">
+                      <v-chip
+                        v-if="report.creator"
+                        size="small"
+                        variant="outlined"
+                        color="primary"
+                        prepend-icon="mdi-account"
+                      >
+                        {{ report.creator.firstName }} {{ report.creator.lastName }}
+                      </v-chip>
+                      
+                      <v-chip
+                        size="small"
+                        variant="outlined"
+                        color="info"
+                        prepend-icon="mdi-calendar-clock"
+                      >
+                        {{ formatDate(report.reportDate) }}
+                      </v-chip>
+                    </div>
+                  </v-list-item-subtitle>
+                </div>
+
                 <template #append>
                   <div class="d-flex gap-1">
                     <v-btn
                       icon="mdi-pencil"
                       size="small"
                       variant="text"
+                      color="primary"
                       @click="openStatusReportEditDialog(report)"
                     >
                       <v-icon>mdi-pencil</v-icon>
@@ -487,6 +518,7 @@
       <TaskProgressEditDialog
         v-if="selectedProgressReport"
         :progress-report="selectedProgressReport"
+        :eligible-staff="eligibleStaff"
         @cancel="showProgressReportEditDialog = false"
         @updated="handleProgressReportUpdated"
       />
@@ -505,6 +537,7 @@
       <TaskStatusReportEditDialog
         v-if="selectedStatusReport"
         :status-report="selectedStatusReport"
+        :eligible-staff="eligibleStaff"
         @cancel="showStatusReportEditDialog = false"
         @updated="handleStatusReportUpdated"
       />
@@ -633,6 +666,16 @@
     }
 
     return eligible
+  })
+
+  // Sorted progress reports (descending by percentage)
+  const sortedProgressReports = computed(() => {
+    return [...progressReports.value].sort((a, b) => b.progressPercent - a.progressPercent)
+  })
+
+  // Sorted status reports (newest first)
+  const sortedStatusReports = computed(() => {
+    return [...statusReports.value].sort((a, b) => new Date(b.reportDate).getTime() - new Date(a.reportDate).getTime())
   })
 
   // Dialog visibility state
