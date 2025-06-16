@@ -9,20 +9,11 @@
 <template>
   <v-container fluid>
     <!-- Page Header -->
-    <div class="d-flex justify-space-between align-center mb-6">
-      <div>
-        <h1 class="text-h4 mb-2">Teams Management</h1>
-        <p class="text-subtitle-1 text-medium-emphasis">
-          Manage teams and team member assignments
-        </p>
-      </div>
-      <v-btn
-        color="primary"
-        prepend-icon="mdi-account-multiple-plus"
-        @click="openCreateDialog"
-      >
-        Create Team
-      </v-btn>
+    <div class="mb-6">
+      <h1 class="text-h4 mb-2">Teams Management</h1>
+      <p class="text-subtitle-1 text-medium-emphasis">
+        Manage teams and team member assignments
+      </p>
     </div>
 
     <!-- Teams Table -->
@@ -32,15 +23,25 @@
           <v-card-title>
             <div class="d-flex justify-space-between align-center w-100">
               <span>Teams ({{ filteredTeams.length }})</span>
-              <v-text-field
-                v-model="teamSearch"
-                clearable
-                density="compact"
-                label="Search teams..."
-                prepend-inner-icon="mdi-magnify"
-                style="max-width: 300px"
-                variant="outlined"
-              />
+              <div class="d-flex gap-2 align-center">
+                <v-btn
+                  color="primary"
+                  prepend-icon="mdi-plus"
+                  size="small"
+                  @click="openCreateDialog"
+                >
+                  Create Team
+                </v-btn>
+                <v-text-field
+                  v-model="teamSearch"
+                  clearable
+                  density="compact"
+                  label="Search teams..."
+                  prepend-inner-icon="mdi-magnify"
+                  style="max-width: 300px"
+                  variant="outlined"
+                />
+              </div>
             </div>
           </v-card-title>
 
