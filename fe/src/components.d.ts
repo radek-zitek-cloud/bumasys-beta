@@ -14,6 +14,7 @@ declare module 'vue' {
     ComplexityDeleteDialog: typeof import('./components/references/ComplexityDeleteDialog.vue')['default']
     ComplexityEditDialog: typeof import('./components/references/ComplexityEditDialog.vue')['default']
     ConfigDisplayCard: typeof import('./components/debug/ConfigDisplayCard.vue')['default']
+    CreateUserFromStaffDialog: typeof import('./components/users/CreateUserFromStaffDialog.vue')['default']
     DebugInfoCard: typeof import('./components/debug/DebugInfoCard.vue')['default']
     DepartmentCreateDialog: typeof import('./components/organization/DepartmentCreateDialog.vue')['default']
     DepartmentDeleteDialog: typeof import('./components/organization/DepartmentDeleteDialog.vue')['default']

@@ -3,11 +3,11 @@
 
   This page provides comprehensive management of a specific task including:
   - Task assignees (CRUD operations)
-  - Task predecessors (CRUD operations) 
+  - Task predecessors (CRUD operations)
   - Child tasks (CRUD operations)
   - Progress reports (CRUD operations)
   - Status reports (CRUD operations)
-  
+
   Follows the design patterns established in the user management interface.
 -->
 
@@ -27,7 +27,7 @@
 
     <!-- Page Header with Task Details -->
     <div class="mb-6">
-      
+
       <!-- Task Details Card -->
       <v-card v-if="task" class="mb-6">
         <v-card-title class="bg-primary">
@@ -35,68 +35,68 @@
           Task Details: {{ task?.name || 'Loading...' }}
         </v-card-title>
         <v-card-text>
-            <v-row class="pt-4">
+          <v-row class="pt-4">
             <!-- Basic Info -->
             <v-col cols="12" md="6">
               <v-text-field
-              label="Task Name"
-              :model-value="task.name"
-              prepend-icon="mdi-clipboard-text"
-              readonly
-              variant="outlined"
+                label="Task Name"
+                :model-value="task.name"
+                prepend-icon="mdi-clipboard-text"
+                readonly
+                variant="outlined"
               />
             </v-col>
             <v-col cols="12" md="6">
               <v-text-field
-              label="Project"
-              :model-value="task.project?.name || 'Unknown'"
-              prepend-icon="mdi-clipboard-outline"
-              readonly
-              variant="outlined"
+                label="Project"
+                :model-value="task.project?.name || 'Unknown'"
+                prepend-icon="mdi-clipboard-outline"
+                readonly
+                variant="outlined"
               />
             </v-col>
-            
+
             <!-- Description -->
             <v-col cols="12">
               <v-textarea
-              label="Description"
-              :model-value="task.description || 'No description provided'"
-              prepend-icon="mdi-text-box"
-              readonly
-              rows="2"
-              variant="outlined"
+                label="Description"
+                :model-value="task.description || 'No description provided'"
+                prepend-icon="mdi-text-box"
+                readonly
+                rows="2"
+                variant="outlined"
               />
             </v-col>
-            
+
             <!-- Status Info -->
             <v-col cols="12" md="4">
               <v-text-field
-              label="Status"
-              :model-value="task.status?.name || 'Not set'"
-              prepend-icon="mdi-flag"
-              readonly
-              variant="outlined"
+                label="Status"
+                :model-value="task.status?.name || 'Not set'"
+                prepend-icon="mdi-flag"
+                readonly
+                variant="outlined"
               />
             </v-col>
             <v-col cols="12" md="4">
               <v-text-field
-              label="Priority"
-              :model-value="task.priority?.name || 'Not set'"
-              prepend-icon="mdi-priority-high"
-              readonly
-              variant="outlined"
+                label="Priority"
+                :model-value="task.priority?.name || 'Not set'"
+                prepend-icon="mdi-priority-high"
+                readonly
+                variant="outlined"
               />
             </v-col>
             <v-col cols="12" md="4">
               <v-text-field
-              label="Complexity"
-              :model-value="task.complexity?.name || 'Not set'"
-              prepend-icon="mdi-chart-line"
-              readonly
-              variant="outlined"
+                label="Complexity"
+                :model-value="task.complexity?.name || 'Not set'"
+                prepend-icon="mdi-chart-line"
+                readonly
+                variant="outlined"
               />
             </v-col>
-            </v-row>
+          </v-row>
         </v-card-text>
       </v-card>
     </div>
@@ -438,11 +438,11 @@
 
     <v-dialog v-model="showChildTaskCreateDialog" max-width="700" persistent>
       <TaskChildCreateDialog
+        :available-complexities="availableComplexities"
+        :available-priorities="availablePriorities"
+        :available-statuses="availableStatuses"
         :parent-task-id="taskId"
         :project-id="task?.projectId || ''"
-        :available-statuses="availableStatuses"
-        :available-priorities="availablePriorities"
-        :available-complexities="availableComplexities"
         @cancel="showChildTaskCreateDialog = false"
         @created="handleChildTaskCreated"
       />
@@ -498,54 +498,54 @@
 </template>
 
 <script lang="ts" setup>
+  // Import services and types
+  import type {
+    CreateTaskInput,
+    CreateTaskProgressInput,
+    CreateTaskStatusReportInput,
+    Staff,
+    Task,
+    TaskProgress,
+    TaskStatusReport,
+    UpdateTaskProgressInput,
+    UpdateTaskStatusReportInput,
+  } from '../../services/tasks'
   import { computed, onMounted, ref } from 'vue'
+
   import { useRoute, useRouter } from 'vue-router'
-  
   // Import dialog components
   import TaskAssigneeCreateDialog from '../../components/tasks/TaskAssigneeCreateDialog.vue'
-  import TaskPredecessorCreateDialog from '../../components/tasks/TaskPredecessorCreateDialog.vue'
   import TaskChildCreateDialog from '../../components/tasks/TaskChildCreateDialog.vue'
+  import TaskPredecessorCreateDialog from '../../components/tasks/TaskPredecessorCreateDialog.vue'
   import TaskProgressCreateDialog from '../../components/tasks/TaskProgressCreateDialog.vue'
   import TaskProgressEditDialog from '../../components/tasks/TaskProgressEditDialog.vue'
   import TaskStatusReportCreateDialog from '../../components/tasks/TaskStatusReportCreateDialog.vue'
+
   import TaskStatusReportEditDialog from '../../components/tasks/TaskStatusReportEditDialog.vue'
-  
-  // Import services and types
-  import type { 
-    Task, 
-    Staff, 
-    TaskProgress, 
-    TaskStatusReport,
-    CreateTaskInput,
-    CreateTaskProgressInput,
-    UpdateTaskProgressInput,
-    CreateTaskStatusReportInput,
-    UpdateTaskStatusReportInput
-  } from '../../services/tasks'
-  import { 
-    getTaskWithManagementData,
-    assignStaffToTask,
-    removeStaffFromTask,
-    addTaskPredecessor,
-    removeTaskPredecessor,
-    createTask,
-    createTaskProgress,
-    updateTaskProgress,
-    deleteTaskProgress,
-    createTaskStatusReport,
-    updateTaskStatusReport,
-    deleteTaskStatusReport,
-    getTasks
-  } from '../../services/tasks'
+  import { getComplexities } from '../../services/complexity'
+  import { getPriorities } from '../../services/priority'
   import { getStaff } from '../../services/staff'
   import { getStatuses } from '../../services/status'
-  import { getPriorities } from '../../services/priority'
-  import { getComplexities } from '../../services/complexity'
+  import {
+    addTaskPredecessor,
+    assignStaffToTask,
+    createTask,
+    createTaskProgress,
+    createTaskStatusReport,
+    deleteTaskProgress,
+    deleteTaskStatusReport,
+    getTasks,
+    getTaskWithManagementData,
+    removeStaffFromTask,
+    removeTaskPredecessor,
+    updateTaskProgress,
+    updateTaskStatusReport,
+  } from '../../services/tasks'
 
   // Router and route
   const router = useRouter()
   const route = useRoute()
-  
+
   // Task ID from route params
   const taskId = computed(() => (route.params as { id: string }).id)
 
@@ -561,9 +561,9 @@
   // Available data for dropdowns
   const availableStaff = ref<Staff[]>([])
   const availableTasks = ref<Task[]>([])
-  const availableStatuses = ref<Array<{ id: string; name: string }>>([])
-  const availablePriorities = ref<Array<{ id: string; name: string }>>([])
-  const availableComplexities = ref<Array<{ id: string; name: string }>>([])
+  const availableStatuses = ref<Array<{ id: string, name: string }>>([])
+  const availablePriorities = ref<Array<{ id: string, name: string }>>([])
+  const availableComplexities = ref<Array<{ id: string, name: string }>>([])
 
   // Dialog visibility state
   const showAssigneeCreateDialog = ref(false)
@@ -586,26 +586,26 @@
   })
 
   // Utility functions
-  function formatDate(dateString: string): string {
+  function formatDate (dateString: string): string {
     return new Date(dateString).toLocaleDateString()
   }
 
-  function showNotification(message: string, isSuccess = true) {
+  function showNotification (message: string, isSuccess = true) {
     snackbar.value.message = message
     snackbar.value.color = isSuccess ? 'success' : 'error'
     snackbar.value.show = true
   }
 
-  function goBackToTasks() {
+  function goBackToTasks () {
     router.push('/tasks')
   }
 
   // Dialog functions
-  function openAssigneeCreateDialog() {
+  function openAssigneeCreateDialog () {
     showAssigneeCreateDialog.value = true
   }
 
-  async function handleAssigneeCreated(staffId: string) {
+  async function handleAssigneeCreated (staffId: string) {
     try {
       await assignStaffToTask(taskId.value, staffId)
       showNotification('Assignee added successfully')
@@ -617,7 +617,7 @@
     }
   }
 
-  async function openAssigneeDeleteDialog(assignee: Staff) {
+  async function openAssigneeDeleteDialog (assignee: Staff) {
     try {
       await removeStaffFromTask(taskId.value, assignee.id)
       showNotification(`Removed assignee ${assignee.firstName} ${assignee.lastName}`)
@@ -628,11 +628,11 @@
     }
   }
 
-  function openPredecessorCreateDialog() {
+  function openPredecessorCreateDialog () {
     showPredecessorCreateDialog.value = true
   }
 
-  async function handlePredecessorCreated(predecessorTaskId: string) {
+  async function handlePredecessorCreated (predecessorTaskId: string) {
     try {
       await addTaskPredecessor(taskId.value, predecessorTaskId)
       showNotification('Predecessor added successfully')
@@ -644,7 +644,7 @@
     }
   }
 
-  async function openPredecessorDeleteDialog(predecessor: Task) {
+  async function openPredecessorDeleteDialog (predecessor: Task) {
     try {
       await removeTaskPredecessor(taskId.value, predecessor.id)
       showNotification(`Removed predecessor ${predecessor.name}`)
@@ -655,11 +655,11 @@
     }
   }
 
-  function openChildTaskCreateDialog() {
+  function openChildTaskCreateDialog () {
     showChildTaskCreateDialog.value = true
   }
 
-  async function handleChildTaskCreated(taskData: CreateTaskInput) {
+  async function handleChildTaskCreated (taskData: CreateTaskInput) {
     try {
       const { createTask: newTask } = await createTask(taskData)
       showNotification(`Child task "${newTask.name}" created successfully`)
@@ -671,15 +671,15 @@
     }
   }
 
-  function openChildTaskDeleteDialog(childTask: Task) {
+  function openChildTaskDeleteDialog (childTask: Task) {
     showNotification(`Remove child task ${childTask.name} - coming soon`, false)
   }
 
-  function openProgressReportCreateDialog() {
+  function openProgressReportCreateDialog () {
     showProgressReportCreateDialog.value = true
   }
 
-  async function handleProgressReportCreated(progressData: CreateTaskProgressInput) {
+  async function handleProgressReportCreated (progressData: CreateTaskProgressInput) {
     try {
       await createTaskProgress(progressData)
       showNotification('Progress report created successfully')
@@ -691,12 +691,12 @@
     }
   }
 
-  function openProgressReportEditDialog(report: TaskProgress) {
+  function openProgressReportEditDialog (report: TaskProgress) {
     selectedProgressReport.value = report
     showProgressReportEditDialog.value = true
   }
 
-  async function handleProgressReportUpdated(progressData: UpdateTaskProgressInput) {
+  async function handleProgressReportUpdated (progressData: UpdateTaskProgressInput) {
     try {
       await updateTaskProgress(progressData)
       showNotification('Progress report updated successfully')
@@ -709,7 +709,7 @@
     }
   }
 
-  async function openProgressReportDeleteDialog(report: TaskProgress) {
+  async function openProgressReportDeleteDialog (report: TaskProgress) {
     try {
       await deleteTaskProgress(report.id)
       showNotification('Progress report deleted')
@@ -720,11 +720,11 @@
     }
   }
 
-  function openStatusReportCreateDialog() {
+  function openStatusReportCreateDialog () {
     showStatusReportCreateDialog.value = true
   }
 
-  async function handleStatusReportCreated(statusData: CreateTaskStatusReportInput) {
+  async function handleStatusReportCreated (statusData: CreateTaskStatusReportInput) {
     try {
       await createTaskStatusReport(statusData)
       showNotification('Status report created successfully')
@@ -736,12 +736,12 @@
     }
   }
 
-  function openStatusReportEditDialog(report: TaskStatusReport) {
+  function openStatusReportEditDialog (report: TaskStatusReport) {
     selectedStatusReport.value = report
     showStatusReportEditDialog.value = true
   }
 
-  async function handleStatusReportUpdated(statusData: UpdateTaskStatusReportInput) {
+  async function handleStatusReportUpdated (statusData: UpdateTaskStatusReportInput) {
     try {
       await updateTaskStatusReport(statusData)
       showNotification('Status report updated successfully')
@@ -754,7 +754,7 @@
     }
   }
 
-  async function openStatusReportDeleteDialog(report: TaskStatusReport) {
+  async function openStatusReportDeleteDialog (report: TaskStatusReport) {
     try {
       await deleteTaskStatusReport(report.id)
       showNotification('Status report deleted')
@@ -766,12 +766,12 @@
   }
 
   // Data loading function
-  async function loadTaskData() {
+  async function loadTaskData () {
     loading.value = true
     try {
       // Load the task with all management data
       const { task: taskData } = await getTaskWithManagementData(taskId.value)
-      
+
       if (!taskData) {
         showNotification('Task not found', false)
         router.push('/tasks')
@@ -795,16 +795,16 @@
   }
 
   // Load available staff and tasks for dropdowns
-  async function loadDropdownData() {
+  async function loadDropdownData () {
     try {
       const [staffResponse, tasksResponse, statusesResponse, prioritiesResponse, complexitiesResponse] = await Promise.all([
         getStaff(),
         getTasks(),
         getStatuses(),
         getPriorities(),
-        getComplexities()
+        getComplexities(),
       ])
-      
+
       availableStaff.value = staffResponse.staff || []
       availableTasks.value = tasksResponse.tasks || []
       availableStatuses.value = statusesResponse.statuses || []
@@ -819,7 +819,7 @@
   onMounted(async () => {
     await Promise.all([
       loadTaskData(),
-      loadDropdownData()
+      loadDropdownData(),
     ])
   })
 </script>

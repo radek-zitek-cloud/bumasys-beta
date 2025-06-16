@@ -42,12 +42,12 @@
             <v-select
               v-model="form.statusId"
               clearable
+              item-title="title"
+              item-value="value"
               :items="statusOptions"
               label="Status"
               prepend-icon="mdi-flag"
               variant="outlined"
-              item-title="title"
-              item-value="value"
             />
           </v-col>
 
@@ -55,12 +55,12 @@
             <v-select
               v-model="form.priorityId"
               clearable
+              item-title="title"
+              item-value="value"
               :items="priorityOptions"
               label="Priority"
               prepend-icon="mdi-priority-high"
               variant="outlined"
-              item-title="title"
-              item-value="value"
             />
           </v-col>
 
@@ -68,12 +68,12 @@
             <v-select
               v-model="form.complexityId"
               clearable
+              item-title="title"
+              item-value="value"
               :items="complexityOptions"
               label="Complexity"
               prepend-icon="mdi-gauge"
               variant="outlined"
-              item-title="title"
-              item-value="value"
             />
           </v-col>
 
@@ -100,9 +100,9 @@
           <!-- Info Alert -->
           <v-col cols="12">
             <v-alert
+              icon="mdi-information"
               type="info"
               variant="tonal"
-              icon="mdi-information"
             >
               This task will be created as a child of the current task and inherit its project.
             </v-alert>
@@ -135,9 +135,9 @@
   const props = defineProps<{
     parentTaskId: string
     projectId: string
-    availableStatuses: Array<{ id: string; name: string }>
-    availablePriorities: Array<{ id: string; name: string }>
-    availableComplexities: Array<{ id: string; name: string }>
+    availableStatuses: Array<{ id: string, name: string }>
+    availablePriorities: Array<{ id: string, name: string }>
+    availableComplexities: Array<{ id: string, name: string }>
   }>()
 
   /** Component events */
@@ -217,11 +217,11 @@
       }
 
       // Clean up empty fields
-      Object.keys(taskData).forEach(key => {
+      for (const key of Object.keys(taskData)) {
         if (taskData[key as keyof CreateTaskInput] === '') {
           delete taskData[key as keyof CreateTaskInput]
         }
-      })
+      }
 
       // Emit the task data to parent for actual API call
       emit('created', taskData)

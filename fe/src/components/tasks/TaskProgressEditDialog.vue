@@ -32,14 +32,14 @@
             <v-text-field
               v-model.number="form.progressPercent"
               label="Progress Percentage *"
+              max="100"
+              min="0"
               prepend-icon="mdi-percent"
               required
               :rules="progressRules"
-              type="number"
-              min="0"
-              max="100"
-              variant="outlined"
               suffix="%"
+              type="number"
+              variant="outlined"
             />
           </v-col>
 
@@ -47,10 +47,10 @@
           <v-col cols="12">
             <v-slider
               v-model="form.progressPercent"
-              :min="0"
-              :max="100"
-              :step="1"
               color="primary"
+              :max="100"
+              :min="0"
+              :step="1"
               thumb-label="always"
               track-color="grey-lighten-2"
             >
@@ -71,10 +71,10 @@
             <v-textarea
               v-model="form.notes"
               label="Notes"
+              placeholder="Optional notes about this progress update..."
               prepend-icon="mdi-note-text"
               rows="3"
               variant="outlined"
-              placeholder="Optional notes about this progress update..."
             />
           </v-col>
         </v-row>
@@ -123,7 +123,7 @@
   const processing = ref(false)
 
   /** Initialize form with existing data */
-  watch(() => props.progressReport, (report) => {
+  watch(() => props.progressReport, report => {
     if (report) {
       form.reportDate = report.reportDate.split('T')[0] // Convert to YYYY-MM-DD format
       form.progressPercent = report.progressPercent
@@ -145,7 +145,7 @@
   /**
    * Get color based on progress percentage
    */
-  function getProgressColor(progress: number): string {
+  function getProgressColor (progress: number): string {
     if (progress < 25) return 'error'
     if (progress < 50) return 'warning'
     if (progress < 75) return 'info'

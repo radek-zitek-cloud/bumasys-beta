@@ -4,8 +4,8 @@
  * These tests validate the dialog's form functionality, validation, and event emission.
  */
 
-import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { describe, expect, it, vi } from 'vitest'
 import { createVuetify } from 'vuetify'
 import TaskAssigneeCreateDialog from '../../../src/components/tasks/TaskAssigneeCreateDialog.vue'
 
@@ -19,7 +19,7 @@ describe('TaskAssigneeCreateDialog', () => {
       lastName: 'Doe',
       email: 'john@example.com',
       role: 'Developer',
-      department: { id: '1', name: 'Engineering' }
+      department: { id: '1', name: 'Engineering' },
     },
     {
       id: '2',
@@ -27,8 +27,8 @@ describe('TaskAssigneeCreateDialog', () => {
       lastName: 'Smith',
       email: 'jane@example.com',
       role: 'Designer',
-      department: { id: '2', name: 'Design' }
-    }
+      department: { id: '2', name: 'Design' },
+    },
   ]
 
   const mockCurrentAssignees = [
@@ -38,19 +38,19 @@ describe('TaskAssigneeCreateDialog', () => {
       lastName: 'Wilson',
       email: 'bob@example.com',
       role: 'Manager',
-      department: { id: '1', name: 'Engineering' }
-    }
+      department: { id: '1', name: 'Engineering' },
+    },
   ]
 
   it('renders the dialog with correct title', () => {
     const wrapper = mount(TaskAssigneeCreateDialog, {
       global: {
-        plugins: [vuetify]
+        plugins: [vuetify],
       },
       props: {
         availableStaff: mockAvailableStaff,
-        currentAssignees: mockCurrentAssignees
-      }
+        currentAssignees: mockCurrentAssignees,
+      },
     })
 
     expect(wrapper.text()).toContain('Add Assignee to Task')
@@ -59,12 +59,12 @@ describe('TaskAssigneeCreateDialog', () => {
   it('filters out current assignees from available options', () => {
     const wrapper = mount(TaskAssigneeCreateDialog, {
       global: {
-        plugins: [vuetify]
+        plugins: [vuetify],
       },
       props: {
         availableStaff: [...mockAvailableStaff, mockCurrentAssignees[0]],
-        currentAssignees: mockCurrentAssignees
-      }
+        currentAssignees: mockCurrentAssignees,
+      },
     })
 
     // The component should only show staff that are not already assigned
@@ -76,12 +76,12 @@ describe('TaskAssigneeCreateDialog', () => {
   it('emits created event with staff ID when form is submitted', async () => {
     const wrapper = mount(TaskAssigneeCreateDialog, {
       global: {
-        plugins: [vuetify]
+        plugins: [vuetify],
       },
       props: {
         availableStaff: mockAvailableStaff,
-        currentAssignees: mockCurrentAssignees
-      }
+        currentAssignees: mockCurrentAssignees,
+      },
     })
 
     // Set a staff member
@@ -99,12 +99,12 @@ describe('TaskAssigneeCreateDialog', () => {
   it('emits cancel event when cancel button is clicked', async () => {
     const wrapper = mount(TaskAssigneeCreateDialog, {
       global: {
-        plugins: [vuetify]
+        plugins: [vuetify],
       },
       props: {
         availableStaff: mockAvailableStaff,
-        currentAssignees: mockCurrentAssignees
-      }
+        currentAssignees: mockCurrentAssignees,
+      },
     })
 
     // Click cancel button
@@ -118,12 +118,12 @@ describe('TaskAssigneeCreateDialog', () => {
   it('displays staff options with correct format', () => {
     const wrapper = mount(TaskAssigneeCreateDialog, {
       global: {
-        plugins: [vuetify]
+        plugins: [vuetify],
       },
       props: {
         availableStaff: mockAvailableStaff,
-        currentAssignees: []
-      }
+        currentAssignees: [],
+      },
     })
 
     const vm = wrapper.vm as any

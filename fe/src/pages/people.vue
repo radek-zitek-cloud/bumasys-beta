@@ -319,6 +319,16 @@
             <template #item.actions="{ item }">
               <div class="d-flex gap-1">
                 <v-btn
+                  color="success"
+                  icon="mdi-account-plus"
+                  size="small"
+                  variant="text"
+                  @click="openCreateUserFromStaffDialog(item)"
+                >
+                  <v-icon>mdi-account-plus</v-icon>
+                  <v-tooltip activator="parent" location="top">Create User Account</v-tooltip>
+                </v-btn>
+                <v-btn
                   icon="mdi-account-supervisor"
                   size="small"
                   variant="text"
@@ -496,6 +506,17 @@
       />
     </v-dialog>
 
+    <!-- Create User from Staff Dialog -->
+    <v-dialog v-model="showCreateUserFromStaffDialog" max-width="600" persistent>
+      <CreateUserFromStaffDialog
+        v-if="userCreationData"
+        :initial-data="userCreationData"
+        :staff-member="selectedStaff"
+        @cancel="showCreateUserFromStaffDialog = false"
+        @created="handleUserCreatedFromStaff"
+      />
+    </v-dialog>
+
     <!-- Snackbar for notifications -->
     <v-snackbar
       v-model="snackbar.show"
@@ -513,10 +534,12 @@
   import type { CreateDepartmentInput, Department, UpdateDepartmentInput } from '../services/departments'
   import type { CreateOrganizationInput, Organization, UpdateOrganizationInput } from '../services/organizations'
   import type { CreateStaffInput, Staff, UpdateStaffInput } from '../services/staff'
+  import type { CreateUserInput } from '../services/users'
   import { computed, onMounted, reactive, ref } from 'vue'
   import * as departmentService from '../services/departments'
   import * as organizationService from '../services/organizations'
   import * as staffService from '../services/staff'
+  import * as userService from '../services/users'
 
   /** Data table configuration */
   type DataTableHeaders = VDataTable['$props']['headers']
@@ -541,7 +564,7 @@
     { title: 'Department', key: 'departmentId', sortable: true },
     { title: 'Organization', key: 'organizationId', sortable: true },
     { title: 'Email', key: 'email', sortable: true },
-    { title: 'Actions', key: 'actions', sortable: false, width: '200px' },
+    { title: 'Actions', key: 'actions', sortable: false, width: '250px' },
   ]
 
   /** Reactive data */
@@ -577,6 +600,7 @@
   const showStaffDeleteDialog = ref(false)
   const showDepartmentTreeDialog = ref(false)
   const showStaffTreeDialog = ref(false)
+  const showCreateUserFromStaffDialog = ref(false)
 
   /** Data table configuration */
   const itemsPerPage = ref(10)
@@ -805,6 +829,34 @@
   function openStaffTreeDialog (staffMember: Staff) {
     selectedStaff.value = staffMember
     showStaffTreeDialog.value = true
+  }
+
+  /** User creation from staff */
+  const userCreationData = ref<CreateUserInput | null>(null)
+
+  function openCreateUserFromStaffDialog (staffMember: Staff) {
+    // Pre-populate user data from staff member
+    userCreationData.value = {
+      email: staffMember.email,
+      firstName: staffMember.firstName,
+      lastName: staffMember.lastName,
+      password: '', // Will be filled in the dialog
+      note: `User account created from staff member: ${staffMember.firstName} ${staffMember.lastName}`,
+    }
+    selectedStaff.value = staffMember
+    showCreateUserFromStaffDialog.value = true
+  }
+
+  async function handleUserCreatedFromStaff (userData: CreateUserInput) {
+    try {
+      const { createUser } = await userService.createUser(userData)
+      showSnackbar(`User account created successfully for ${createUser.firstName} ${createUser.lastName}`)
+      showCreateUserFromStaffDialog.value = false
+      userCreationData.value = null
+    } catch (error) {
+      console.error('Error creating user from staff:', error)
+      showSnackbar((error as Error).message, 'error')
+    }
   }
 
   async function handleStaffCreated (staffData: CreateStaffInput) {

@@ -14,13 +14,13 @@
           <v-col cols="12">
             <v-select
               v-model="form.staffId"
+              item-title="title"
+              item-value="value"
               :items="staffOptions"
               label="Staff Member *"
               prepend-icon="mdi-account"
               required
               :rules="staffRules"
-              item-title="title"
-              item-value="value"
             />
           </v-col>
         </v-row>
@@ -69,9 +69,9 @@
 
   /** Staff options filtered to exclude current assignees */
   const staffOptions = computed(() => {
-    const currentAssigneeIds = props.currentAssignees.map(assignee => assignee.id)
+    const currentAssigneeIds = new Set(props.currentAssignees.map(assignee => assignee.id))
     return props.availableStaff
-      .filter(staff => !currentAssigneeIds.includes(staff.id))
+      .filter(staff => !currentAssigneeIds.has(staff.id))
       .map(staff => ({
         title: `${staff.firstName} ${staff.lastName} - ${staff.role} (${staff.department?.name || 'No Department'})`,
         value: staff.id,

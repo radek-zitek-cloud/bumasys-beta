@@ -14,20 +14,20 @@
           <v-col cols="12">
             <v-select
               v-model="form.predecessorTaskId"
+              item-title="title"
+              item-value="value"
               :items="taskOptions"
               label="Predecessor Task *"
               prepend-icon="mdi-arrow-left-bold"
               required
               :rules="taskRules"
-              item-title="title"
-              item-value="value"
             />
           </v-col>
           <v-col cols="12">
             <v-alert
+              icon="mdi-information"
               type="info"
               variant="tonal"
-              icon="mdi-information"
             >
               Select a task that must be completed before this task can begin.
               The predecessor task can be from any project.
@@ -80,12 +80,12 @@
 
   /** Task options filtered to exclude current task, current predecessors, and child tasks */
   const taskOptions = computed(() => {
-    const currentPredecessorIds = props.currentPredecessors.map(predecessor => predecessor.id)
+    const currentPredecessorIds = new Set(props.currentPredecessors.map(predecessor => predecessor.id))
     return props.availableTasks
-      .filter(task => 
-        task.id !== props.currentTaskId && 
-        !currentPredecessorIds.includes(task.id) &&
-        task.parentTaskId !== props.currentTaskId // Don't allow child tasks as predecessors
+      .filter(task =>
+        task.id !== props.currentTaskId
+        && !currentPredecessorIds.has(task.id)
+        && task.parentTaskId !== props.currentTaskId, // Don't allow child tasks as predecessors
       )
       .map(task => ({
         title: `${task.name} (${task.project?.name || 'Unknown Project'})`,

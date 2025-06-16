@@ -32,21 +32,21 @@
             <v-textarea
               v-model="form.statusSummary"
               label="Status Summary *"
+              placeholder="Describe the current status, progress, blockers, and next steps..."
               prepend-icon="mdi-text-box"
               required
-              :rules="summaryRules"
               rows="4"
+              :rules="summaryRules"
               variant="outlined"
-              placeholder="Describe the current status, progress, blockers, and next steps..."
             />
           </v-col>
 
           <!-- Info Alert -->
           <v-col cols="12">
             <v-alert
+              icon="mdi-information"
               type="info"
               variant="tonal"
-              icon="mdi-information"
             >
               Status reports help communicate task progress and current situation to stakeholders.
               Be clear and concise about current status, any issues, and planned next steps.
@@ -97,7 +97,7 @@
   const processing = ref(false)
 
   /** Initialize form with existing data */
-  watch(() => props.statusReport, (report) => {
+  watch(() => props.statusReport, report => {
     if (report) {
       form.reportDate = report.reportDate.split('T')[0] // Convert to YYYY-MM-DD format
       form.statusSummary = report.statusSummary || ''
