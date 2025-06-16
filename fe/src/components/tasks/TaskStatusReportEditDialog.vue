@@ -90,7 +90,7 @@
 </template>
 
 <script lang="ts" setup>
-  import type { TaskStatusReport, UpdateTaskStatusReportInput, Staff } from '../../services/tasks'
+  import type { Staff, TaskStatusReport, UpdateTaskStatusReportInput } from '../../services/tasks'
   import { computed, reactive, ref, watch } from 'vue'
 
   /** Component props */
@@ -113,11 +113,11 @@
   })
 
   /** Staff options with display names */
-  const staffOptions = computed(() => 
+  const staffOptions = computed(() =>
     props.eligibleStaff.map(staff => ({
       ...staff,
       displayName: `${staff.firstName} ${staff.lastName} (${staff.email})`,
-    }))
+    })),
   )
 
   /** Processing state for the submit button */
