@@ -2,6 +2,109 @@
 
 ## Change Log
 
+### 2025-01-03 - Enhanced Task Graph Dialog with Project, Predecessor, and Child Task Visualization
+
+#### Root Cause Analysis:
+The TaskGraphDialog component was displaying only a single task node without showing the broader context of task relationships. Users needed to see the task's position within its project hierarchy and understand its dependencies and breakdown structure. The existing implementation lacked visual representation of:
+- Project context as a parent container
+- Predecessor task dependencies (left-side positioning)
+- Child task breakdown structure (bottom positioning)
+- Proper edge connections between related nodes
+
+#### Impact of Changes:
+- **Enhanced Visualization**: Task graph now displays comprehensive relationship mapping
+- **Improved UX**: Users can visually understand task context and dependencies at a glance
+- **Data Utilization**: Leverages existing backend relationship data (predecessors, childTasks, project)
+- **Maintainable Code**: Preserved backward compatibility while adding new node types
+- **Professional Appearance**: Color-coded nodes with distinct styling for each relationship type
+
+#### New Features Added:
+- **Project Node Visualization**: Purple gradient nodes representing the project container
+- **Current Task Emphasis**: Blue gradient nodes with emphasized styling for the focal task
+- **Predecessor Mapping**: Orange gradient nodes positioned to the left with connecting edges
+- **Child Task Hierarchy**: Green gradient nodes positioned below with connecting edges
+- **Edge Connections**: Color-coded edges showing relationship flow:
+  - Blue edges: predecessor → current task
+  - Green edges: current task → child tasks
+- **Smart Positioning**: Calculated positioning algorithm for optimal layout
+- **Multiple Node Types**: Vue Flow templates for project, currentTask, predecessor, and childTask nodes
+- **Responsive Layout**: Adaptive positioning based on number of relationships
+
+#### Bugs Fixed:
+- **Limited Context**: Users can now see full task context instead of isolated single node
+- **Missing Relationships**: All task relationships are now visualized properly
+- **Poor User Experience**: Enhanced graph provides meaningful visual information
+
+#### Improvements Made:
+- **Visual Hierarchy**: Clear distinction between different node types using color coding
+- **User Navigation**: Better understanding of task flow and dependencies
+- **Data Integration**: Full utilization of existing GraphQL endpoint `getTaskWithManagementData`
+- **Code Quality**: Maintained TypeScript compliance and linting standards
+- **Test Coverage**: Enhanced test suite covering new node types and relationships
+
+#### Technical Implementation:
+
+**Enhanced Component Features:**
+- Fetches complete task data including relationships via `getTaskWithManagementData`
+- Implements smart positioning algorithm for different node types
+- Creates Vue Flow elements array with nodes and edges
+- Handles edge cases when relationships don't exist
+- Maintains proper error handling and loading states
+
+**Node Type Styling:**
+```css
+/* Project nodes: Purple gradient */
+.custom-project-node { background: linear-gradient(135deg, #6A1B9A, #8E24AA); }
+
+/* Current task: Blue gradient (emphasized) */
+.custom-current-task-node { background: linear-gradient(135deg, #1976D2, #2196F3); }
+
+/* Predecessors: Orange gradient */
+.custom-predecessor-node { background: linear-gradient(135deg, #FF8F00, #FFA726); }
+
+/* Child tasks: Green gradient */
+.custom-child-task-node { background: linear-gradient(135deg, #388E3C, #4CAF50); }
+```
+
+**Positioning Algorithm:**
+- Project node: Above center as container (centerX - 150, centerY - 200)
+- Current task: Center position (centerX, centerY)
+- Predecessors: Left side with vertical distribution for multiple items
+- Child tasks: Below center with horizontal distribution for multiple items
+
+**Vue Flow Integration:**
+- Custom node templates for each relationship type
+- Proper edge configuration with handles and styling
+- Maintained zoom and pan functionality
+- Responsive viewport settings
+
+#### Files Modified:
+- `fe/src/components/tasks/TaskGraphDialog.vue` - Complete enhancement of graph visualization
+- `fe/tests/unit/components/TaskGraphDialog.test.ts` - Enhanced test coverage for new features
+
+#### Testing Results:
+- All existing tests pass
+- New tests cover project, predecessor, and child task visualization
+- TypeScript compilation successful
+- Linting compliance maintained
+- Build process successful
+
+#### Documentation Updates:
+- Component documentation updated to reflect new visualization capabilities
+- Test documentation enhanced with relationship testing scenarios
+
+#### Follow-up Tasks:
+- Consider adding node interaction features (click to navigate)
+- Potential enhancement: edge labels showing relationship types
+- Future consideration: expand to show multi-level hierarchies
+
+#### Potential Risks Identified:
+- Large numbers of predecessors or children might need layout optimization
+- Performance considerations for complex task hierarchies
+- Future Vue Flow version compatibility
+
+---
+
 ### 2025-06-16 - Task Status Report and Progress Report Creator Staff Implementation
 
 #### Root Cause Analysis:
