@@ -5,25 +5,70 @@
  * and provides initialization functions for setting up services.
  */
 
+
 import {
-  queryResolvers,
-  organizationResolvers,
-  departmentResolvers,
-  staffResolvers,
-  teamResolvers,
-  teamMemberResolvers,
-  projectResolvers,
-  taskResolvers,
-  taskProgressResolvers,
-  taskEvaluationResolvers,
-  taskStatusReportResolvers,
-  projectStatusReportResolvers,
-  setServices as setQueryServices,
-} from './query.resolvers';
+  referenceDataQueryResolvers,
+  referenceDataMutationResolvers,
+  setServices as setReferenceDataServices,
+} from './reference.data.resolvers';
 import {
-  mutationResolvers,
-  setServices as setMutationServices,
-} from './mutation.resolvers';
+  staffQueryResolvers,
+  staffMutationResolvers,
+  staffFieldResolvers,
+  initializeStaffResolvers,
+} from './staff.resolvers';
+import {
+  teamQueryResolvers,
+  teamMutationResolvers,
+  teamFieldResolvers,
+  teamMemberFieldResolvers,
+  initializeTeamResolvers,
+} from './team.resolvers';
+import {
+  projectQueryResolvers,
+  projectMutationResolvers,
+  projectFieldResolvers,
+  projectStatusReportFieldResolvers,
+  initializeProjectResolvers,
+} from './project.resolvers';
+import {
+  taskQueryResolvers,
+  taskMutationResolvers,
+  taskFieldResolvers,
+  taskProgressFieldResolvers,
+  taskEvaluationFieldResolvers,
+  taskStatusReportFieldResolvers,
+  initializeTaskResolvers,
+} from './task.resolvers';
+import {
+  healthResolvers,
+  setServices as setHealthServices,
+} from './health.resolvers';
+import {
+  authResolvers,
+  authMutationResolvers,
+  setServices as setAuthServices,
+} from './auth.resolvers';
+import {
+  userResolvers,
+  userMutationResolvers,
+  setServices as setUserServices,
+} from './user.resolvers';
+import {
+  organizationQueryResolvers,
+  organizationMutationResolvers,
+  organizationFieldResolvers,
+  staffOrganizationFieldResolvers,
+  initializeOrganizationResolvers,
+} from './organization.resolvers';
+import {
+  departmentQueryResolvers,
+  departmentMutationResolvers,
+  departmentFieldResolvers,
+  staffDepartmentFieldResolvers,
+  initializeDepartmentResolvers,
+} from './department.resolvers';
+
 import {
   AuthService,
   UserService,
@@ -49,24 +94,46 @@ import GraphQLJSON from 'graphql-type-json';
  */
 export const resolvers = {
   JSON: GraphQLJSON,
-  Query: queryResolvers,
-  Mutation: mutationResolvers,
-  Organization: organizationResolvers,
-  Department: departmentResolvers,
-  Staff: staffResolvers,
-  Team: teamResolvers,
-  TeamMember: teamMemberResolvers,
-  Project: projectResolvers,
-  Task: taskResolvers,
-  TaskProgress: taskProgressResolvers,
-  TaskEvaluation: taskEvaluationResolvers,
-  TaskStatusReport: taskStatusReportResolvers,
-  ProjectStatusReport: projectStatusReportResolvers,
+  Query: { 
+    ...referenceDataQueryResolvers, 
+    ...healthResolvers, 
+    ...authResolvers, 
+    ...userResolvers,
+    ...organizationQueryResolvers,
+    ...departmentQueryResolvers,
+    ...staffQueryResolvers,
+    ...teamQueryResolvers,
+    ...projectQueryResolvers,
+    ...taskQueryResolvers
+  },
+  Mutation: { 
+    ...referenceDataMutationResolvers, 
+    ...authMutationResolvers, 
+    ...userMutationResolvers,
+    ...organizationMutationResolvers,
+    ...departmentMutationResolvers,
+    ...staffMutationResolvers,
+    ...teamMutationResolvers,
+    ...projectMutationResolvers,
+    ...taskMutationResolvers
+  },
+  Organization: organizationFieldResolvers,
+  Department: departmentFieldResolvers,
+  Staff: { ...staffFieldResolvers, ...staffOrganizationFieldResolvers, ...staffDepartmentFieldResolvers },
+  Team: teamFieldResolvers,
+  TeamMember: teamMemberFieldResolvers,
+  Project: projectFieldResolvers,
+  Task: taskFieldResolvers,
+  TaskProgress: taskProgressFieldResolvers,
+  TaskEvaluation: taskEvaluationFieldResolvers,
+  TaskStatusReport: taskStatusReportFieldResolvers,
+  ProjectStatusReport: projectStatusReportFieldResolvers,
 };
 
 /**
  * Initialize resolvers with service instances
  * Must be called during application startup after database initialization
+ * Sets up services for query, mutation, health check, and authentication resolvers
  * @param authService - AuthService instance for authentication operations
  * @param userService - UserService instance for user operations
  * @param organizationService - OrganizationService instance for organization operations
@@ -100,37 +167,45 @@ export function initializeResolvers(
   taskStatusReportService: TaskStatusReportService,
   projectStatusReportService: ProjectStatusReportService,
 ): void {
-  setQueryServices(
-    userService,
-    organizationService,
-    departmentService,
-    staffService,
-    teamService,
+  setReferenceDataServices(
     statusService,
     priorityService,
     complexityService,
-    projectService,
-    taskService,
-    taskProgressService,
-    taskEvaluationService,
-    taskStatusReportService,
-    projectStatusReportService,
   );
-  setMutationServices(
-    authService,
-    userService,
-    organizationService,
-    departmentService,
-    staffService,
-    teamService,
-    statusService,
-    priorityService,
-    complexityService,
-    projectService,
-    taskService,
-    taskProgressService,
-    taskEvaluationService,
-    taskStatusReportService,
-    projectStatusReportService,
-  );
+  setHealthServices(userService);
+  setAuthServices(userService, authService);
+  setUserServices(userService);
+  initializeOrganizationResolvers({
+    organization: organizationService,
+    department: departmentService,
+    staff: staffService,
+  });
+  initializeDepartmentResolvers({
+    department: departmentService,
+    organization: organizationService,
+    staff: staffService,
+  });
+  initializeStaffResolvers({
+    staff: staffService,
+  });
+  initializeTeamResolvers({
+    staff: staffService,
+    team: teamService,
+  });
+  initializeProjectResolvers({
+    staff: staffService,
+    project: projectService,
+    projectStatusReport: projectStatusReportService,
+  });
+  initializeTaskResolvers({
+    staff: staffService,
+    status: statusService,
+    priority: priorityService,
+    complexity: complexityService,
+    project: projectService,
+    task: taskService,
+    taskProgress: taskProgressService,
+    taskEvaluation: taskEvaluationService,
+    taskStatusReport: taskStatusReportService,
+  });
 }

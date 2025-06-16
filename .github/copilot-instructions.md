@@ -6,6 +6,14 @@ Welcome to the **Fulcrum project**! This document defines the expectations and r
 
 ## ⚙️ Technology Stack Overview
 
+### General Tooling
+
+- **Node.js** for both backend and frontend
+- **pnpm** as the package manager
+- **TypeScript** for type safety
+- **ESLint** and **Prettier** for code quality and formatting
+- **Git** for version control
+
 ### Backend:
 - **Runtime:** Node.js
 - **Framework:** Express.js
