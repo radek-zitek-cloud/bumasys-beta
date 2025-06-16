@@ -75,6 +75,7 @@ export default defineConfig({
     extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue'],
   },
   server: {
+    allowedHosts: ['all'],
     port: 3000,
     proxy: {
       // Proxy API requests during development to the backend GraphQL server
