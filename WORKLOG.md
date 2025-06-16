@@ -2,6 +2,66 @@
 
 ## Change Log
 
+### 2025-01-16 - Staff Organization Chart Fix: Display Hierarchy from Selected Staff Member
+
+#### Root Cause Analysis:
+The Staff Organization Chart (Staff Tree Dialog) was always displaying the complete organizational hierarchy starting from the highest-level manager (root staff member), regardless of which staff member was selected. This occurred because the `findRootStaff` function was traversing up the supervisory hierarchy to find the topmost staff member with no supervisor, then building the entire organizational tree from that point. Users expected the chart to show the selected staff member as the root node, displaying only their subordinates and downward hierarchy.
+
+#### Impact of Changes:
+- **Focused Hierarchy Display**: Staff organization chart now starts from the selected staff member as the root node
+- **Improved User Experience**: Users can now view targeted organizational subsets rather than always seeing the full company structure
+- **Contextual Navigation**: When clicking on a manager, users see only their team and subordinates
+- **Flexible Organizational Views**: Different starting points provide different perspectives of the organizational structure
+- **Reduced Cognitive Load**: Smaller, focused trees are easier to navigate and understand
+
+#### Bugs Fixed:
+- **Staff Orgchart Root Issue**: Fixed the organization chart to start from the selected staff member instead of always showing the full organizational hierarchy from the top-level root
+
+#### Technical Changes:
+
+**Modified Files:**
+- `fe/src/components/organization/StaffTreeDialog.vue`: Updated `initializeTree()` function to use the selected staff member directly as the tree root instead of finding the organizational root
+
+**Code Changes:**
+```diff
+- // Find the root of the hierarchy for the selected staff member
+- const rootStaff = findRootStaff(allStaff, props.staff)
+- 
+- // Build tree structure starting from the root
+- const treeStructure = buildStaffTree(allStaff, rootStaff)
++ // Build tree structure starting from the selected staff member
++ const treeStructure = buildStaffTree(allStaff, props.staff)
+```
+
+**New Test Coverage:**
+- `fe/tests/unit/components/StaffTreeDialog.hierarchy.test.ts`: Comprehensive test suite validating hierarchy behavior:
+  - Middle manager selection shows only their subordinates
+  - Junior employee selection shows empty tree (no subordinates)
+  - CEO selection shows full downward hierarchy
+  - Proper tree structure validation with mock staff hierarchy data
+
+#### Improvements Made:
+- **Minimal Code Change**: Only 2 lines added, 5 lines removed for surgical fix
+- **Comprehensive Testing**: Added focused tests to prevent regression
+- **Maintained Backward Compatibility**: All existing functionality preserved
+- **Performance Optimization**: No additional API calls or processing overhead
+
+#### Documentation Updates:
+- Updated WORKLOG.md with detailed change documentation
+- Enhanced test coverage documentation
+- Root cause analysis and solution approach documented
+
+#### Potential Issues or Risks Identified:
+- **Unused Function**: `findRootStaff` function remains in codebase but is no longer used (minimal impact, left for potential future use)
+- **Test Warnings**: Linter warnings about unused imports in other components (unrelated to this fix)
+
+#### Follow-up Tasks:
+- Consider adding UI indicator showing the selected staff member as root in the dialog title
+- Potential enhancement to add breadcrumb navigation for moving between organizational levels
+- Consider adding "View Full Organization" option for users who want to see complete hierarchy
+
+---
+
 ### 2025-01-16 - Task Management Dialog Implementation: Complete UI Enhancement for Task Operations
 
 #### Root Cause Analysis:
