@@ -455,6 +455,8 @@ export interface TaskProgress {
   progressPercent: number;
   /** Optional notes */
   notes?: string;
+  /** Staff member who created this progress report */
+  creatorId?: string;
 }
 
 /**
@@ -487,6 +489,8 @@ export interface TaskStatusReport {
   reportDate: string;
   /** Status summary */
   statusSummary?: string;
+  /** Staff member who created this status report */
+  creatorId?: string;
 }
 
 /**
@@ -671,6 +675,8 @@ export interface CreateTaskProgressInput {
   progressPercent: number;
   /** Optional notes */
   notes?: string;
+  /** Optional creator staff ID (auto-detected if not provided) */
+  creatorId?: string;
 }
 
 /**
@@ -729,6 +735,8 @@ export interface CreateTaskStatusReportInput {
   reportDate: string;
   /** Status summary */
   statusSummary?: string;
+  /** Optional creator staff ID (auto-detected if not provided) */
+  creatorId?: string;
 }
 
 /**

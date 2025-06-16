@@ -1,12 +1,19 @@
 /**
  * @fileoverview Unit tests for TaskEvaluationService
- * 
+ *
  * Tests task evaluation service functionality including evaluation creation,
  * updates, retrieval, and deletion operations.
  */
 
 import { TaskEvaluationService } from '../../../src/services/task-evaluation.service';
-import type { Database, Task, Staff, TaskEvaluation, CreateTaskEvaluationInput, UpdateTaskEvaluationInput } from '../../../src/types';
+import type {
+  Database,
+  Task,
+  Staff,
+  TaskEvaluation,
+  CreateTaskEvaluationInput,
+  UpdateTaskEvaluationInput,
+} from '../../../src/types';
 import { v4 as uuidv4 } from 'uuid';
 
 // Mock uuid
@@ -83,7 +90,7 @@ describe('TaskEvaluationService', () => {
   describe('getAllTaskEvaluations', () => {
     it('should return all task evaluations when no taskId is provided', async () => {
       const result = await taskEvaluationService.getAllTaskEvaluations();
-      
+
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(mockEvaluation);
     });
@@ -99,15 +106,17 @@ describe('TaskEvaluationService', () => {
       };
       mockDatabase.data.taskEvaluations.push(evaluation2);
 
-      const result = await taskEvaluationService.getAllTaskEvaluations('task-1');
-      
+      const result =
+        await taskEvaluationService.getAllTaskEvaluations('task-1');
+
       expect(result).toHaveLength(1);
       expect(result[0].taskId).toBe('task-1');
     });
 
     it('should return empty array when no evaluations match taskId', async () => {
-      const result = await taskEvaluationService.getAllTaskEvaluations('nonexistent-task');
-      
+      const result =
+        await taskEvaluationService.getAllTaskEvaluations('nonexistent-task');
+
       expect(result).toHaveLength(0);
     });
   });
@@ -115,13 +124,13 @@ describe('TaskEvaluationService', () => {
   describe('findById', () => {
     it('should return evaluation when found', async () => {
       const result = await taskEvaluationService.findById('eval-1');
-      
+
       expect(result).toEqual(mockEvaluation);
     });
 
     it('should return null when evaluation not found', async () => {
       const result = await taskEvaluationService.findById('nonexistent-eval');
-      
+
       expect(result).toBeNull();
     });
   });
@@ -129,13 +138,14 @@ describe('TaskEvaluationService', () => {
   describe('findByTaskId', () => {
     it('should return evaluation when found by task ID', async () => {
       const result = await taskEvaluationService.findByTaskId('task-1');
-      
+
       expect(result).toEqual(mockEvaluation);
     });
 
     it('should return null when no evaluation found for task ID', async () => {
-      const result = await taskEvaluationService.findByTaskId('nonexistent-task');
-      
+      const result =
+        await taskEvaluationService.findByTaskId('nonexistent-task');
+
       expect(result).toBeNull();
     });
   });
@@ -155,8 +165,9 @@ describe('TaskEvaluationService', () => {
     });
 
     it('should create a new task evaluation successfully', async () => {
-      const result = await taskEvaluationService.createTaskEvaluation(validEvaluationData);
-      
+      const result =
+        await taskEvaluationService.createTaskEvaluation(validEvaluationData);
+
       expect(result).toEqual({
         id: 'mock-uuid-1234',
         taskId: 'task-1',
@@ -170,27 +181,36 @@ describe('TaskEvaluationService', () => {
     });
 
     it('should throw error when task does not exist', async () => {
-      const invalidData = { ...validEvaluationData, taskId: 'nonexistent-task' };
-      
-      await expect(taskEvaluationService.createTaskEvaluation(invalidData))
-        .rejects.toThrow('Task not found');
+      const invalidData = {
+        ...validEvaluationData,
+        taskId: 'nonexistent-task',
+      };
+
+      await expect(
+        taskEvaluationService.createTaskEvaluation(invalidData),
+      ).rejects.toThrow('Task not found');
       expect(mockDatabase.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when evaluator does not exist', async () => {
-      const invalidData = { ...validEvaluationData, evaluatorId: 'nonexistent-staff' };
-      
-      await expect(taskEvaluationService.createTaskEvaluation(invalidData))
-        .rejects.toThrow('Evaluator not found');
+      const invalidData = {
+        ...validEvaluationData,
+        evaluatorId: 'nonexistent-staff',
+      };
+
+      await expect(
+        taskEvaluationService.createTaskEvaluation(invalidData),
+      ).rejects.toThrow('Evaluator not found');
       expect(mockDatabase.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when evaluation already exists for task', async () => {
       // Add an existing evaluation back
       mockDatabase.data.taskEvaluations = [mockEvaluation];
-      
-      await expect(taskEvaluationService.createTaskEvaluation(validEvaluationData))
-        .rejects.toThrow('Task evaluation already exists for this task');
+
+      await expect(
+        taskEvaluationService.createTaskEvaluation(validEvaluationData),
+      ).rejects.toThrow('Task evaluation already exists for this task');
       expect(mockDatabase.write).not.toHaveBeenCalled();
     });
   });
@@ -203,8 +223,9 @@ describe('TaskEvaluationService', () => {
     };
 
     it('should update evaluation successfully', async () => {
-      const result = await taskEvaluationService.updateTaskEvaluation(validUpdateData);
-      
+      const result =
+        await taskEvaluationService.updateTaskEvaluation(validUpdateData);
+
       expect(result.evaluationNotes).toBe('Updated notes');
       expect(result.result).toBe('Failed');
       expect(mockDatabase.write).toHaveBeenCalledTimes(1);
@@ -212,44 +233,52 @@ describe('TaskEvaluationService', () => {
 
     it('should update evaluator when provided', async () => {
       const updateData = { ...validUpdateData, evaluatorId: 'staff-1' };
-      
-      const result = await taskEvaluationService.updateTaskEvaluation(updateData);
-      
+
+      const result =
+        await taskEvaluationService.updateTaskEvaluation(updateData);
+
       expect(result.evaluatorId).toBe('staff-1');
       expect(mockDatabase.write).toHaveBeenCalledTimes(1);
     });
 
     it('should update evaluation date when provided', async () => {
       const updateData = { ...validUpdateData, evaluationDate: '2025-06-25' };
-      
-      const result = await taskEvaluationService.updateTaskEvaluation(updateData);
-      
+
+      const result =
+        await taskEvaluationService.updateTaskEvaluation(updateData);
+
       expect(result.evaluationDate).toBe('2025-06-25');
       expect(mockDatabase.write).toHaveBeenCalledTimes(1);
     });
 
     it('should throw error when evaluation not found', async () => {
       const invalidUpdateData = { ...validUpdateData, id: 'nonexistent-eval' };
-      
-      await expect(taskEvaluationService.updateTaskEvaluation(invalidUpdateData))
-        .rejects.toThrow('Task evaluation not found');
+
+      await expect(
+        taskEvaluationService.updateTaskEvaluation(invalidUpdateData),
+      ).rejects.toThrow('Task evaluation not found');
       expect(mockDatabase.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when evaluator does not exist', async () => {
-      const invalidUpdateData = { ...validUpdateData, evaluatorId: 'nonexistent-staff' };
-      
-      await expect(taskEvaluationService.updateTaskEvaluation(invalidUpdateData))
-        .rejects.toThrow('Evaluator not found');
+      const invalidUpdateData = {
+        ...validUpdateData,
+        evaluatorId: 'nonexistent-staff',
+      };
+
+      await expect(
+        taskEvaluationService.updateTaskEvaluation(invalidUpdateData),
+      ).rejects.toThrow('Evaluator not found');
       expect(mockDatabase.write).not.toHaveBeenCalled();
     });
 
     it('should not update properties when undefined', async () => {
       const originalEvaluation = { ...mockEvaluation };
       const updateData = { id: 'eval-1' }; // No properties to update
-      
-      const result = await taskEvaluationService.updateTaskEvaluation(updateData);
-      
+
+      const result =
+        await taskEvaluationService.updateTaskEvaluation(updateData);
+
       expect(result).toEqual(originalEvaluation);
       expect(mockDatabase.write).toHaveBeenCalledTimes(1);
     });
@@ -258,15 +287,16 @@ describe('TaskEvaluationService', () => {
   describe('deleteTaskEvaluation', () => {
     it('should delete evaluation successfully', async () => {
       const result = await taskEvaluationService.deleteTaskEvaluation('eval-1');
-      
+
       expect(result).toBe(true);
       expect(mockDatabase.data.taskEvaluations).toHaveLength(0);
       expect(mockDatabase.write).toHaveBeenCalledTimes(1);
     });
 
     it('should throw error when evaluation not found', async () => {
-      await expect(taskEvaluationService.deleteTaskEvaluation('nonexistent-eval'))
-        .rejects.toThrow('Task evaluation not found');
+      await expect(
+        taskEvaluationService.deleteTaskEvaluation('nonexistent-eval'),
+      ).rejects.toThrow('Task evaluation not found');
       expect(mockDatabase.write).not.toHaveBeenCalled();
     });
   });

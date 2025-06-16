@@ -3,7 +3,14 @@
  */
 
 import { StaffService } from '../../../src/services/staff.service';
-import type { Database, Staff, CreateStaffInput, UpdateStaffInput, Department, Organization } from '../../../src/types';
+import type {
+  Database,
+  Staff,
+  CreateStaffInput,
+  UpdateStaffInput,
+  Department,
+  Organization,
+} from '../../../src/types';
 
 describe('StaffService', () => {
   let staffService: StaffService;
@@ -186,24 +193,37 @@ describe('StaffService', () => {
     });
 
     it('should throw error when email already exists', async () => {
-      const duplicateInput = { ...createStaffInput, email: 'john.doe@test.com' };
-      
-      await expect(staffService.createStaff(duplicateInput)).rejects.toThrow('Email already in use');
+      const duplicateInput = {
+        ...createStaffInput,
+        email: 'john.doe@test.com',
+      };
+
+      await expect(staffService.createStaff(duplicateInput)).rejects.toThrow(
+        'Email already in use',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when organization not found', async () => {
-      const invalidInput = { ...createStaffInput, organizationId: 'org-invalid' };
-      
-      await expect(staffService.createStaff(invalidInput)).rejects.toThrow('Organization not found');
+      const invalidInput = {
+        ...createStaffInput,
+        organizationId: 'org-invalid',
+      };
+
+      await expect(staffService.createStaff(invalidInput)).rejects.toThrow(
+        'Organization not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when department not found', async () => {
-      const invalidInput = { ...createStaffInput, departmentId: 'dept-invalid' };
-      
+      const invalidInput = {
+        ...createStaffInput,
+        departmentId: 'dept-invalid',
+      };
+
       await expect(staffService.createStaff(invalidInput)).rejects.toThrow(
-        'Department not found or does not belong to the specified organization'
+        'Department not found or does not belong to the specified organization',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -221,18 +241,21 @@ describe('StaffService', () => {
       mockDb.data.departments.push(otherDept);
 
       const invalidInput = { ...createStaffInput, departmentId: 'dept-2' };
-      
+
       await expect(staffService.createStaff(invalidInput)).rejects.toThrow(
-        'Department not found or does not belong to the specified organization'
+        'Department not found or does not belong to the specified organization',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when supervisor not found', async () => {
-      const invalidInput = { ...createStaffInput, supervisorId: 'supervisor-invalid' };
-      
+      const invalidInput = {
+        ...createStaffInput,
+        supervisorId: 'supervisor-invalid',
+      };
+
       await expect(staffService.createStaff(invalidInput)).rejects.toThrow(
-        'Supervisor not found or does not belong to the same organization'
+        'Supervisor not found or does not belong to the same organization',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -253,18 +276,21 @@ describe('StaffService', () => {
       mockDb.data.staff.push(otherOrgStaff);
 
       const invalidInput = { ...createStaffInput, supervisorId: 'staff-3' };
-      
+
       await expect(staffService.createStaff(invalidInput)).rejects.toThrow(
-        'Supervisor not found or does not belong to the same organization'
+        'Supervisor not found or does not belong to the same organization',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should create staff without supervisor', async () => {
-      const inputWithoutSupervisor = { ...createStaffInput, supervisorId: undefined };
-      
+      const inputWithoutSupervisor = {
+        ...createStaffInput,
+        supervisorId: undefined,
+      };
+
       const result = await staffService.createStaff(inputWithoutSupervisor);
-      
+
       expect(result.supervisorId).toBeUndefined();
       expect(mockDb.write).toHaveBeenCalled();
     });
@@ -288,23 +314,33 @@ describe('StaffService', () => {
 
     it('should throw error when staff not found', async () => {
       const invalidUpdate = { ...updateStaffInput, id: 'staff-invalid' };
-      
-      await expect(staffService.updateStaff(invalidUpdate)).rejects.toThrow('Staff member not found');
+
+      await expect(staffService.updateStaff(invalidUpdate)).rejects.toThrow(
+        'Staff member not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when email already in use by another staff', async () => {
-      const conflictUpdate = { ...updateStaffInput, email: 'jane.smith@test.com' };
-      
-      await expect(staffService.updateStaff(conflictUpdate)).rejects.toThrow('Email already in use');
+      const conflictUpdate = {
+        ...updateStaffInput,
+        email: 'jane.smith@test.com',
+      };
+
+      await expect(staffService.updateStaff(conflictUpdate)).rejects.toThrow(
+        'Email already in use',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should allow updating to same email', async () => {
-      const sameEmailUpdate = { ...updateStaffInput, email: 'john.doe@test.com' };
-      
+      const sameEmailUpdate = {
+        ...updateStaffInput,
+        email: 'john.doe@test.com',
+      };
+
       const result = await staffService.updateStaff(sameEmailUpdate);
-      
+
       expect(result.email).toBe('john.doe@test.com');
       expect(mockDb.write).toHaveBeenCalled();
     });
@@ -322,58 +358,69 @@ describe('StaffService', () => {
       mockDb.data.departments.push(newDept);
 
       const deptUpdate = { ...updateStaffInput, departmentId: 'dept-2' };
-      
+
       const result = await staffService.updateStaff(deptUpdate);
-      
+
       expect(result.departmentId).toBe('dept-2');
       expect(mockDb.write).toHaveBeenCalled();
     });
 
     it('should throw error when department not found or belongs to different organization', async () => {
-      const invalidDeptUpdate = { ...updateStaffInput, departmentId: 'dept-invalid' };
-      
+      const invalidDeptUpdate = {
+        ...updateStaffInput,
+        departmentId: 'dept-invalid',
+      };
+
       await expect(staffService.updateStaff(invalidDeptUpdate)).rejects.toThrow(
-        'Department not found or does not belong to the same organization'
+        'Department not found or does not belong to the same organization',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should update supervisor when valid', async () => {
       const supervisorUpdate = { ...updateStaffInput, supervisorId: 'staff-2' };
-      
+
       const result = await staffService.updateStaff(supervisorUpdate);
-      
+
       expect(result.supervisorId).toBe('staff-2');
       expect(mockDb.write).toHaveBeenCalled();
     });
 
     it('should throw error when supervisor not found', async () => {
-      const invalidSupervisorUpdate = { ...updateStaffInput, supervisorId: 'supervisor-invalid' };
-      
-      await expect(staffService.updateStaff(invalidSupervisorUpdate)).rejects.toThrow(
-        'Supervisor not found or does not belong to the same organization'
+      const invalidSupervisorUpdate = {
+        ...updateStaffInput,
+        supervisorId: 'supervisor-invalid',
+      };
+
+      await expect(
+        staffService.updateStaff(invalidSupervisorUpdate),
+      ).rejects.toThrow(
+        'Supervisor not found or does not belong to the same organization',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when staff tries to supervise themselves', async () => {
-      const selfSupervisorUpdate = { ...updateStaffInput, supervisorId: 'staff-1' };
-      
-      await expect(staffService.updateStaff(selfSupervisorUpdate)).rejects.toThrow(
-        'Staff member cannot supervise themselves'
-      );
+      const selfSupervisorUpdate = {
+        ...updateStaffInput,
+        supervisorId: 'staff-1',
+      };
+
+      await expect(
+        staffService.updateStaff(selfSupervisorUpdate),
+      ).rejects.toThrow('Staff member cannot supervise themselves');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when update would create circular supervision', async () => {
       // Set up hierarchy: staff-2 supervises staff-1
       mockDb.data.staff[0].supervisorId = 'staff-2';
-      
+
       // Try to make staff-2 report to staff-1 (would create circle)
       const circularUpdate = { id: 'staff-2', supervisorId: 'staff-1' };
-      
+
       await expect(staffService.updateStaff(circularUpdate)).rejects.toThrow(
-        'Update would create circular supervision hierarchy'
+        'Update would create circular supervision hierarchy',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -381,11 +428,14 @@ describe('StaffService', () => {
     it('should not update supervisor when set to undefined', async () => {
       // First set a supervisor
       const originalSupervisorId = mockDb.data.staff[0].supervisorId;
-      
-      const clearSupervisorUpdate = { ...updateStaffInput, supervisorId: undefined };
-      
+
+      const clearSupervisorUpdate = {
+        ...updateStaffInput,
+        supervisorId: undefined,
+      };
+
       const result = await staffService.updateStaff(clearSupervisorUpdate);
-      
+
       expect(result.supervisorId).toBe(originalSupervisorId); // Should remain unchanged
       expect(mockDb.write).toHaveBeenCalled();
     });
@@ -414,7 +464,7 @@ describe('StaffService', () => {
       mockDb.data.staff[0].supervisorId = 'staff-2';
 
       await expect(staffService.deleteStaff('staff-2')).rejects.toThrow(
-        'Cannot delete staff member who has subordinates or manages departments'
+        'Cannot delete staff member who has subordinates or manages departments',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -424,7 +474,7 @@ describe('StaffService', () => {
       mockDb.data.departments[0].managerId = 'staff-1';
 
       await expect(staffService.deleteStaff('staff-1')).rejects.toThrow(
-        'Cannot delete staff member who has subordinates or manages departments'
+        'Cannot delete staff member who has subordinates or manages departments',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -482,7 +532,7 @@ describe('StaffService', () => {
       };
 
       mockDb.data.staff = [freshMockStaff, freshMockSupervisor];
-      
+
       // Add another subordinate that also reports to staff-2
       const subordinate: Staff = {
         id: 'staff-3',
@@ -502,11 +552,11 @@ describe('StaffService', () => {
       const result = staffService.getStaffWithStats();
 
       expect(result).toHaveLength(3);
-      
-      const supervisor = result.find(s => s.id === 'staff-2');
+
+      const supervisor = result.find((s) => s.id === 'staff-2');
       expect(supervisor?.subordinateCount).toBe(2);
-      
-      const subordinate = result.find(s => s.id === 'staff-1');
+
+      const subordinate = result.find((s) => s.id === 'staff-1');
       expect(subordinate?.subordinateCount).toBe(0);
     });
 
@@ -528,7 +578,7 @@ describe('StaffService', () => {
       const result = staffService.getStaffWithStats('org-1');
 
       expect(result).toHaveLength(3);
-      expect(result.every(s => s.organizationId === 'org-1')).toBe(true);
+      expect(result.every((s) => s.organizationId === 'org-1')).toBe(true);
     });
 
     it('should filter by department ID', () => {
@@ -549,14 +599,18 @@ describe('StaffService', () => {
       const result = staffService.getStaffWithStats(undefined, 'dept-1');
 
       expect(result).toHaveLength(3);
-      expect(result.every(s => s.departmentId === 'dept-1')).toBe(true);
+      expect(result.every((s) => s.departmentId === 'dept-1')).toBe(true);
     });
 
     it('should filter by both organization and department ID', () => {
       const result = staffService.getStaffWithStats('org-1', 'dept-1');
 
       expect(result).toHaveLength(3);
-      expect(result.every(s => s.organizationId === 'org-1' && s.departmentId === 'dept-1')).toBe(true);
+      expect(
+        result.every(
+          (s) => s.organizationId === 'org-1' && s.departmentId === 'dept-1',
+        ),
+      ).toBe(true);
     });
   });
 });

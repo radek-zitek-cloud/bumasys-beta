@@ -10,7 +10,11 @@ import type {
   CreateDepartmentInput,
   UpdateDepartmentInput,
 } from '../types';
-import { DepartmentService, OrganizationService, StaffService } from '../services';
+import {
+  DepartmentService,
+  OrganizationService,
+  StaffService,
+} from '../services';
 import logger from '../utils/logger';
 
 let departmentService: DepartmentService;

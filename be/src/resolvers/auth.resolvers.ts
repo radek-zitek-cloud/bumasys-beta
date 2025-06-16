@@ -5,7 +5,7 @@
  * including current user information retrieval, authentication mutations, and session management.
  */
 
-import type { 
+import type {
   GraphQLContext,
   RegisterInput,
   LoginInput,

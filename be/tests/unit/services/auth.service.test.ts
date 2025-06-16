@@ -1,6 +1,6 @@
 /**
  * @fileoverview Unit tests for AuthService
- * 
+ *
  * Tests authentication service functionality including token generation,
  * password hashing, user authentication, and session management.
  */
@@ -13,7 +13,11 @@ import type { Database, User } from '../../../src/types';
 jest.mock('bcryptjs', () => ({
   compare: jest.fn().mockImplementation((plain, hashed) => {
     // Mock successful comparison for the specific test password
-    return Promise.resolve(plain === 'password123' && hashed === '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LPTPMmNbbFfiFXr9K');
+    return Promise.resolve(
+      plain === 'password123' &&
+        hashed ===
+          '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LPTPMmNbbFfiFXr9K',
+    );
   }),
   hash: jest.fn().mockResolvedValue('hashed-password'),
 }));
@@ -109,10 +113,10 @@ describe('AuthService', () => {
     it('should generate tokens with same content but different timing', async () => {
       const userId = 'user123';
       const token1 = await authService.signRefreshToken(userId);
-      
+
       // Small delay to ensure different timestamps
-      await new Promise(resolve => setTimeout(resolve, 1));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1));
+
       const token2 = await authService.signRefreshToken(userId);
 
       // Both tokens should be valid but may have different timestamps
@@ -142,7 +146,7 @@ describe('AuthService', () => {
       const expiredToken = jwt.sign(
         { id: 'user123' },
         'test-secret-key-for-testing',
-        { expiresIn: '-1s' }
+        { expiresIn: '-1s' },
       );
 
       expect(() => authService.verifyToken(expiredToken)).toThrow();
@@ -163,11 +167,11 @@ describe('AuthService', () => {
       const validJWT = jwt.sign(
         { id: 'user123' },
         'test-secret-key-for-testing',
-        { expiresIn: '7d' }
+        { expiresIn: '7d' },
       );
 
       expect(() => authService.verifyRefreshToken(validJWT)).toThrow(
-        'Invalid refresh token'
+        'Invalid refresh token',
       );
     });
   });
@@ -189,7 +193,7 @@ describe('AuthService', () => {
       const nonExistentToken = 'non-existent-token';
 
       await expect(
-        authService.invalidateRefreshToken(nonExistentToken)
+        authService.invalidateRefreshToken(nonExistentToken),
       ).resolves.not.toThrow();
     });
   });
@@ -218,7 +222,8 @@ describe('AuthService', () => {
       mockDatabase.data.users.push({
         id: 'user123',
         email: 'test@example.com',
-        password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LPTPMmNbbFfiFXr9K', // "password123"
+        password:
+          '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LPTPMmNbbFfiFXr9K', // "password123"
         firstName: 'Test',
         lastName: 'User',
       });
@@ -246,7 +251,7 @@ describe('AuthService', () => {
       };
 
       await expect(authService.authenticateUser(loginInput)).rejects.toThrow(
-        'Invalid credentials'
+        'Invalid credentials',
       );
     });
 
@@ -257,7 +262,7 @@ describe('AuthService', () => {
       };
 
       await expect(authService.authenticateUser(loginInput)).rejects.toThrow(
-        'Invalid credentials'
+        'Invalid credentials',
       );
     });
   });
@@ -265,14 +270,14 @@ describe('AuthService', () => {
   describe('refreshAccessToken', () => {
     it('should generate new access token from valid refresh token', async () => {
       const userId = 'user123';
-      
+
       // Add user to database so refresh token validation works
       mockDatabase.data.users.push({
         id: userId,
         email: 'test@example.com',
         password: 'hashed-password',
       });
-      
+
       const refreshToken = await authService.signRefreshToken(userId);
 
       const result = await authService.refreshAccessToken(refreshToken);
@@ -282,14 +287,19 @@ describe('AuthService', () => {
       expect(result.refreshToken).toBe(refreshToken); // Same refresh token
 
       // Verify new access token contains correct user ID
-      const decoded = jwt.verify(result.token, 'test-secret-key-for-testing') as any;
+      const decoded = jwt.verify(
+        result.token,
+        'test-secret-key-for-testing',
+      ) as any;
       expect(decoded.id).toBe(userId);
     });
 
     it('should throw error for invalid refresh token', async () => {
       const invalidToken = 'invalid-token';
 
-      await expect(authService.refreshAccessToken(invalidToken)).rejects.toThrow();
+      await expect(
+        authService.refreshAccessToken(invalidToken),
+      ).rejects.toThrow();
     });
   });
 

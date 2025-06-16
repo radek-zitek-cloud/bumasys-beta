@@ -3,7 +3,15 @@
  */
 
 import { ProjectService } from '../../../src/services/project.service';
-import type { Database, Project, CreateProjectInput, UpdateProjectInput, Staff, Task, ProjectStatusReport } from '../../../src/types';
+import type {
+  Database,
+  Project,
+  CreateProjectInput,
+  UpdateProjectInput,
+  Staff,
+  Task,
+  ProjectStatusReport,
+} from '../../../src/types';
 
 describe('ProjectService', () => {
   let projectService: ProjectService;
@@ -86,16 +94,16 @@ describe('ProjectService', () => {
   describe('getAllProjects', () => {
     it('should return all projects', async () => {
       const result = await projectService.getAllProjects();
-      
+
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(mockProject);
     });
 
     it('should return empty array when no projects exist', async () => {
       mockDb.data.projects = [];
-      
+
       const result = await projectService.getAllProjects();
-      
+
       expect(result).toHaveLength(0);
     });
   });
@@ -103,13 +111,13 @@ describe('ProjectService', () => {
   describe('findById', () => {
     it('should return project when found by ID', async () => {
       const result = await projectService.findById('project-1');
-      
+
       expect(result).toEqual(mockProject);
     });
 
     it('should return null when project not found by ID', async () => {
       const result = await projectService.findById('nonexistent');
-      
+
       expect(result).toBeNull();
     });
   });
@@ -143,18 +151,26 @@ describe('ProjectService', () => {
     });
 
     it('should create project without lead staff', async () => {
-      const inputWithoutLead = { ...createProjectInput, leadStaffId: undefined };
-      
+      const inputWithoutLead = {
+        ...createProjectInput,
+        leadStaffId: undefined,
+      };
+
       const result = await projectService.createProject(inputWithoutLead);
-      
+
       expect(result.leadStaffId).toBeUndefined();
       expect(mockDb.write).toHaveBeenCalled();
     });
 
     it('should throw error when lead staff not found', async () => {
-      const invalidInput = { ...createProjectInput, leadStaffId: 'staff-invalid' };
-      
-      await expect(projectService.createProject(invalidInput)).rejects.toThrow('Lead staff member not found');
+      const invalidInput = {
+        ...createProjectInput,
+        leadStaffId: 'staff-invalid',
+      };
+
+      await expect(projectService.createProject(invalidInput)).rejects.toThrow(
+        'Lead staff member not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
@@ -164,9 +180,9 @@ describe('ProjectService', () => {
         plannedStartDate: '2024-12-01',
         plannedEndDate: '2024-01-01',
       };
-      
+
       await expect(projectService.createProject(invalidInput)).rejects.toThrow(
-        'Planned start date must be before planned end date'
+        'Planned start date must be before planned end date',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -177,9 +193,9 @@ describe('ProjectService', () => {
         actualStartDate: '2024-12-01',
         actualEndDate: '2024-01-01',
       };
-      
+
       await expect(projectService.createProject(invalidInput)).rejects.toThrow(
-        'Actual start date must be before actual end date'
+        'Actual start date must be before actual end date',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -190,10 +206,10 @@ describe('ProjectService', () => {
         plannedStartDate: '2024-01-01',
         plannedEndDate: '2024-01-01',
       };
-      
-      await expect(projectService.createProject(inputWithEqualDates)).rejects.toThrow(
-        'Planned start date must be before planned end date'
-      );
+
+      await expect(
+        projectService.createProject(inputWithEqualDates),
+      ).rejects.toThrow('Planned start date must be before planned end date');
     });
 
     it('should create project with only start date', async () => {
@@ -202,9 +218,9 @@ describe('ProjectService', () => {
         plannedStartDate: '2024-02-01',
         plannedEndDate: undefined,
       };
-      
+
       const result = await projectService.createProject(inputWithOnlyStart);
-      
+
       expect(result.plannedStartDate).toBe('2024-02-01');
       expect(result.plannedEndDate).toBeUndefined();
       expect(mockDb.write).toHaveBeenCalled();
@@ -229,23 +245,30 @@ describe('ProjectService', () => {
 
     it('should throw error when project not found', async () => {
       const invalidUpdate = { ...updateProjectInput, id: 'project-invalid' };
-      
-      await expect(projectService.updateProject(invalidUpdate)).rejects.toThrow('Project not found');
+
+      await expect(projectService.updateProject(invalidUpdate)).rejects.toThrow(
+        'Project not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when lead staff not found', async () => {
-      const invalidUpdate = { ...updateProjectInput, leadStaffId: 'staff-invalid' };
-      
-      await expect(projectService.updateProject(invalidUpdate)).rejects.toThrow('Lead staff member not found');
+      const invalidUpdate = {
+        ...updateProjectInput,
+        leadStaffId: 'staff-invalid',
+      };
+
+      await expect(projectService.updateProject(invalidUpdate)).rejects.toThrow(
+        'Lead staff member not found',
+      );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should not update lead staff when set to undefined', async () => {
       const clearLeadUpdate = { ...updateProjectInput, leadStaffId: undefined };
-      
+
       const result = await projectService.updateProject(clearLeadUpdate);
-      
+
       expect(result.leadStaffId).toBe('staff-1'); // Should remain unchanged
       expect(mockDb.write).toHaveBeenCalled();
     });
@@ -256,10 +279,10 @@ describe('ProjectService', () => {
         plannedStartDate: '2024-12-01',
         plannedEndDate: '2024-01-01',
       };
-      
-      await expect(projectService.updateProject(invalidDateUpdate)).rejects.toThrow(
-        'Planned start date must be before planned end date'
-      );
+
+      await expect(
+        projectService.updateProject(invalidDateUpdate),
+      ).rejects.toThrow('Planned start date must be before planned end date');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
@@ -269,10 +292,10 @@ describe('ProjectService', () => {
         actualStartDate: '2024-12-01',
         actualEndDate: '2024-01-01',
       };
-      
-      await expect(projectService.updateProject(invalidDateUpdate)).rejects.toThrow(
-        'Actual start date must be before actual end date'
-      );
+
+      await expect(
+        projectService.updateProject(invalidDateUpdate),
+      ).rejects.toThrow('Actual start date must be before actual end date');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
@@ -282,10 +305,10 @@ describe('ProjectService', () => {
         ...updateProjectInput,
         plannedEndDate: '2023-12-31', // Before existing start date of 2024-01-01
       };
-      
-      await expect(projectService.updateProject(invalidDateUpdate)).rejects.toThrow(
-        'Planned start date must be before planned end date'
-      );
+
+      await expect(
+        projectService.updateProject(invalidDateUpdate),
+      ).rejects.toThrow('Planned start date must be before planned end date');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
@@ -300,9 +323,9 @@ describe('ProjectService', () => {
         actualStartDate: '2024-02-15',
         actualEndDate: '2024-11-15',
       };
-      
+
       const result = await projectService.updateProject(fullUpdate);
-      
+
       expect(result).toMatchObject(fullUpdate);
       expect(mockDb.write).toHaveBeenCalled();
     });
@@ -313,7 +336,7 @@ describe('ProjectService', () => {
       // Remove task and status report dependencies
       mockDb.data.tasks = [];
       mockDb.data.projectStatusReports = [];
-      
+
       const result = await projectService.deleteProject('project-1');
 
       expect(result).toBe(true);
@@ -322,13 +345,15 @@ describe('ProjectService', () => {
     });
 
     it('should throw error when project not found', async () => {
-      await expect(projectService.deleteProject('project-invalid')).rejects.toThrow('Project not found');
+      await expect(
+        projectService.deleteProject('project-invalid'),
+      ).rejects.toThrow('Project not found');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when project has associated tasks', async () => {
       await expect(projectService.deleteProject('project-1')).rejects.toThrow(
-        'Cannot delete project: it has associated tasks'
+        'Cannot delete project: it has associated tasks',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -336,9 +361,9 @@ describe('ProjectService', () => {
     it('should throw error when project has status reports', async () => {
       // Remove task dependency but keep status report
       mockDb.data.tasks = [];
-      
+
       await expect(projectService.deleteProject('project-1')).rejects.toThrow(
-        'Cannot delete project: it has status reports'
+        'Cannot delete project: it has status reports',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -347,14 +372,16 @@ describe('ProjectService', () => {
   describe('getProjectTasks', () => {
     it('should return tasks for a specific project', async () => {
       const result = await projectService.getProjectTasks('project-1');
-      
+
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(mockTask);
     });
 
     it('should return empty array for project with no tasks', async () => {
-      const result = await projectService.getProjectTasks('project-nonexistent');
-      
+      const result = await projectService.getProjectTasks(
+        'project-nonexistent',
+      );
+
       expect(result).toHaveLength(0);
     });
 
@@ -376,9 +403,9 @@ describe('ProjectService', () => {
         actualEndDate: undefined,
       };
       mockDb.data.tasks.push(otherProjectTask);
-      
+
       const result = await projectService.getProjectTasks('project-1');
-      
+
       expect(result).toHaveLength(1);
       expect(result[0].projectId).toBe('project-1');
     });
@@ -387,14 +414,16 @@ describe('ProjectService', () => {
   describe('getProjectStatusReports', () => {
     it('should return status reports for a specific project', async () => {
       const result = await projectService.getProjectStatusReports('project-1');
-      
+
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(mockProjectStatusReport);
     });
 
     it('should return empty array for project with no status reports', async () => {
-      const result = await projectService.getProjectStatusReports('project-nonexistent');
-      
+      const result = await projectService.getProjectStatusReports(
+        'project-nonexistent',
+      );
+
       expect(result).toHaveLength(0);
     });
 
@@ -407,9 +436,9 @@ describe('ProjectService', () => {
         statusSummary: 'Project is facing delays',
       };
       mockDb.data.projectStatusReports.push(otherProjectReport);
-      
+
       const result = await projectService.getProjectStatusReports('project-1');
-      
+
       expect(result).toHaveLength(1);
       expect(result[0].projectId).toBe('project-1');
     });

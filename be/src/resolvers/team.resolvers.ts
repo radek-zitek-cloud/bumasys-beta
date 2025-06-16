@@ -13,10 +13,7 @@ import type {
   CreateTeamMemberInput,
   UpdateTeamMemberInput,
 } from '../types';
-import type {
-  StaffService,
-  TeamService,
-} from '../services';
+import type { StaffService, TeamService } from '../services';
 
 /**
  * Service instances - will be set during application initialization
@@ -51,11 +48,7 @@ export const teamQueryResolvers = {
    * @returns Team object if found, null otherwise
    * @throws Error if user is not authenticated
    */
-  team: (
-    _: unknown,
-    { id }: { id: string },
-    { user }: GraphQLContext,
-  ) => {
+  team: (_: unknown, { id }: { id: string }, { user }: GraphQLContext) => {
     if (!user) {
       throw new Error('Unauthenticated');
     }

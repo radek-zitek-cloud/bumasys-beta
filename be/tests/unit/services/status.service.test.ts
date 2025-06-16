@@ -129,7 +129,7 @@ describe('StatusService', () => {
       };
 
       await expect(service.createStatus(statusData)).rejects.toThrow(
-        'Status name already exists'
+        'Status name already exists',
       );
       expect(mockDb.data.statuses).toHaveLength(3);
       expect(mockDb.write).not.toHaveBeenCalled();
@@ -141,7 +141,7 @@ describe('StatusService', () => {
       };
 
       await expect(service.createStatus(statusData)).rejects.toThrow(
-        'Status name already exists'
+        'Status name already exists',
       );
       expect(mockDb.data.statuses).toHaveLength(3);
       expect(mockDb.write).not.toHaveBeenCalled();
@@ -170,7 +170,7 @@ describe('StatusService', () => {
       };
 
       await expect(service.updateStatus(updateData)).rejects.toThrow(
-        'Status not found'
+        'Status not found',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -182,7 +182,7 @@ describe('StatusService', () => {
       };
 
       await expect(service.updateStatus(updateData)).rejects.toThrow(
-        'Status name already exists'
+        'Status name already exists',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -209,7 +209,9 @@ describe('StatusService', () => {
 
       expect(result).toBe(true);
       expect(mockDb.data.statuses).toHaveLength(initialCount - 1);
-      expect(mockDb.data.statuses.find(s => s.id === 'status-3')).toBeUndefined();
+      expect(
+        mockDb.data.statuses.find((s) => s.id === 'status-3'),
+      ).toBeUndefined();
       expect(mockDb.write).toHaveBeenCalledTimes(1);
     });
 
@@ -217,7 +219,7 @@ describe('StatusService', () => {
       const initialCount = mockDb.data.statuses.length;
 
       await expect(service.deleteStatus('non-existent')).rejects.toThrow(
-        'Status not found'
+        'Status not found',
       );
       expect(mockDb.data.statuses).toHaveLength(initialCount);
       expect(mockDb.write).not.toHaveBeenCalled();
@@ -227,7 +229,7 @@ describe('StatusService', () => {
       const initialCount = mockDb.data.statuses.length;
 
       await expect(service.deleteStatus('status-1')).rejects.toThrow(
-        'Cannot delete status: it is being used by tasks'
+        'Cannot delete status: it is being used by tasks',
       );
       expect(mockDb.data.statuses).toHaveLength(initialCount);
       expect(mockDb.write).not.toHaveBeenCalled();

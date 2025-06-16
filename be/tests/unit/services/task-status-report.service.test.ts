@@ -18,7 +18,35 @@ const createMockDatabase = (): Database => ({
     sessions: [],
     organizations: [],
     departments: [],
-    staff: [],
+    staff: [
+      {
+        id: 'staff-1',
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        role: 'Developer',
+        organizationId: 'org-1',
+        departmentId: 'dept-1',
+      },
+      {
+        id: 'staff-2',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane.smith@example.com',
+        role: 'Evaluator',
+        organizationId: 'org-1',
+        departmentId: 'dept-1',
+      },
+      {
+        id: 'staff-3',
+        firstName: 'Bob',
+        lastName: 'Wilson',
+        email: 'bob.wilson@example.com',
+        role: 'Developer',
+        organizationId: 'org-1',
+        departmentId: 'dept-1',
+      },
+    ],
     projects: [],
     tasks: [
       {
@@ -31,6 +59,7 @@ const createMockDatabase = (): Database => ({
         complexityId: 'complexity-1',
         plannedStartDate: '2024-01-01',
         plannedEndDate: '2024-01-10',
+        evaluatorId: 'staff-2',
       },
       {
         id: 'task-2',
@@ -44,7 +73,10 @@ const createMockDatabase = (): Database => ({
         plannedEndDate: '2024-02-15',
       },
     ] as Task[],
-    taskAssignees: [],
+    taskAssignees: [
+      { taskId: 'task-1', staffId: 'staff-1' },
+      { taskId: 'task-2', staffId: 'staff-3' },
+    ],
     taskPredecessors: [],
     taskStatusReports: [
       {
@@ -103,7 +135,7 @@ describe('TaskStatusReportService', () => {
       const result = await service.getAllTaskStatusReports('task-1');
 
       expect(result).toHaveLength(2);
-      expect(result.every(report => report.taskId === 'task-1')).toBe(true);
+      expect(result.every((report) => report.taskId === 'task-1')).toBe(true);
       expect(result[0].id).toBe('report-1');
       expect(result[1].id).toBe('report-2');
     });
@@ -159,10 +191,138 @@ describe('TaskStatusReportService', () => {
       };
 
       await expect(service.createTaskStatusReport(reportData)).rejects.toThrow(
-        'Task not found'
+        'Task not found',
       );
       expect(mockDb.data.taskStatusReports).toHaveLength(3);
       expect(mockDb.write).not.toHaveBeenCalled();
+    });
+
+    // Creator assignment tests
+    it('should auto-assign creator when user email matches assigned staff', async () => {
+      const reportData: CreateTaskStatusReportInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        statusSummary: 'Status by assigned staff',
+      };
+
+      const result = await service.createTaskStatusReport(
+        reportData,
+        'john.doe@example.com',
+      );
+
+      expect(result).toBeDefined();
+      expect(result.creatorId).toBe('staff-1');
+      expect(result.taskId).toBe('task-1');
+      expect(result.statusSummary).toBe('Status by assigned staff');
+    });
+
+    it('should auto-assign creator when user email matches evaluator', async () => {
+      const reportData: CreateTaskStatusReportInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        statusSummary: 'Status by evaluator',
+      };
+
+      const result = await service.createTaskStatusReport(
+        reportData,
+        'jane.smith@example.com',
+      );
+
+      expect(result).toBeDefined();
+      expect(result.creatorId).toBe('staff-2');
+      expect(result.taskId).toBe('task-1');
+      expect(result.statusSummary).toBe('Status by evaluator');
+    });
+
+    it('should not auto-assign creator when user email matches staff not assigned to task', async () => {
+      const reportData: CreateTaskStatusReportInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        statusSummary: 'Status by unauthorized staff',
+      };
+
+      const result = await service.createTaskStatusReport(
+        reportData,
+        'bob.wilson@example.com',
+      );
+
+      expect(result).toBeDefined();
+      expect(result.creatorId).toBeUndefined();
+      expect(result.taskId).toBe('task-1');
+      expect(result.statusSummary).toBe('Status by unauthorized staff');
+    });
+
+    it('should accept explicit creator when they are assigned to task', async () => {
+      const reportData: CreateTaskStatusReportInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        statusSummary: 'Status with explicit creator',
+        creatorId: 'staff-1',
+      };
+
+      const result = await service.createTaskStatusReport(reportData);
+
+      expect(result).toBeDefined();
+      expect(result.creatorId).toBe('staff-1');
+      expect(result.taskId).toBe('task-1');
+      expect(result.statusSummary).toBe('Status with explicit creator');
+    });
+
+    it('should accept explicit creator when they are evaluator', async () => {
+      const reportData: CreateTaskStatusReportInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        statusSummary: 'Status with evaluator as creator',
+        creatorId: 'staff-2',
+      };
+
+      const result = await service.createTaskStatusReport(reportData);
+
+      expect(result).toBeDefined();
+      expect(result.creatorId).toBe('staff-2');
+      expect(result.taskId).toBe('task-1');
+      expect(result.statusSummary).toBe('Status with evaluator as creator');
+    });
+
+    it('should throw error when explicit creator is not found', async () => {
+      const reportData: CreateTaskStatusReportInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        statusSummary: 'Status with invalid creator',
+        creatorId: 'non-existent-staff',
+      };
+
+      await expect(service.createTaskStatusReport(reportData)).rejects.toThrow(
+        'Creator staff not found',
+      );
+    });
+
+    it('should throw error when explicit creator is not authorized', async () => {
+      const reportData: CreateTaskStatusReportInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        statusSummary: 'Status with unauthorized creator',
+        creatorId: 'staff-3',
+      };
+
+      await expect(service.createTaskStatusReport(reportData)).rejects.toThrow(
+        'Creator must be assigned to the task or be the evaluator',
+      );
+    });
+
+    it('should create report without creator when no user email provided and no explicit creator', async () => {
+      const reportData: CreateTaskStatusReportInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        statusSummary: 'Status without creator',
+      };
+
+      const result = await service.createTaskStatusReport(reportData);
+
+      expect(result).toBeDefined();
+      expect(result.creatorId).toBeUndefined();
+      expect(result.taskId).toBe('task-1');
+      expect(result.statusSummary).toBe('Status without creator');
     });
   });
 
@@ -184,7 +344,9 @@ describe('TaskStatusReportService', () => {
     });
 
     it('should update only provided fields', async () => {
-      const originalReport = mockDb.data.taskStatusReports.find(r => r.id === 'report-1')!;
+      const originalReport = mockDb.data.taskStatusReports.find(
+        (r) => r.id === 'report-1',
+      )!;
       const originalDate = originalReport.reportDate;
 
       const updateData: UpdateTaskStatusReportInput = {
@@ -206,7 +368,7 @@ describe('TaskStatusReportService', () => {
       };
 
       await expect(service.updateTaskStatusReport(updateData)).rejects.toThrow(
-        'Task status report not found'
+        'Task status report not found',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -220,16 +382,18 @@ describe('TaskStatusReportService', () => {
 
       expect(result).toBe(true);
       expect(mockDb.data.taskStatusReports).toHaveLength(initialCount - 1);
-      expect(mockDb.data.taskStatusReports.find(r => r.id === 'report-1')).toBeUndefined();
+      expect(
+        mockDb.data.taskStatusReports.find((r) => r.id === 'report-1'),
+      ).toBeUndefined();
       expect(mockDb.write).toHaveBeenCalledTimes(1);
     });
 
     it('should throw error when report not found', async () => {
       const initialCount = mockDb.data.taskStatusReports.length;
 
-      await expect(service.deleteTaskStatusReport('non-existent')).rejects.toThrow(
-        'Task status report not found'
-      );
+      await expect(
+        service.deleteTaskStatusReport('non-existent'),
+      ).rejects.toThrow('Task status report not found');
       expect(mockDb.data.taskStatusReports).toHaveLength(initialCount);
       expect(mockDb.write).not.toHaveBeenCalled();
     });

@@ -48,16 +48,60 @@ export class TaskStatusReportService {
   /**
    * Create a new task status report
    * @param reportData - Status report creation data
+   * @param userEmail - Email of the logged-in user (for creator auto-assignment)
    * @returns Promise resolving to the created status report object
    * @throws Error if validation fails
    */
   public async createTaskStatusReport(
     reportData: CreateTaskStatusReportInput,
+    userEmail?: string,
   ): Promise<TaskStatusReport> {
     // Validate task exists
     const task = this.db.data.tasks.find((t) => t.id === reportData.taskId);
     if (!task) {
       throw new Error('Task not found');
+    }
+
+    // Determine creator
+    let creatorId = reportData.creatorId;
+
+    // If no explicit creator provided, try to auto-assign based on user email
+    if (!creatorId && userEmail) {
+      const staff = this.db.data.staff.find((s) => s.email === userEmail);
+      if (staff) {
+        // Check if this staff member is assigned to the task or is the evaluator
+        const isAssigned = this.db.data.taskAssignees.some(
+          (assignee) =>
+            assignee.taskId === reportData.taskId &&
+            assignee.staffId === staff.id,
+        );
+        const isEvaluator = task.evaluatorId === staff.id;
+
+        if (isAssigned || isEvaluator) {
+          creatorId = staff.id;
+        }
+      }
+    }
+
+    // If explicit creator provided, validate they are authorized
+    if (creatorId) {
+      const staff = this.db.data.staff.find((s) => s.id === creatorId);
+      if (!staff) {
+        throw new Error('Creator staff not found');
+      }
+
+      const isAssigned = this.db.data.taskAssignees.some(
+        (assignee) =>
+          assignee.taskId === reportData.taskId &&
+          assignee.staffId === creatorId,
+      );
+      const isEvaluator = task.evaluatorId === creatorId;
+
+      if (!isAssigned && !isEvaluator) {
+        throw new Error(
+          'Creator must be assigned to the task or be the evaluator',
+        );
+      }
     }
 
     // Create new status report object
@@ -66,6 +110,7 @@ export class TaskStatusReportService {
       taskId: reportData.taskId,
       reportDate: reportData.reportDate,
       statusSummary: reportData.statusSummary,
+      creatorId,
     };
 
     // Add to database

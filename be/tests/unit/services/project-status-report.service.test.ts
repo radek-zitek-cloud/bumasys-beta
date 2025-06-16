@@ -99,7 +99,9 @@ describe('ProjectStatusReportService', () => {
       const result = await service.getAllProjectStatusReports('project-1');
 
       expect(result).toHaveLength(2);
-      expect(result.every(report => report.projectId === 'project-1')).toBe(true);
+      expect(result.every((report) => report.projectId === 'project-1')).toBe(
+        true,
+      );
       expect(result[0].id).toBe('report-1');
       expect(result[1].id).toBe('report-2');
     });
@@ -154,9 +156,9 @@ describe('ProjectStatusReportService', () => {
         statusSummary: 'Report for non-existent project',
       };
 
-      await expect(service.createProjectStatusReport(reportData)).rejects.toThrow(
-        'Project not found'
-      );
+      await expect(
+        service.createProjectStatusReport(reportData),
+      ).rejects.toThrow('Project not found');
       expect(mockDb.data.projectStatusReports).toHaveLength(3);
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -180,7 +182,9 @@ describe('ProjectStatusReportService', () => {
     });
 
     it('should update only provided fields', async () => {
-      const originalReport = mockDb.data.projectStatusReports.find(r => r.id === 'report-1')!;
+      const originalReport = mockDb.data.projectStatusReports.find(
+        (r) => r.id === 'report-1',
+      )!;
       const originalDate = originalReport.reportDate;
 
       const updateData: UpdateProjectStatusReportInput = {
@@ -201,9 +205,9 @@ describe('ProjectStatusReportService', () => {
         statusSummary: 'Updated summary',
       };
 
-      await expect(service.updateProjectStatusReport(updateData)).rejects.toThrow(
-        'Project status report not found'
-      );
+      await expect(
+        service.updateProjectStatusReport(updateData),
+      ).rejects.toThrow('Project status report not found');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
   });
@@ -216,16 +220,18 @@ describe('ProjectStatusReportService', () => {
 
       expect(result).toBe(true);
       expect(mockDb.data.projectStatusReports).toHaveLength(initialCount - 1);
-      expect(mockDb.data.projectStatusReports.find(r => r.id === 'report-1')).toBeUndefined();
+      expect(
+        mockDb.data.projectStatusReports.find((r) => r.id === 'report-1'),
+      ).toBeUndefined();
       expect(mockDb.write).toHaveBeenCalledTimes(1);
     });
 
     it('should throw error when report not found', async () => {
       const initialCount = mockDb.data.projectStatusReports.length;
 
-      await expect(service.deleteProjectStatusReport('non-existent')).rejects.toThrow(
-        'Project status report not found'
-      );
+      await expect(
+        service.deleteProjectStatusReport('non-existent'),
+      ).rejects.toThrow('Project status report not found');
       expect(mockDb.data.projectStatusReports).toHaveLength(initialCount);
       expect(mockDb.write).not.toHaveBeenCalled();
     });
