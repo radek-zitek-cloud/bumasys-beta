@@ -2,7 +2,7 @@
  * @fileoverview Tests for plugins index
  */
 
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createApp } from 'vue'
 
 describe('Plugins Index', () => {
@@ -41,14 +41,14 @@ describe('Plugins Index', () => {
       const mockVuetify = { install: vi.fn() }
       const mockRouter = { install: vi.fn() }
       const mockPinia = { install: vi.fn() }
-      
+
       app.use(mockVuetify).use(mockRouter).use(mockPinia)
-      
+
       return { mockVuetify, mockRouter, mockPinia }
     }
 
     const { mockVuetify, mockRouter, mockPinia } = registerPlugins(app)
-    
+
     expect(mockVuetify.install).toHaveBeenCalledWith(app)
     expect(mockRouter.install).toHaveBeenCalledWith(app)
     expect(mockPinia.install).toHaveBeenCalledWith(app)

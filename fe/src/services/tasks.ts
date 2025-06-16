@@ -51,6 +51,72 @@ export interface Task {
     id: string
     name: string
   }
+  assignees?: Staff[]
+  predecessors?: Task[]
+  progressReports?: TaskProgress[]
+  statusReports?: TaskStatusReport[]
+}
+
+/** Staff interface for assignees */
+export interface Staff {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  role: string
+  department?: {
+    id: string
+    name: string
+  }
+}
+
+/** Task progress report interface */
+export interface TaskProgress {
+  id: string
+  taskId: string
+  reportDate: string
+  progressPercent: number
+  notes?: string
+  task?: Task
+}
+
+/** Task status report interface */
+export interface TaskStatusReport {
+  id: string
+  taskId: string
+  reportDate: string
+  statusSummary?: string
+  task?: Task
+}
+
+/** Interface for creating a new task progress report */
+export interface CreateTaskProgressInput {
+  taskId: string
+  reportDate: string
+  progressPercent: number
+  notes?: string
+}
+
+/** Interface for updating a task progress report */
+export interface UpdateTaskProgressInput {
+  id: string
+  reportDate?: string
+  progressPercent?: number
+  notes?: string
+}
+
+/** Interface for creating a new task status report */
+export interface CreateTaskStatusReportInput {
+  taskId: string
+  reportDate: string
+  statusSummary?: string
+}
+
+/** Interface for updating a task status report */
+export interface UpdateTaskStatusReportInput {
+  id: string
+  reportDate?: string
+  statusSummary?: string
 }
 
 /** Interface for creating a new task */
@@ -377,6 +443,352 @@ export function deleteTask (id: string): Promise<{ deleteTask: boolean }> {
     `
       mutation DeleteTask($id: ID!) {
         deleteTask(id: $id)
+      }
+    `,
+    { id },
+    store.token,
+  )
+}
+
+/**
+ * Get a task with all its management data (assignees, predecessors, etc.)
+ * Requires authentication.
+ * @param id - Task ID to fetch
+ */
+export function getTaskWithManagementData (id: string): Promise<{ task: Task | null }> {
+  const store = useAuthStore()
+  return graphqlClient<{ task: Task | null }>(
+    `
+      query GetTaskWithManagementData($id: ID!) {
+        task(id: $id) {
+          id
+          name
+          description
+          projectId
+          parentTaskId
+          evaluatorId
+          statusId
+          priorityId
+          complexityId
+          plannedStartDate
+          plannedEndDate
+          actualStartDate
+          actualEndDate
+          project {
+            id
+            name
+          }
+          parentTask {
+            id
+            name
+          }
+          childTasks {
+            id
+            name
+            description
+            status {
+              id
+              name
+            }
+            project {
+              id
+              name
+            }
+          }
+          evaluator {
+            id
+            firstName
+            lastName
+            email
+          }
+          status {
+            id
+            name
+          }
+          priority {
+            id
+            name
+          }
+          complexity {
+            id
+            name
+          }
+          assignees {
+            id
+            firstName
+            lastName
+            email
+            role
+            department {
+              id
+              name
+            }
+          }
+          predecessors {
+            id
+            name
+            description
+            project {
+              id
+              name
+            }
+          }
+          progressReports {
+            id
+            taskId
+            reportDate
+            progressPercent
+            notes
+          }
+          statusReports {
+            id
+            taskId
+            reportDate
+            statusSummary
+          }
+        }
+      }
+    `,
+    { id },
+    store.token,
+  )
+}
+
+/**
+ * Assign a staff member to a task.
+ * Requires authentication.
+ * @param taskId - Task ID
+ * @param staffId - Staff ID to assign
+ */
+export function assignStaffToTask (taskId: string, staffId: string): Promise<{ assignStaffToTask: boolean }> {
+  const store = useAuthStore()
+  return graphqlClient<{ assignStaffToTask: boolean }>(
+    `
+      mutation AssignStaffToTask($taskId: ID!, $staffId: ID!) {
+        assignStaffToTask(taskId: $taskId, staffId: $staffId)
+      }
+    `,
+    { taskId, staffId },
+    store.token,
+  )
+}
+
+/**
+ * Remove a staff member from a task.
+ * Requires authentication.
+ * @param taskId - Task ID
+ * @param staffId - Staff ID to remove
+ */
+export function removeStaffFromTask (taskId: string, staffId: string): Promise<{ removeStaffFromTask: boolean }> {
+  const store = useAuthStore()
+  return graphqlClient<{ removeStaffFromTask: boolean }>(
+    `
+      mutation RemoveStaffFromTask($taskId: ID!, $staffId: ID!) {
+        removeStaffFromTask(taskId: $taskId, staffId: $staffId)
+      }
+    `,
+    { taskId, staffId },
+    store.token,
+  )
+}
+
+/**
+ * Add a predecessor relationship to a task.
+ * Requires authentication.
+ * @param taskId - Task ID
+ * @param predecessorTaskId - Predecessor task ID
+ */
+export function addTaskPredecessor (taskId: string, predecessorTaskId: string): Promise<{ addTaskPredecessor: boolean }> {
+  const store = useAuthStore()
+  return graphqlClient<{ addTaskPredecessor: boolean }>(
+    `
+      mutation AddTaskPredecessor($taskId: ID!, $predecessorTaskId: ID!) {
+        addTaskPredecessor(taskId: $taskId, predecessorTaskId: $predecessorTaskId)
+      }
+    `,
+    { taskId, predecessorTaskId },
+    store.token,
+  )
+}
+
+/**
+ * Remove a predecessor relationship from a task.
+ * Requires authentication.
+ * @param taskId - Task ID
+ * @param predecessorTaskId - Predecessor task ID to remove
+ */
+export function removeTaskPredecessor (taskId: string, predecessorTaskId: string): Promise<{ removeTaskPredecessor: boolean }> {
+  const store = useAuthStore()
+  return graphqlClient<{ removeTaskPredecessor: boolean }>(
+    `
+      mutation RemoveTaskPredecessor($taskId: ID!, $predecessorTaskId: ID!) {
+        removeTaskPredecessor(taskId: $taskId, predecessorTaskId: $predecessorTaskId)
+      }
+    `,
+    { taskId, predecessorTaskId },
+    store.token,
+  )
+}
+
+/**
+ * Create a new task progress report.
+ * Requires authentication.
+ * @param progressData - Progress report creation data
+ */
+export function createTaskProgress (progressData: CreateTaskProgressInput): Promise<{ createTaskProgress: TaskProgress }> {
+  const store = useAuthStore()
+  return graphqlClient<{ createTaskProgress: TaskProgress }>(
+    `
+      mutation CreateTaskProgress(
+        $taskId: ID!
+        $reportDate: String!
+        $progressPercent: Int!
+        $notes: String
+      ) {
+        createTaskProgress(
+          taskId: $taskId
+          reportDate: $reportDate
+          progressPercent: $progressPercent
+          notes: $notes
+        ) {
+          id
+          taskId
+          reportDate
+          progressPercent
+          notes
+        }
+      }
+    `,
+    progressData as unknown as Record<string, unknown>,
+    store.token,
+  )
+}
+
+/**
+ * Update an existing task progress report.
+ * Requires authentication.
+ * @param progressData - Progress report update data
+ */
+export function updateTaskProgress (progressData: UpdateTaskProgressInput): Promise<{ updateTaskProgress: TaskProgress }> {
+  const store = useAuthStore()
+  return graphqlClient<{ updateTaskProgress: TaskProgress }>(
+    `
+      mutation UpdateTaskProgress(
+        $id: ID!
+        $reportDate: String
+        $progressPercent: Int
+        $notes: String
+      ) {
+        updateTaskProgress(
+          id: $id
+          reportDate: $reportDate
+          progressPercent: $progressPercent
+          notes: $notes
+        ) {
+          id
+          taskId
+          reportDate
+          progressPercent
+          notes
+        }
+      }
+    `,
+    progressData as unknown as Record<string, unknown>,
+    store.token,
+  )
+}
+
+/**
+ * Delete a task progress report by ID.
+ * Requires authentication.
+ * @param id - Progress report ID to delete
+ */
+export function deleteTaskProgress (id: string): Promise<{ deleteTaskProgress: boolean }> {
+  const store = useAuthStore()
+  return graphqlClient<{ deleteTaskProgress: boolean }>(
+    `
+      mutation DeleteTaskProgress($id: ID!) {
+        deleteTaskProgress(id: $id)
+      }
+    `,
+    { id },
+    store.token,
+  )
+}
+
+/**
+ * Create a new task status report.
+ * Requires authentication.
+ * @param statusData - Status report creation data
+ */
+export function createTaskStatusReport (statusData: CreateTaskStatusReportInput): Promise<{ createTaskStatusReport: TaskStatusReport }> {
+  const store = useAuthStore()
+  return graphqlClient<{ createTaskStatusReport: TaskStatusReport }>(
+    `
+      mutation CreateTaskStatusReport(
+        $taskId: ID!
+        $reportDate: String!
+        $statusSummary: String
+      ) {
+        createTaskStatusReport(
+          taskId: $taskId
+          reportDate: $reportDate
+          statusSummary: $statusSummary
+        ) {
+          id
+          taskId
+          reportDate
+          statusSummary
+        }
+      }
+    `,
+    statusData as unknown as Record<string, unknown>,
+    store.token,
+  )
+}
+
+/**
+ * Update an existing task status report.
+ * Requires authentication.
+ * @param statusData - Status report update data
+ */
+export function updateTaskStatusReport (statusData: UpdateTaskStatusReportInput): Promise<{ updateTaskStatusReport: TaskStatusReport }> {
+  const store = useAuthStore()
+  return graphqlClient<{ updateTaskStatusReport: TaskStatusReport }>(
+    `
+      mutation UpdateTaskStatusReport(
+        $id: ID!
+        $reportDate: String
+        $statusSummary: String
+      ) {
+        updateTaskStatusReport(
+          id: $id
+          reportDate: $reportDate
+          statusSummary: $statusSummary
+        ) {
+          id
+          taskId
+          reportDate
+          statusSummary
+        }
+      }
+    `,
+    statusData as unknown as Record<string, unknown>,
+    store.token,
+  )
+}
+
+/**
+ * Delete a task status report by ID.
+ * Requires authentication.
+ * @param id - Status report ID to delete
+ */
+export function deleteTaskStatusReport (id: string): Promise<{ deleteTaskStatusReport: boolean }> {
+  const store = useAuthStore()
+  return graphqlClient<{ deleteTaskStatusReport: boolean }>(
+    `
+      mutation DeleteTaskStatusReport($id: ID!) {
+        deleteTaskStatusReport(id: $id)
       }
     `,
     { id },

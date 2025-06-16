@@ -8,8 +8,8 @@ vi.mock('vue3-d3-tree', () => ({
   default: {
     name: 'VueTree',
     template: '<div class="vue-tree-mock">Vue Tree Component</div>',
-    props: ['data', 'direction', 'hierarchyMargin', 'neighborMargin', 'showKnot', 'wheelZoom', 'lineType', 'lineStyle', 'collapsedWay', 'top', 'left']
-  }
+    props: ['data', 'direction', 'hierarchyMargin', 'neighborMargin', 'showKnot', 'wheelZoom', 'lineType', 'lineStyle', 'collapsedWay', 'top', 'left'],
+  },
 }))
 
 // Mock the Vue D3 tree composable
@@ -70,8 +70,8 @@ describe('Tree Dialog Components', () => {
           'v-icon': { template: '<i class="v-icon"><slot /></i>' },
           'v-btn': { template: '<button class="v-btn"><slot /></button>' },
           'v-spacer': { template: '<div class="v-spacer"></div>' },
-        }
-      }
+        },
+      },
     })
 
     expect(wrapper.exists()).toBe(true)
@@ -93,8 +93,8 @@ describe('Tree Dialog Components', () => {
           'v-icon': { template: '<i class="v-icon"><slot /></i>' },
           'v-btn': { template: '<button class="v-btn"><slot /></button>' },
           'v-spacer': { template: '<div class="v-spacer"></div>' },
-        }
-      }
+        },
+      },
     })
 
     expect(wrapper.exists()).toBe(true)
@@ -116,8 +116,8 @@ describe('Tree Dialog Components', () => {
           'v-icon': { template: '<i class="v-icon"><slot /></i>' },
           'v-btn': { template: '<button class="v-btn"><slot /></button>' },
           'v-spacer': { template: '<div class="v-spacer"></div>' },
-        }
-      }
+        },
+      },
     })
 
     expect(wrapper.find('.v-progress-circular').exists()).toBe(true)
@@ -138,8 +138,8 @@ describe('Tree Dialog Components', () => {
           'v-icon': { template: '<i class="v-icon"><slot /></i>' },
           'v-btn': { template: '<button class="v-btn"><slot /></button>' },
           'v-spacer': { template: '<div class="v-spacer"></div>' },
-        }
-      }
+        },
+      },
     })
 
     expect(wrapper.find('.v-progress-circular').exists()).toBe(true)

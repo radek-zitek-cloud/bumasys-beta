@@ -30,7 +30,7 @@ describe('useAuth composable', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockNotify = vi.fn()
-    
+
     // Setup mock implementations
     vi.mocked(useAuthStore).mockReturnValue(mockAuthStore as any)
   })
@@ -54,7 +54,7 @@ describe('useAuth composable', () => {
 
       expect(vi.mocked(authApi.login)).toHaveBeenCalledWith(
         credentials.email,
-        credentials.password
+        credentials.password,
       )
       expect(mockAuthStore.setAuth).toHaveBeenCalledWith(mockLoginResponse)
       expect(mockNotify).toHaveBeenCalledWith('Login successful')
@@ -104,7 +104,7 @@ describe('useAuth composable', () => {
         userData.password,
         userData.firstName,
         userData.lastName,
-        userData.note
+        userData.note,
       )
       expect(mockAuthStore.setAuth).toHaveBeenCalledWith(mockRegisterResponse)
       expect(mockNotify).toHaveBeenCalledWith('Registration successful')

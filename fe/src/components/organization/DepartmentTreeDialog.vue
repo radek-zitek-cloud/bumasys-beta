@@ -7,10 +7,10 @@
 -->
 
 <template>
-  <v-card 
+  <v-card
     class="department-tree-dialog"
-    :width="dialogWidth"
     :height="dialogHeight"
+    :width="dialogWidth"
   >
     <v-card-title class="dialog-header">
       <v-icon class="mr-2">mdi-file-tree</v-icon>
@@ -28,9 +28,9 @@
 
       <div v-else class="tree-content">
         <div class="tree-wrapper">
-          <component 
-            :is="VueTreeComponent" 
-            v-if="vueTreeProps" 
+          <component
+            :is="VueTreeComponent"
+            v-if="vueTreeProps"
             v-bind="vueTreeProps"
             class="tree-container"
           >

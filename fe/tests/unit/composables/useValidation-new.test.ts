@@ -211,7 +211,7 @@ describe('useValidation composable', () => {
       const { createValidator } = useValidation()
       const rule = createValidator(
         (value: string) => value.startsWith('prefix_'),
-        'Must start with prefix_'
+        'Must start with prefix_',
       )
 
       expect(rule('prefix_valid')).toBe(true)
@@ -222,10 +222,10 @@ describe('useValidation composable', () => {
   describe('useFormValidation', () => {
     it('should validate form data', async () => {
       const { validateRequired, validateEmail, useFormValidation } = useValidation()
-      
+
       const { validate, errors, isValid } = useFormValidation({
         email: [validateRequired(), validateEmail()],
-        name: [validateRequired()]
+        name: [validateRequired()],
       })
 
       // Valid data
@@ -239,10 +239,10 @@ describe('useValidation composable', () => {
 
     it('should handle validation errors', async () => {
       const { validateRequired, validateEmail, useFormValidation } = useValidation()
-      
+
       const { validate, errors, isValid, getFieldErrors } = useFormValidation({
         email: [validateRequired(), validateEmail()],
-        name: [validateRequired()]
+        name: [validateRequired()],
       })
 
       // Invalid data
@@ -257,9 +257,9 @@ describe('useValidation composable', () => {
 
     it('should validate single fields', () => {
       const { validateRequired, useFormValidation } = useValidation()
-      
+
       const { validateField, hasFieldErrors, getFieldErrors } = useFormValidation({
-        name: [validateRequired()]
+        name: [validateRequired()],
       })
 
       // Valid field
@@ -274,10 +274,10 @@ describe('useValidation composable', () => {
 
     it('should clear errors', () => {
       const { validateRequired, useFormValidation } = useValidation()
-      
+
       const { validateField, clearErrors, clearFieldErrors, hasFieldErrors } = useFormValidation({
         name: [validateRequired()],
-        email: [validateRequired()]
+        email: [validateRequired()],
       })
 
       // Create some errors

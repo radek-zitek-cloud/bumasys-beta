@@ -15,7 +15,7 @@ describe('Vuetify Plugin', () => {
       install: vi.fn(),
       theme: {},
     }))
-    
+
     const themeConfig = {
       theme: {
         defaultTheme: 'light',
@@ -25,9 +25,9 @@ describe('Vuetify Plugin', () => {
         },
       },
     }
-    
+
     const vuetifyInstance = mockCreateVuetify()
-    
+
     expect(vuetifyInstance).toBeDefined()
     expect(typeof vuetifyInstance.install).toBe('function')
     expect(themeConfig.theme.defaultTheme).toBe('light')
@@ -102,7 +102,7 @@ describe('Vuetify Plugin', () => {
     const mockApp = {
       use: vi.fn().mockReturnThis(),
     }
-    
+
     const mockPlugin = {
       install: vi.fn(),
     }

@@ -46,8 +46,8 @@ Object.defineProperty(import.meta, 'env', {
   value: {
     MODE: 'test',
     VITE_API_BASE_URL: 'http://localhost:4000',
-    VITE_BETTERSTACK_TOKEN: ''
-  }
+    VITE_BETTERSTACK_TOKEN: '',
+  },
 })
 
 describe('main.ts', () => {

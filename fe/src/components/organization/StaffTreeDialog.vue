@@ -7,13 +7,13 @@
 -->
 
 <template>
-  <v-card 
+  <v-card
     class="staff-tree-dialog"
-    :width="dialogWidth"
     :height="dialogHeight"
+    :width="dialogWidth"
   >
 
-  <v-card-title class="dialog-header">
+    <v-card-title class="dialog-header">
       <v-icon class="mr-2">mdi-account-supervisor</v-icon>
       Organization Structure
     </v-card-title>
@@ -29,9 +29,9 @@
 
       <div v-else class="tree-content">
         <div class="tree-wrapper">
-          <component 
-            :is="VueTreeComponent" 
-            v-if="vueTreeProps" 
+          <component
+            :is="VueTreeComponent"
+            v-if="vueTreeProps"
             v-bind="vueTreeProps"
             class="tree-container"
           >
@@ -76,7 +76,7 @@
 
   /** Dialog dimensions - use most of the available window space */
   const dialogWidth = computed(() => Math.min(window.innerWidth * 0.95, 1800))
-  const dialogHeight = computed(() => Math.min(window.innerHeight * 0.90, 1000))
+  const dialogHeight = computed(() => Math.min(window.innerHeight * 0.9, 1000))
 
   /** Vue D3 tree composable */
   const { createTree, error: treeError, VueTreeComponent, vueTreeProps } = useD3Tree()

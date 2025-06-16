@@ -13,14 +13,14 @@ describe('StatusCreateDialog', () => {
           'v-card-actions': { template: '<div class="v-card-actions"><slot /></div>' },
           'v-row': { template: '<div class="v-row"><slot /></div>' },
           'v-col': { template: '<div class="v-col"><slot /></div>' },
-          'v-text-field': { 
-            template: '<input class="v-text-field" :placeholder="label" />', 
-            props: ['label', 'modelValue', 'rules', 'counter', 'maxlength', 'prependIcon', 'required']
+          'v-text-field': {
+            template: '<input class="v-text-field" :placeholder="label" />',
+            props: ['label', 'modelValue', 'rules', 'counter', 'maxlength', 'prependIcon', 'required'],
           },
           'v-btn': { template: '<button class="v-btn" :disabled="disabled"><slot /></button>', props: ['disabled', 'color'] },
           'v-spacer': { template: '<div class="v-spacer"></div>' },
-        }
-      }
+        },
+      },
     })
 
     expect(wrapper.find('.v-card').exists()).toBe(true)
@@ -40,20 +40,20 @@ describe('StatusCreateDialog', () => {
           'v-card-actions': { template: '<div class="v-card-actions"><slot /></div>' },
           'v-row': { template: '<div class="v-row"><slot /></div>' },
           'v-col': { template: '<div class="v-col"><slot /></div>' },
-          'v-text-field': { 
-            template: '<input class="v-text-field" :placeholder="label" />', 
-            props: ['label', 'modelValue', 'rules', 'counter', 'maxlength', 'prependIcon', 'required']
+          'v-text-field': {
+            template: '<input class="v-text-field" :placeholder="label" />',
+            props: ['label', 'modelValue', 'rules', 'counter', 'maxlength', 'prependIcon', 'required'],
           },
           'v-btn': { template: '<button class="v-btn" :disabled="disabled"><slot /></button>', props: ['disabled'] },
           'v-spacer': { template: '<div class="v-spacer"></div>' },
-        }
-      }
+        },
+      },
     })
 
     // Check that the component renders
     expect(wrapper.exists()).toBe(true)
-    
-    // Verify the component rendered properly  
+
+    // Verify the component rendered properly
     expect(wrapper.text()).toContain('Create New Status')
   })
 
@@ -70,8 +70,8 @@ describe('StatusCreateDialog', () => {
           'v-text-field': { template: '<input class="v-text-field" />' },
           'v-btn': { template: '<button class="v-btn"><slot /></button>' },
           'v-spacer': { template: '<div class="v-spacer"></div>' },
-        }
-      }
+        },
+      },
     })
 
     await wrapper.vm.$emit('cancel')
@@ -91,13 +91,13 @@ describe('StatusCreateDialog', () => {
           'v-text-field': { template: '<input class="v-text-field" />' },
           'v-btn': { template: '<button class="v-btn"><slot /></button>' },
           'v-spacer': { template: '<div class="v-spacer"></div>' },
-        }
-      }
+        },
+      },
     })
 
     const statusData = { name: 'In Progress' }
     await wrapper.vm.$emit('submit', statusData)
-    
+
     expect(wrapper.emitted('submit')).toBeTruthy()
     expect(wrapper.emitted('submit')![0]).toEqual([statusData])
   })

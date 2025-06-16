@@ -98,11 +98,13 @@ export function getConfig (): Promise<{ config: Config }> {
         enabled: config.logging.enabled,
         pretty: true,
       },
-      betterStack: config.logging.betterStack ? {
-        enabled: config.logging.betterStack.enabled,
-        sourceToken: config.logging.betterStack.token,
-        endpoint: config.logging.betterStack.endpoint,
-      } : undefined,
+      betterStack: config.logging.betterStack
+        ? {
+            enabled: config.logging.betterStack.enabled,
+            sourceToken: config.logging.betterStack.token,
+            endpoint: config.logging.betterStack.endpoint,
+          }
+        : undefined,
     },
     features: {
       debugMode: config.features.debugMode,
