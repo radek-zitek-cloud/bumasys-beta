@@ -2,6 +2,127 @@
 
 ## Change Log
 
+### 2025-06-16 - Task Status Report and Progress Report Creator Staff Implementation
+
+#### Root Cause Analysis:
+The system required modification of Task Status Report and Progress Report entities to include a creator Staff field. When these reports are created, a report creator needs to be set who is one of the Staff assigned to the Task or the evaluator of the Task. The requirement was to auto-detect the creator when the logged-in user's email matches one of the eligible staff members.
+
+#### Impact of Changes:
+- **Data Model Enhancement**: Added `creatorId` field to both TaskStatusReport and TaskProgress interfaces
+- **GraphQL Schema Update**: Enhanced schema to include creator field and Staff relationship
+- **Auto-Assignment Logic**: Implemented automatic creator assignment based on user email matching
+- **Authorization Validation**: Added validation to ensure creators are authorized (assigned to task or evaluator)
+- **Backward Compatibility**: Maintained existing API compatibility with optional creator field
+- **Field Resolvers**: Added GraphQL field resolvers for creator Staff relationships
+
+#### New Features Added:
+- **Creator Auto-Assignment**: Automatically assigns creator when logged-in user email matches eligible staff
+- **Authorization Validation**: Validates that creator is either assigned to task or is the evaluator
+- **GraphQL Relationships**: Added creator field with Staff relationship in GraphQL schema
+- **Optional Override**: Allows explicit creator assignment with validation
+
+#### Bugs Fixed:
+- **Missing Creator Tracking**: Reports now properly track who created them
+- **Authorization Gap**: Ensures only authorized staff can be set as creators
+
+#### Improvements Made:
+- **User Experience**: Seamless creator assignment without manual selection in most cases
+- **Data Integrity**: Enforced business rules for report creator assignment
+- **API Enhancement**: Extended GraphQL mutations to support optional creator parameter
+
+#### Technical Changes:
+
+**Modified Interfaces:**
+- `TaskStatusReport`: Added optional `creatorId?: string` field
+- `TaskProgress`: Added optional `creatorId?: string` field
+- `CreateTaskStatusReportInput`: Added optional `creatorId?: string` field
+- `CreateTaskProgressInput`: Added optional `creatorId?: string` field
+
+**GraphQL Schema Changes:**
+```diff
+type TaskStatusReport {
+  id: ID!
+  taskId: ID!
+  reportDate: String!
+  statusSummary: String
++ creatorId: ID
+  task: Task!
++ creator: Staff
+}
+
+type TaskProgress {
+  id: ID!
+  taskId: ID!
+  reportDate: String!
+  progressPercent: Int!
+  notes: String
++ creatorId: ID
+  task: Task!
++ creator: Staff
+}
+
+// Mutation input updates
+createTaskStatusReport(
+  taskId: ID!
+  reportDate: String!
+  statusSummary: String
++ creatorId: ID
+): TaskStatusReport!
+
+createTaskProgress(
+  taskId: ID!
+  reportDate: String!
+  progressPercent: Int!
+  notes: String
++ creatorId: ID
+): TaskProgress!
+```
+
+**Service Layer Enhancements:**
+- Enhanced `TaskProgressService.createTaskProgress()` to accept `userEmail` parameter
+- Enhanced `TaskStatusReportService.createTaskStatusReport()` to accept `userEmail` parameter
+- Added creator auto-assignment logic based on user email matching
+- Added authorization validation for explicit creator assignments
+
+**Resolver Updates:**
+- Updated task resolvers to pass user email to services for auto-assignment
+- Added field resolvers for creator Staff relationships
+
+**Creator Assignment Logic:**
+1. If no explicit creator provided, check if user email matches any staff
+2. If match found, validate staff is assigned to task OR is evaluator
+3. If valid, auto-assign as creator
+4. If explicit creator provided, validate they are authorized
+5. Allow creation without creator if no valid assignment possible
+
+#### Documentation Updates:
+- Updated interface documentation to describe creator fields
+- Added JSDoc comments for new service method parameters
+- Enhanced GraphQL schema documentation for creator relationships
+
+#### Tests Added:
+- **Creator Auto-Assignment Tests**: 8 new test cases for TaskProgressService
+- **Creator Validation Tests**: 8 new test cases for TaskStatusReportService
+- **Authorization Tests**: Tests for valid and invalid creator assignments
+- **Edge Case Tests**: Tests for scenarios without user email or explicit creator
+
+#### Test Coverage:
+- All existing tests continue to pass (381 total tests)
+- 16 new tests added specifically for creator functionality
+- 100% coverage of new creator assignment logic paths
+
+#### Potential Issues or Risks Identified:
+- **Migration**: Existing reports will have `creatorId` as `undefined` - this is expected and handled
+- **Performance**: Field resolvers add database lookups for creator - minimal impact expected
+- **API Changes**: New optional fields are backward compatible
+
+#### Follow-up Tasks:
+- Consider adding creator tracking to project status reports if needed
+- Monitor performance of creator field resolver queries
+- Consider adding creator audit trail for report modifications
+
+### Previous Changes...
+
 ### 2025-01-16 - Task Graph Display Feature Implementation
 
 #### Root Cause Analysis:

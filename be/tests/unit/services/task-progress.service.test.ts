@@ -18,13 +18,42 @@ const createMockDatabase = (): Database => ({
     sessions: [],
     organizations: [],
     departments: [],
-    staff: [],
+    staff: [
+      {
+        id: 'staff-1',
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        role: 'Developer',
+        organizationId: 'org-1',
+        departmentId: 'dept-1',
+      },
+      {
+        id: 'staff-2',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        email: 'jane.smith@example.com',
+        role: 'Evaluator',
+        organizationId: 'org-1',
+        departmentId: 'dept-1',
+      },
+      {
+        id: 'staff-3',
+        firstName: 'Bob',
+        lastName: 'Wilson',
+        email: 'bob.wilson@example.com',
+        role: 'Developer',
+        organizationId: 'org-1',
+        departmentId: 'dept-1',
+      },
+    ],
     projects: [],
     tasks: [
       {
         id: 'task-1',
         name: 'Test Task 1',
         projectId: 'project-1',
+        evaluatorId: 'staff-2',
       },
       {
         id: 'task-2',
@@ -32,7 +61,10 @@ const createMockDatabase = (): Database => ({
         projectId: 'project-2',
       },
     ] as Task[],
-    taskAssignees: [],
+    taskAssignees: [
+      { taskId: 'task-1', staffId: 'staff-1' },
+      { taskId: 'task-2', staffId: 'staff-3' },
+    ],
     taskPredecessors: [],
     taskStatusReports: [],
     taskProgress: [
@@ -218,6 +250,142 @@ describe('TaskProgressService', () => {
 
       expect(result.progressPercent).toBe(100);
       expect(mockDb.write).toHaveBeenCalledTimes(1);
+    });
+
+    // Creator assignment tests
+    it('should auto-assign creator when user email matches assigned staff', async () => {
+      const progressData: CreateTaskProgressInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        progressPercent: 75,
+        notes: 'Progress by assigned staff',
+      };
+
+      const result = await service.createTaskProgress(
+        progressData,
+        'john.doe@example.com',
+      );
+
+      expect(result).toBeDefined();
+      expect(result.creatorId).toBe('staff-1');
+      expect(result.taskId).toBe('task-1');
+      expect(result.progressPercent).toBe(75);
+    });
+
+    it('should auto-assign creator when user email matches evaluator', async () => {
+      const progressData: CreateTaskProgressInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        progressPercent: 75,
+        notes: 'Progress by evaluator',
+      };
+
+      const result = await service.createTaskProgress(
+        progressData,
+        'jane.smith@example.com',
+      );
+
+      expect(result).toBeDefined();
+      expect(result.creatorId).toBe('staff-2');
+      expect(result.taskId).toBe('task-1');
+      expect(result.progressPercent).toBe(75);
+    });
+
+    it('should not auto-assign creator when user email matches staff not assigned to task', async () => {
+      const progressData: CreateTaskProgressInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        progressPercent: 75,
+        notes: 'Progress by unauthorized staff',
+      };
+
+      const result = await service.createTaskProgress(
+        progressData,
+        'bob.wilson@example.com',
+      );
+
+      expect(result).toBeDefined();
+      expect(result.creatorId).toBeUndefined();
+      expect(result.taskId).toBe('task-1');
+      expect(result.progressPercent).toBe(75);
+    });
+
+    it('should accept explicit creator when they are assigned to task', async () => {
+      const progressData: CreateTaskProgressInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        progressPercent: 75,
+        notes: 'Progress with explicit creator',
+        creatorId: 'staff-1',
+      };
+
+      const result = await service.createTaskProgress(progressData);
+
+      expect(result).toBeDefined();
+      expect(result.creatorId).toBe('staff-1');
+      expect(result.taskId).toBe('task-1');
+      expect(result.progressPercent).toBe(75);
+    });
+
+    it('should accept explicit creator when they are evaluator', async () => {
+      const progressData: CreateTaskProgressInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        progressPercent: 75,
+        notes: 'Progress with evaluator as creator',
+        creatorId: 'staff-2',
+      };
+
+      const result = await service.createTaskProgress(progressData);
+
+      expect(result).toBeDefined();
+      expect(result.creatorId).toBe('staff-2');
+      expect(result.taskId).toBe('task-1');
+      expect(result.progressPercent).toBe(75);
+    });
+
+    it('should throw error when explicit creator is not found', async () => {
+      const progressData: CreateTaskProgressInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        progressPercent: 75,
+        notes: 'Progress with invalid creator',
+        creatorId: 'non-existent-staff',
+      };
+
+      await expect(service.createTaskProgress(progressData)).rejects.toThrow(
+        'Creator staff not found',
+      );
+    });
+
+    it('should throw error when explicit creator is not authorized', async () => {
+      const progressData: CreateTaskProgressInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        progressPercent: 75,
+        notes: 'Progress with unauthorized creator',
+        creatorId: 'staff-3',
+      };
+
+      await expect(service.createTaskProgress(progressData)).rejects.toThrow(
+        'Creator must be assigned to the task or be the evaluator',
+      );
+    });
+
+    it('should create report without creator when no user email provided and no explicit creator', async () => {
+      const progressData: CreateTaskProgressInput = {
+        taskId: 'task-1',
+        reportDate: '2024-01-15',
+        progressPercent: 75,
+        notes: 'Progress without creator',
+      };
+
+      const result = await service.createTaskProgress(progressData);
+
+      expect(result).toBeDefined();
+      expect(result.creatorId).toBeUndefined();
+      expect(result.taskId).toBe('task-1');
+      expect(result.progressPercent).toBe(75);
     });
   });
 

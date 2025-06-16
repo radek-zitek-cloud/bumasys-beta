@@ -563,9 +563,19 @@ export const typeDefs = gql`
     notes: String
 
     """
+    Staff member who created this progress report
+    """
+    creatorId: ID
+
+    """
     Task object this progress report belongs to
     """
     task: Task!
+
+    """
+    Creator staff member (if set)
+    """
+    creator: Staff
   }
 
   """
@@ -638,9 +648,19 @@ export const typeDefs = gql`
     statusSummary: String
 
     """
+    Staff member who created this status report
+    """
+    creatorId: ID
+
+    """
     Task object this status report belongs to
     """
     task: Task!
+
+    """
+    Creator staff member (if set)
+    """
+    creator: Staff
   }
 
   """
@@ -1227,6 +1247,7 @@ export const typeDefs = gql`
       reportDate: String!
       progressPercent: Int!
       notes: String
+      creatorId: ID
     ): TaskProgress!
 
     """
@@ -1278,6 +1299,7 @@ export const typeDefs = gql`
       taskId: ID!
       reportDate: String!
       statusSummary: String
+      creatorId: ID
     ): TaskStatusReport!
 
     """
