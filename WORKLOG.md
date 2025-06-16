@@ -2,6 +2,115 @@
 
 ## Change Log
 
+### 2025-06-16 - Task Graph Nesting Implementation with Vue Flow Parent-Child Relationships
+
+#### Root Cause Analysis:
+The task graph visualization system had a fundamental design issue where tasks were displayed as separate, independent nodes rather than being properly nested inside their project containers. This made it difficult to understand project structure and task relationships at a glance.
+
+Key issues identified:
+1. **No True Nesting**: Tasks appeared near but not inside project nodes
+2. **Poor Visual Hierarchy**: Project-task relationships were unclear
+3. **Missing Container Semantics**: Project nodes didn't act as proper containers
+4. **Scattered Layout**: Tasks from same project could appear anywhere on the graph
+
+#### Impact of Changes:
+- **True Hierarchical Visualization**: Tasks are now nested inside their project containers
+- **Improved User Understanding**: Clear visual representation of project-task relationships
+- **Better Organization**: Tasks grouped by project with proper container boundaries
+- **Enhanced Navigation**: Users can easily identify which tasks belong to which projects
+- **Multi-Project Support**: Handles complex scenarios with tasks spanning multiple projects
+
+#### New Features Added:
+- **Parent-Child Node Relationships**: Implemented Vue Flow `parentNode` property for proper nesting
+- **Project Container Nodes**: Project nodes act as true containers with headers and content areas
+- **Task Grouping Logic**: Algorithm to group all related tasks by their project
+- **Connection Handle System**: Proper Vue Flow handles for all connection directions
+- **Multi-Project Layout**: Horizontal layout for multiple project containers
+- **Relative Positioning**: Task positions calculated relative to their parent project
+
+#### Technical Implementation:
+
+**Vue Flow Integration:**
+- Implemented `parentNode: projectId` for child task nodes
+- Added `extent: 'parent'` to constrain task movement within projects
+- Used `Position` enum for proper handle positioning (Left, Right, Top, Bottom)
+- Imported `Handle` component for connection points on all task nodes
+
+**Core Algorithm Changes:**
+```typescript
+// Group all tasks by project
+const tasksByProject = new Map()
+for (const task of allTasks) {
+  const projectId = task.project?.id || 'unknown'
+  if (!tasksByProject.has(projectId)) {
+    tasksByProject.set(projectId, { project, tasks: [] })
+  }
+  tasksByProject.get(projectId).tasks.push(task)
+}
+
+// Create project containers and nested task nodes
+for (const [projectId, { project, tasks }] of tasksByProject.entries()) {
+  // Project container node
+  nodes.push({
+    id: `project-${projectId}`,
+    type: 'project',
+    style: { width: projectWidth, height: projectHeight }
+  })
+  
+  // Nested task nodes
+  for (const task of tasks) {
+    nodes.push({
+      id: task.id,
+      parentNode: `project-${projectId}`,
+      extent: 'parent',
+      position: { x: relativeX, y: relativeY }
+    })
+  }
+}
+```
+
+**UI Component Enhancements:**
+- **Project Container Template**: New container design with header and content sections
+- **Handle Integration**: Added Vue Flow handles to all task node templates
+- **Container Styling**: Purple gradient containers with proper headers
+- **Task Node Updates**: Enhanced with connection handles for all directions
+- **Responsive Layout**: Dynamic container sizing based on contained tasks
+
+**Edge Connection Preservation:**
+- Maintained predecessor→current task connections (right handle → left handle)
+- Preserved current task→child task connections (bottom handle → top handle)
+- Edge styling and behavior unchanged from previous implementation
+
+#### Files Modified:
+- `fe/src/components/tasks/TaskGraphDialog.vue` - Complete nesting implementation
+- `fe/tests/unit/components/TaskGraphDialog.test.ts` - Fixed merge conflicts and enhanced tests
+- `fe/tests/unit/components/TaskGraphNesting.test.ts` - New comprehensive nesting tests
+
+#### Testing Results:
+- **11/11 tests passing** (7 existing + 4 new nesting tests)
+- **Type checking successful** with proper Vue Flow type imports
+- **Logic verification** for task grouping and parent-child relationships
+- **Edge connection testing** to ensure proper handle connections
+
+#### Documentation Updates:
+- Enhanced component documentation to reflect nesting capabilities
+- Added technical notes about Vue Flow parent-child relationships
+- Documented the task grouping algorithm and positioning logic
+
+#### Follow-up Tasks:
+- Consider adding node interaction features (click to navigate to task/project)
+- Potential enhancement: resize handles for project containers
+- Future consideration: expand to show multi-level task hierarchies
+- Performance optimization for large numbers of tasks per project
+
+#### Potential Risks Identified:
+- Large numbers of tasks in single project might need layout optimization
+- Very wide project names could affect container sizing
+- Future Vue Flow version compatibility considerations
+- Performance considerations for complex multi-project hierarchies
+
+---
+
 ### 2025-06-16 - Enhanced Report Editing & Display with Creator Management and Progress Sorting
 
 #### Root Cause Analysis:
