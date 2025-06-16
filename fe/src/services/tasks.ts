@@ -545,12 +545,26 @@ export function getTaskWithManagementData (id: string): Promise<{ task: Task | n
             reportDate
             progressPercent
             notes
+            creatorId
+            creator {
+              id
+              firstName
+              lastName
+              email
+            }
           }
           statusReports {
             id
             taskId
             reportDate
             statusSummary
+            creatorId
+            creator {
+              id
+              firstName
+              lastName
+              email
+            }
           }
         }
       }

@@ -321,7 +321,13 @@
                   </v-avatar>
                 </template>
                 <v-list-item-title>{{ formatDate(report.reportDate) }}</v-list-item-title>
-                <v-list-item-subtitle>{{ report.notes || 'No notes' }}</v-list-item-subtitle>
+                <v-list-item-subtitle>
+                  <div>{{ report.notes || 'No notes' }}</div>
+                  <div v-if="report.creator" class="text-caption text-medium-emphasis">
+                    <v-icon class="mr-1" size="12">mdi-account</v-icon>
+                    Creator: {{ report.creator.firstName }} {{ report.creator.lastName }}
+                  </div>
+                </v-list-item-subtitle>
                 <template #append>
                   <div class="d-flex gap-1">
                     <v-btn
@@ -387,7 +393,13 @@
                   </v-avatar>
                 </template>
                 <v-list-item-title>{{ formatDate(report.reportDate) }}</v-list-item-title>
-                <v-list-item-subtitle>{{ report.statusSummary || 'No summary' }}</v-list-item-subtitle>
+                <v-list-item-subtitle>
+                  <div>{{ report.statusSummary || 'No summary' }}</div>
+                  <div v-if="report.creator" class="text-caption text-medium-emphasis">
+                    <v-icon class="mr-1" size="12">mdi-account</v-icon>
+                    Creator: {{ report.creator.firstName }} {{ report.creator.lastName }}
+                  </div>
+                </v-list-item-subtitle>
                 <template #append>
                   <div class="d-flex gap-1">
                     <v-btn

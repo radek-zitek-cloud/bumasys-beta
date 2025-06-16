@@ -2,6 +2,56 @@
 
 ## Change Log
 
+### 2025-01-16 - Creator Display in Task Report Lists (Completed Issue #104)
+
+#### Root Cause Analysis:
+The Task Details page was missing creator information in the lists of status reports and progress reports. While the creator functionality was fully implemented in the backend and creation dialogs (as part of issue #102), the report lists only displayed date and content (summary/notes) without showing who created each report. Users needed visibility into report authorship for better accountability and traceability.
+
+#### Impact of Changes:
+- **Enhanced User Experience**: Report lists now display creator information alongside existing content
+- **Improved Accountability**: Users can easily identify who created each report
+- **Consistent Information Architecture**: Creator information follows established design patterns
+- **Backward Compatibility**: Graceful handling of existing reports without creator information
+- **Minimal UI Changes**: Non-disruptive integration that maintains existing layouts
+
+#### New Features Added:
+- **Creator Display in Progress Reports**: Shows "Creator: FirstName LastName" with account icon
+- **Creator Display in Status Reports**: Shows "Creator: FirstName LastName" with account icon  
+- **Conditional Rendering**: Only displays creator information when available
+- **GraphQL Data Enhancement**: Extended query to fetch creator staff details
+
+#### Technical Implementation:
+
+**GraphQL Query Enhancement:**
+- Enhanced `getTaskWithManagementData` query in `fe/src/services/tasks.ts`
+- Added `creatorId` and `creator` fields to both report types
+- Included staff details: id, firstName, lastName, email
+
+**UI Component Updates:**
+- Modified report list items in `fe/src/pages/task-management/[id].vue`
+- Added creator information as small caption text below main content
+- Used conditional rendering with `v-if="report.creator"`
+- Maintained existing prepend/append action button layouts
+
+#### Code Quality:
+- **Minimal Changes**: Only 2 files modified with targeted enhancements
+- **Consistent Styling**: Used existing Vuetify design tokens and patterns
+- **Type Safety**: Leveraged existing TypeScript interfaces
+- **Linting Compliance**: All changes pass ESLint validation
+- **Test Coverage**: Existing test suite continues to pass
+
+#### Files Modified:
+- `fe/src/services/tasks.ts` - Enhanced GraphQL query for creator data
+- `fe/src/pages/task-management/[id].vue` - Added creator display in both report lists
+
+#### User Experience Impact:
+- **Seamless Integration**: Creator information appears naturally in existing lists
+- **Visual Hierarchy**: Creator shown as subtle caption text that doesn't compete with primary content
+- **Icon Context**: Account icon provides visual cue for creator information
+- **No Breaking Changes**: Existing functionality and workflows remain unchanged
+
+This implementation successfully addresses the requirement to display creator information in task report lists while maintaining design consistency and user experience quality. The changes are surgical and focused, adding value without disrupting existing workflows.
+
 ### 2025-06-16 - UI Creator Field Implementation for Task Reports (Completed Issue #102)
 
 #### Root Cause Analysis:
