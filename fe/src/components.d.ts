@@ -28,6 +28,7 @@ declare module 'vue' {
     HomeCard: typeof import('./components/debug/HomeCard.vue')['default']
     LoginCard: typeof import('./components/auth/LoginCard.vue')['default']
     LogoutCard: typeof import('./components/auth/LogoutCard.vue')['default']
+    NotificationContainer: typeof import('./components/common/NotificationContainer.vue')['default']
     OrganizationCreateDialog: typeof import('./components/organization/OrganizationCreateDialog.vue')['default']
     OrganizationDeleteDialog: typeof import('./components/organization/OrganizationDeleteDialog.vue')['default']
     OrganizationDialogs: typeof import('./components/organization/OrganizationDialogs.vue')['default']

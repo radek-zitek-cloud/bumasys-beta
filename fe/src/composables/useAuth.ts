@@ -31,22 +31,16 @@ import { readonly, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import * as authApi from '../services/auth'
 import { useAuthStore } from '../stores/auth'
-
-/**
- * Interface for notification callback function
- */
-export interface NotifyFunction {
-  (message: string, success?: boolean): void
-}
+import { useNotifications } from './useNotifications'
 
 /**
  * Authentication composable for handling all auth-related operations
- * @param notify - Function to display notifications to the user
  * @returns Object containing authentication methods and loading states
  */
-export function useAuth (notify: NotifyFunction) {
+export function useAuth () {
   const router = useRouter()
   const auth = useAuthStore()
+  const { notifySuccess, notifyError } = useNotifications()
 
   // Loading states for different operations
   const loginLoading = ref(false)
@@ -65,12 +59,12 @@ export function useAuth (notify: NotifyFunction) {
     try {
       const { login: loginResponse } = await authApi.login(credentials.email, credentials.password)
       auth.setAuth(loginResponse)
-      notify('Login successful')
+      notifySuccess('Login successful')
       await router.push('/')
       return loginResponse
     } catch (error) {
       console.error('Login error:', error)
-      notify((error as Error).message, false)
+      notifyError((error as Error).message)
       throw error
     } finally {
       loginLoading.value = false
@@ -98,12 +92,12 @@ export function useAuth (notify: NotifyFunction) {
         userData.note,
       )
       auth.setAuth(registerResponse)
-      notify('Registration successful')
+      notifySuccess('Registration successful')
       await router.push('/')
       return registerResponse
     } catch (error) {
       console.error('Registration error:', error)
-      notify((error as Error).message, false)
+      notifyError((error as Error).message)
       throw error
     } finally {
       registerLoading.value = false
@@ -118,10 +112,10 @@ export function useAuth (notify: NotifyFunction) {
     resetPasswordLoading.value = true
     try {
       await authApi.resetPassword(email)
-      notify('Password reset email sent')
+      notifySuccess('Password reset email sent')
     } catch (error) {
       console.error('Password reset error:', error)
-      notify((error as Error).message, false)
+      notifyError((error as Error).message)
       throw error
     } finally {
       resetPasswordLoading.value = false
@@ -136,10 +130,10 @@ export function useAuth (notify: NotifyFunction) {
     changePasswordLoading.value = true
     try {
       await authApi.changePassword(passwords.oldPassword, passwords.newPassword)
-      notify('Password changed successfully')
+      notifySuccess('Password changed successfully')
     } catch (error) {
       console.error('Change password error:', error)
-      notify((error as Error).message, false)
+      notifyError((error as Error).message)
       throw error
     } finally {
       changePasswordLoading.value = false
@@ -155,10 +149,10 @@ export function useAuth (notify: NotifyFunction) {
       if (auth.refreshToken) {
         await authApi.logout(auth.refreshToken)
       }
-      notify('Logged out successfully')
+      notifySuccess('Logged out successfully')
     } catch (error) {
       console.error('Logout error:', error)
-      notify((error as Error).message, false)
+      notifyError((error as Error).message)
     } finally {
       auth.clearAuth()
       logoutLoading.value = false
@@ -188,11 +182,11 @@ export function useAuth (notify: NotifyFunction) {
         profileData.note,
       )
       auth.user = updateUser
-      notify('Profile updated successfully')
+      notifySuccess('Profile updated successfully')
       return updateUser
     } catch (error) {
       console.error('Profile update error:', error)
-      notify((error as Error).message, false)
+      notifyError((error as Error).message)
       throw error
     } finally {
       updateProfileLoading.value = false

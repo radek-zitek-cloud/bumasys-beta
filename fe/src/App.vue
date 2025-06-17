@@ -87,9 +87,9 @@
     <v-dialog v-model="showDatabaseSwitch" max-width="500" persistent>
       <DatabaseTagSwitchCard @cancel="showDatabaseSwitch = false" @switch="handleDatabaseSwitch" />
     </v-dialog>
-    <v-snackbar v-model="snackbar" :color="snackbarColor" location="bottom" timeout="4000">
-      {{ snackbarMessage }}
-    </v-snackbar>
+    
+    <!-- Global notification system -->
+    <NotificationContainer />
   </v-app>
 </template>
 
@@ -124,6 +124,7 @@
   import ProfileCard from './components/auth/ProfileCard.vue'
   import RegisterCard from './components/auth/RegisterCard.vue'
   import AppFooter from './components/common/AppFooter.vue'
+  import NotificationContainer from './components/common/NotificationContainer.vue'
   import { useAuth } from './composables/useAuth'
   import { useLogger } from './composables/useLogger'
   import { useNotifications } from './composables/useNotifications'
@@ -186,24 +187,6 @@
   const { logInfo, logError, logWarn } = useLogger()
   const { notifySuccess, notifyError } = useNotifications()
   
-  // Legacy notification support - TODO: Remove after migrating all notifications to useNotifications
-  const snackbar = ref(false)
-  const snackbarMessage = ref('')
-  const snackbarColor = ref<'success' | 'error'>('success')
-
-  /**
-   * Display a notification message to the user.
-   * @deprecated Use useNotifications composable instead
-   * @param message - The message to display
-   * @param success - Whether this is a success (true) or error (false) message
-   */
-  function notify (message: string, success = true) {
-    logInfo('Showing notification to user', { message, success })
-    snackbarMessage.value = message
-    snackbarColor.value = success ? 'success' : 'error'
-    snackbar.value = true
-  }
-
   const { 
     login: loginUser, 
     register: registerUser, 
@@ -211,7 +194,7 @@
     changePassword: changeUserPassword,
     resetPassword: resetUserPassword,
     updateProfile: updateUserProfile 
-  } = useAuth(notify)
+  } = useAuth()
 
   /**
    * Reactive state for the navigation drawer.
@@ -470,11 +453,11 @@
   async function handleDatabaseSwitch (tag: string) {
     try {
       logInfo('Switching database tag', { tag })
-      notify(`Successfully switched to database tag: ${tag}`)
+      notifySuccess(`Successfully switched to database tag: ${tag}`)
       logInfo('Database tag switch completed successfully', { tag })
     } catch (error) {
       logError('Database tag switch failed', error)
-      notify((error as Error).message, false)
+      notifyError((error as Error).message)
     } finally {
       showDatabaseSwitch.value = false
     }
