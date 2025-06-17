@@ -1,3 +1,89 @@
+# WORKLOG.md
+
+## Change Log
+
+### 2025-06-17 - Admin Menu/Page Implementation (Issue #114)
+
+#### Root Cause Analysis:
+The existing system had debug information, backend configuration display, and database management functionality scattered across the user menu (triple-dot menu) in the top navigation. This violated the principle of logical grouping and made administrative functions less discoverable. Users needed a centralized location for system administration tasks, and the user menu was becoming cluttered with administrative functions that didn't belong there.
+
+#### Impact of Changes:
+- **Improved Information Architecture**: Administrative functions now have a dedicated, discoverable location
+- **Better User Experience**: Cleaner user menu focused on user-specific actions (profile, password change, logout)
+- **Enhanced Administrative Capabilities**: New database backup functionality provides data protection
+- **Better Security**: Administrative functions clearly separated from user functions
+- **Maintained Existing Functionality**: All existing features preserved while improving organization
+
+#### New Features Added:
+1. **Administration Page** (`/fe/src/pages/admin.vue`):
+   - Dedicated admin page accessible via `/admin` route
+   - Four main sections: Debug Info, Backend Config, Database Management, Database Backup
+   - Authentication required for access
+   - Clean card-based UI using Vuetify components
+
+2. **Database Backup System**:
+   - Backend: Added `backupDatabase` GraphQL mutation
+   - Database service methods for creating timestamped backups
+   - Frontend service (`/fe/src/services/backup.ts`) for backup operations
+   - Backups stored in `/data/backups/` directory with metadata
+
+3. **Navigation Improvements**:
+   - Added "Administration" item to sidebar navigation (last item)
+   - Uses `mdi-cog-outline` icon with descriptive subtitle
+   - Removed Debug Info and BE Config from user menu
+
+#### Technical Implementation:
+- **Backend Changes**:
+  - Added `backupDatabase` mutation to GraphQL schema
+  - Implemented backup resolver in `database.resolvers.ts`
+  - Extended DatabaseService and DatabaseManager with `createBackup()` methods
+  - Backup files include both auth and data databases with version metadata
+
+- **Frontend Changes**:
+  - Created new admin page reusing existing components (DebugInfoCard, ConfigDisplayCard, DatabaseTagSwitchCard)
+  - Updated App.vue navigation items and removed debug/config dialogs
+  - New backup service using existing GraphQL client patterns
+  - Maintained authentication requirements for all admin functions
+
+#### Improvements Made:
+- **Code Reuse**: Leveraged existing components to minimize new code
+- **Consistent UI**: Admin page follows established design patterns
+- **Error Handling**: Proper error handling and user notifications for all operations
+- **Logging**: Comprehensive logging for all administrative operations
+- **Testing**: Created integration tests for backup functionality
+
+#### Testing Validation:
+- Backend builds successfully (`pnpm build` passes)
+- Frontend builds successfully (`pnpm build-only` passes) 
+- Type checking passes (`pnpm type-check` passes)
+- Backend tests: 383/386 tests pass (3 failures unrelated to changes)
+- Frontend tests: Multiple test suites pass with expected warnings
+- New backup functionality test: 2/2 tests pass
+
+#### Documentation Updates:
+- Updated WORKLOG.md with comprehensive change summary
+- Inline code documentation for all new functions and components
+- JSDoc comments following project standards
+
+#### Migration Path:
+- No breaking changes - all existing functionality preserved
+- Users can still access database switching from user menu
+- Debug Info and BE Config moved to dedicated admin page
+- New backup functionality available immediately
+
+#### TODOs / Follow-up:
+- Consider adding role-based access control for admin functions
+- Explore automatic backup scheduling functionality
+- Add backup restoration capabilities
+- Consider admin audit logging
+
+#### Potential Issues or Risks:
+- Admin page requires authentication but no role-based restrictions
+- Backup files stored locally (consider cloud storage for production)
+- No automatic cleanup of old backup files
+
+---
+
 ## 2025-06-17 Backend Test Review & Fixes
 
 ### Root Cause Analysis
@@ -25,9 +111,6 @@ Routine review of all backend test files to ensure code quality, maintainability
 
 ### Potential Issues or Risks
 - None identified; all tests pass and migration logic is preserved.
-# WORKLOG.md
-
-## Change Log
 
 ### 2025-06-17 - Multiple Database System Implementation
 

@@ -24,8 +24,6 @@
               <v-list-item title="Profile" @click="showProfile = true" />
               <v-list-item title="Change Password" @click="showChange = true" />
               <v-list-item title="Switch Database" @click="showDatabaseSwitch = true" />
-              <v-list-item title="Debug Info" @click="showDebugInfo = true" />
-              <v-list-item title="BE Config" @click="showConfig = true" />
               <v-list-item title="Logout" @click="showLogout = true" />
             </template>
             <template v-else>
@@ -82,12 +80,6 @@
     <v-dialog v-model="showProfile" max-width="400" persistent>
       <ProfileCard @cancel="showProfile = false" @save="handleProfile" />
     </v-dialog>
-    <v-dialog v-model="showDebugInfo" max-width="600" persistent>
-      <DebugInfoCard @close="showDebugInfo = false" />
-    </v-dialog>
-    <v-dialog v-model="showConfig" max-width="600" persistent>
-      <ConfigDisplayCard @close="showConfig = false" />
-    </v-dialog>
     <v-dialog v-model="showDatabaseSwitch" max-width="500" persistent>
       <DatabaseTagSwitchCard @cancel="showDatabaseSwitch = false" @switch="handleDatabaseSwitch" />
     </v-dialog>
@@ -128,8 +120,6 @@
   import ProfileCard from './components/auth/ProfileCard.vue'
   import RegisterCard from './components/auth/RegisterCard.vue'
   import AppFooter from './components/common/AppFooter.vue'
-  import ConfigDisplayCard from './components/debug/ConfigDisplayCard.vue'
-  import DebugInfoCard from './components/debug/DebugInfoCard.vue'
   import { useLogger } from './composables/useLogger'
   import * as authApi from './services/auth'
   import { useAuthStore } from './stores/auth'
@@ -184,8 +174,6 @@
   const showChange = ref(false)
   const showLogout = ref(false)
   const showProfile = ref(false)
-  const showDebugInfo = ref(false)
-  const showConfig = ref(false)
   const showDatabaseSwitch = ref(false)
 
   /**
@@ -266,6 +254,13 @@
       title: 'Users',
       subtitle: 'Manage system users',
       to: '/users',
+    },
+    { separator: true },
+    {
+      icon: 'mdi-cog-outline',
+      title: 'Administration',
+      subtitle: 'System administration and configuration',
+      to: '/admin',
     },
   ]
 

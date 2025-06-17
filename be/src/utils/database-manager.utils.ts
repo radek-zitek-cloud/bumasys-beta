@@ -21,12 +21,23 @@ export class DatabaseManager {
   private dataDbBasePath: string;
   private currentTag: string;
 
-  constructor(authDbPath: string, dataDbBasePath: string, initialTag: string = 'default') {
+  constructor(
+    authDbPath: string,
+    dataDbBasePath: string,
+    initialTag: string = 'default',
+  ) {
     this.authDbPath = path.resolve(authDbPath);
     this.dataDbBasePath = path.resolve(dataDbBasePath);
     this.currentTag = initialTag;
-    
-    logger.info({ authDbPath: this.authDbPath, dataDbBasePath: this.dataDbBasePath, initialTag }, 'Initializing database manager');
+
+    logger.info(
+      {
+        authDbPath: this.authDbPath,
+        dataDbBasePath: this.dataDbBasePath,
+        initialTag,
+      },
+      'Initializing database manager',
+    );
   }
 
   /**
@@ -34,14 +45,17 @@ export class DatabaseManager {
    */
   async initialize(): Promise<void> {
     logger.info('Initializing database manager...');
-    
+
     // Initialize auth database
     this.authDb = await this.createAuthDatabase(this.authDbPath);
-    
+
     // Initialize data database with current tag
     this.dataDb = await this.createDataDatabase(this.currentTag);
-    
-    logger.info({ tag: this.currentTag }, 'Database manager initialized successfully');
+
+    logger.info(
+      { tag: this.currentTag },
+      'Database manager initialized successfully',
+    );
   }
 
   /**
@@ -70,12 +84,79 @@ export class DatabaseManager {
    * @param tag - The tag to switch to
    */
   async switchToTag(tag: string): Promise<void> {
-    logger.info({ oldTag: this.currentTag, newTag: tag }, 'Switching database tag');
-    
+    logger.info(
+      { oldTag: this.currentTag, newTag: tag },
+      'Switching database tag',
+    );
+
     this.currentTag = tag;
     this.dataDb = await this.createDataDatabase(tag);
-    
+
     logger.info({ tag }, 'Database tag switched successfully');
+  }
+
+  /**
+   * Create a backup of the current database
+   * @returns Promise resolving to the backup file path relative to the data directory
+   */
+  async createBackup(): Promise<string> {
+    const fs = await import('fs');
+    const path = await import('path');
+    
+    logger.info(
+      { currentTag: this.currentTag },
+      'Creating database backup',
+    );
+
+    // Create timestamp for backup file
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const backupFileName = `backup-${this.currentTag}-${timestamp}.json`;
+    
+    // Get the data directory from the base path
+    const dataDir = path.dirname(this.dataDbBasePath);
+    const backupPath = path.join(dataDir, 'backups', backupFileName);
+    
+    // Ensure backup directory exists
+    const backupDir = path.dirname(backupPath);
+    if (!fs.existsSync(backupDir)) {
+      logger.debug(
+        { operation: 'createBackup', backupDir },
+        'Creating backup directory',
+      );
+      fs.mkdirSync(backupDir, { recursive: true });
+    }
+
+    try {
+      // Create backup data containing both auth and current data database
+      const backupData = {
+        timestamp: new Date().toISOString(),
+        version: '1.0',
+        tag: this.currentTag,
+        auth: this.authDb.data,
+        data: this.dataDb.data,
+      };
+
+      // Write backup file atomically
+      const tempBackupPath = `${backupPath}.tmp`;
+      fs.writeFileSync(tempBackupPath, JSON.stringify(backupData, null, 2));
+      fs.renameSync(tempBackupPath, backupPath);
+
+      // Return relative path from data directory
+      const relativePath = path.relative(dataDir, backupPath);
+      
+      logger.info(
+        { operation: 'createBackup', backupPath: relativePath, tag: this.currentTag },
+        'Database backup created successfully',
+      );
+
+      return relativePath;
+    } catch (error) {
+      logger.error(
+        { operation: 'createBackup', backupPath, tag: this.currentTag, error },
+        'Failed to create database backup',
+      );
+      throw new Error(`Failed to create database backup: ${(error as Error).message}`);
+    }
   }
 
   /**
@@ -83,16 +164,25 @@ export class DatabaseManager {
    */
   private async createAuthDatabase(filePath: string): Promise<AuthDatabase> {
     const dbPath = path.resolve(filePath);
-    logger.debug({ operation: 'createAuthDatabase', dbPath }, 'Creating auth database instance');
+    logger.debug(
+      { operation: 'createAuthDatabase', dbPath },
+      'Creating auth database instance',
+    );
 
     // Create database file if it doesn't exist
     if (!fs.existsSync(dbPath)) {
-      logger.info({ operation: 'createAuthDatabase', dbPath }, 'Auth database file does not exist, creating new one');
+      logger.info(
+        { operation: 'createAuthDatabase', dbPath },
+        'Auth database file does not exist, creating new one',
+      );
 
       // Ensure directory exists
       const dir = path.dirname(dbPath);
       if (!fs.existsSync(dir)) {
-        logger.debug({ operation: 'createAuthDatabase', dir }, 'Creating auth database directory');
+        logger.debug(
+          { operation: 'createAuthDatabase', dir },
+          'Creating auth database directory',
+        );
         fs.mkdirSync(dir, { recursive: true });
       }
 
@@ -102,9 +192,15 @@ export class DatabaseManager {
       };
 
       fs.writeFileSync(dbPath, JSON.stringify(initialData, null, 2));
-      logger.info({ operation: 'createAuthDatabase', dbPath }, 'New auth database file created successfully');
+      logger.info(
+        { operation: 'createAuthDatabase', dbPath },
+        'New auth database file created successfully',
+      );
     } else {
-      logger.debug({ operation: 'createAuthDatabase', dbPath }, 'Using existing auth database file');
+      logger.debug(
+        { operation: 'createAuthDatabase', dbPath },
+        'Using existing auth database file',
+      );
     }
 
     // Load existing data
@@ -120,18 +216,27 @@ export class DatabaseManager {
     }
 
     // Return auth database interface
-    logger.info({ operation: 'createAuthDatabase', dbPath }, 'Auth database instance created successfully');
+    logger.info(
+      { operation: 'createAuthDatabase', dbPath },
+      'Auth database instance created successfully',
+    );
     return {
       get data() {
         return data;
       },
       async write() {
-        logger.debug({ operation: 'authDatabaseWrite', dbPath }, 'Writing auth database to disk');
+        logger.debug(
+          { operation: 'authDatabaseWrite', dbPath },
+          'Writing auth database to disk',
+        );
         // Write data atomically by writing to temp file first
         const tempPath = `${dbPath}.tmp`;
         fs.writeFileSync(tempPath, JSON.stringify(data, null, 2));
         fs.renameSync(tempPath, dbPath);
-        logger.debug({ operation: 'authDatabaseWrite', dbPath }, 'Auth database write completed successfully');
+        logger.debug(
+          { operation: 'authDatabaseWrite', dbPath },
+          'Auth database write completed successfully',
+        );
       },
     };
   }
@@ -142,16 +247,25 @@ export class DatabaseManager {
   private async createDataDatabase(tag: string): Promise<DataDatabase> {
     const fileName = `db-${tag}.json`;
     const dbPath = path.resolve(path.dirname(this.dataDbBasePath), fileName);
-    logger.debug({ operation: 'createDataDatabase', dbPath, tag }, 'Creating data database instance');
+    logger.debug(
+      { operation: 'createDataDatabase', dbPath, tag },
+      'Creating data database instance',
+    );
 
     // Create database file if it doesn't exist
     if (!fs.existsSync(dbPath)) {
-      logger.info({ operation: 'createDataDatabase', dbPath, tag }, 'Data database file does not exist, creating new one');
+      logger.info(
+        { operation: 'createDataDatabase', dbPath, tag },
+        'Data database file does not exist, creating new one',
+      );
 
       // Ensure directory exists
       const dir = path.dirname(dbPath);
       if (!fs.existsSync(dir)) {
-        logger.debug({ operation: 'createDataDatabase', dir }, 'Creating data database directory');
+        logger.debug(
+          { operation: 'createDataDatabase', dir },
+          'Creating data database directory',
+        );
         fs.mkdirSync(dir, { recursive: true });
       }
 
@@ -175,9 +289,15 @@ export class DatabaseManager {
       };
 
       fs.writeFileSync(dbPath, JSON.stringify(initialData, null, 2));
-      logger.info({ operation: 'createDataDatabase', dbPath, tag }, 'New data database file created successfully');
+      logger.info(
+        { operation: 'createDataDatabase', dbPath, tag },
+        'New data database file created successfully',
+      );
     } else {
-      logger.debug({ operation: 'createDataDatabase', dbPath, tag }, 'Using existing data database file');
+      logger.debug(
+        { operation: 'createDataDatabase', dbPath, tag },
+        'Using existing data database file',
+      );
     }
 
     // Load existing data
@@ -186,9 +306,22 @@ export class DatabaseManager {
 
     // Ensure all required arrays exist for backward compatibility
     const defaultArrays = [
-      'organizations', 'departments', 'staff', 'statuses', 'priorities', 'complexities',
-      'projects', 'tasks', 'taskAssignees', 'taskPredecessors', 'taskProgress',
-      'taskEvaluations', 'taskStatusReports', 'projectStatusReports', 'teams', 'teamMembers'
+      'organizations',
+      'departments',
+      'staff',
+      'statuses',
+      'priorities',
+      'complexities',
+      'projects',
+      'tasks',
+      'taskAssignees',
+      'taskPredecessors',
+      'taskProgress',
+      'taskEvaluations',
+      'taskStatusReports',
+      'projectStatusReports',
+      'teams',
+      'teamMembers',
     ];
 
     for (const arrayName of defaultArrays) {
@@ -198,7 +331,10 @@ export class DatabaseManager {
     }
 
     // Return data database interface
-    logger.info({ operation: 'createDataDatabase', dbPath, tag }, 'Data database instance created successfully');
+    logger.info(
+      { operation: 'createDataDatabase', dbPath, tag },
+      'Data database instance created successfully',
+    );
     return {
       get data() {
         return data;
@@ -207,12 +343,18 @@ export class DatabaseManager {
         return tag;
       },
       async write() {
-        logger.debug({ operation: 'dataDatabaseWrite', dbPath, tag }, 'Writing data database to disk');
+        logger.debug(
+          { operation: 'dataDatabaseWrite', dbPath, tag },
+          'Writing data database to disk',
+        );
         // Write data atomically by writing to temp file first
         const tempPath = `${dbPath}.tmp`;
         fs.writeFileSync(tempPath, JSON.stringify(data, null, 2));
         fs.renameSync(tempPath, dbPath);
-        logger.debug({ operation: 'dataDatabaseWrite', dbPath, tag }, 'Data database write completed successfully');
+        logger.debug(
+          { operation: 'dataDatabaseWrite', dbPath, tag },
+          'Data database write completed successfully',
+        );
       },
     };
   }
@@ -229,7 +371,7 @@ export class DatabaseManager {
 export async function createDatabaseManager(
   authDbPath: string,
   dataDbBasePath: string,
-  initialTag: string = 'default'
+  initialTag: string = 'default',
 ): Promise<DatabaseManager> {
   const manager = new DatabaseManager(authDbPath, dataDbBasePath, initialTag);
   await manager.initialize();
