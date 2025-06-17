@@ -230,7 +230,7 @@
                 </template>
 
                 <div class="flex-grow-1">
-                  <v-list-item-title class="text-body-1 font-weight-medium mb-1">
+                  <v-list-item-title class="text-body-2 mb-1">
                     On {{ formatDate(report.reportDate) }} <span v-if="report.creator">{{ report.creator.firstName }} {{
                       report.creator.lastName }}</span> <span v-else>Unknown creator</span>
                     reported {{ report.progressPercent }}% progress and noted: {{ report.notes || 'No notes' }}
