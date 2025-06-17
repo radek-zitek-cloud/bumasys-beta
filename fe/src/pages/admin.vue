@@ -1,12 +1,12 @@
 <!--
   @fileoverview Administration Page
-  
+
   This page provides administrative tools and information including:
   - Debug information about authentication state
   - Backend configuration display
   - Database tag switching functionality
   - Database backup functionality
-  
+
   Access is restricted to authenticated users only.
 -->
 
@@ -141,76 +141,76 @@
  * - Database backup operations
  */
 
-import { ref } from 'vue'
-import { useAuthStore } from '../stores/auth'
-import { useLogger } from '../composables/useLogger'
-import DebugInfoCard from '../components/debug/DebugInfoCard.vue'
-import ConfigDisplayCard from '../components/debug/ConfigDisplayCard.vue'
-import DatabaseTagSwitchCard from '../components/auth/DatabaseTagSwitchCard.vue'
-import { backupDatabase } from '../services/backup'
+  import { ref } from 'vue'
+  import DatabaseTagSwitchCard from '../components/auth/DatabaseTagSwitchCard.vue'
+  import ConfigDisplayCard from '../components/debug/ConfigDisplayCard.vue'
+  import DebugInfoCard from '../components/debug/DebugInfoCard.vue'
+  import { useLogger } from '../composables/useLogger'
+  import { backupDatabase } from '../services/backup'
+  import { useAuthStore } from '../stores/auth'
 
-const { logInfo, logError } = useLogger()
-const auth = useAuthStore()
+  const { logInfo, logError } = useLogger()
+  const auth = useAuthStore()
 
-// Dialog visibility state
-const showDebugInfo = ref(false)
-const showConfig = ref(false)
-const showDatabaseSwitch = ref(false)
+  // Dialog visibility state
+  const showDebugInfo = ref(false)
+  const showConfig = ref(false)
+  const showDatabaseSwitch = ref(false)
 
-// Backup functionality state
-const backupLoading = ref(false)
+  // Backup functionality state
+  const backupLoading = ref(false)
 
-// Notification state
-const snackbar = ref(false)
-const snackbarMessage = ref('')
-const snackbarColor = ref<'success' | 'error'>('success')
+  // Notification state
+  const snackbar = ref(false)
+  const snackbarMessage = ref('')
+  const snackbarColor = ref<'success' | 'error'>('success')
 
-/**
- * Display a notification message to the user.
- * @param message - The message to display
- * @param success - Whether this is a success (true) or error (false) message
- */
-function notify(message: string, success = true) {
-  logInfo('Showing notification to user', { message, success })
-  snackbarMessage.value = message
-  snackbarColor.value = success ? 'success' : 'error'
-  snackbar.value = true
-}
-
-/**
- * Handle database tag switch.
- * @param tag - The database tag to switch to
- */
-async function handleDatabaseSwitch(tag: string) {
-  try {
-    logInfo('Switching database tag', { tag })
-    notify(`Successfully switched to database tag: ${tag}`)
-    logInfo('Database tag switch completed successfully', { tag })
-  } catch (error) {
-    logError('Database tag switch failed', error)
-    notify((error as Error).message, false)
-  } finally {
-    showDatabaseSwitch.value = false
+  /**
+   * Display a notification message to the user.
+   * @param message - The message to display
+   * @param success - Whether this is a success (true) or error (false) message
+   */
+  function notify (message: string, success = true) {
+    logInfo('Showing notification to user', { message, success })
+    snackbarMessage.value = message
+    snackbarColor.value = success ? 'success' : 'error'
+    snackbar.value = true
   }
-}
 
-/**
- * Create a backup of the current database.
- */
-async function createBackup() {
-  backupLoading.value = true
-  try {
-    logInfo('Creating database backup')
-    const backupPath = await backupDatabase()
-    notify(`Database backup created successfully: ${backupPath}`)
-    logInfo('Database backup completed successfully', { backupPath })
-  } catch (error) {
-    logError('Database backup failed', error)
-    notify((error as Error).message, false)
-  } finally {
-    backupLoading.value = false
+  /**
+   * Handle database tag switch.
+   * @param tag - The database tag to switch to
+   */
+  async function handleDatabaseSwitch (tag: string) {
+    try {
+      logInfo('Switching database tag', { tag })
+      notify(`Successfully switched to database tag: ${tag}`)
+      logInfo('Database tag switch completed successfully', { tag })
+    } catch (error) {
+      logError('Database tag switch failed', error)
+      notify((error as Error).message, false)
+    } finally {
+      showDatabaseSwitch.value = false
+    }
   }
-}
+
+  /**
+   * Create a backup of the current database.
+   */
+  async function createBackup () {
+    backupLoading.value = true
+    try {
+      logInfo('Creating database backup')
+      const backupPath = await backupDatabase()
+      notify(`Database backup created successfully: ${backupPath}`)
+      logInfo('Database backup completed successfully', { backupPath })
+    } catch (error) {
+      logError('Database backup failed', error)
+      notify((error as Error).message, false)
+    } finally {
+      backupLoading.value = false
+    }
+  }
 </script>
 
 <style scoped>
