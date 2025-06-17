@@ -56,7 +56,7 @@ describe('Auth', () => {
     // GraphQL errors can be returned in different ways - check for error response
     const hasErrors = invalidRes.body.errors && invalidRes.body.errors.length > 0;
     const hasNullData = invalidRes.body.data === null;
-    
+
     // Either there should be GraphQL errors, or the data should be null
     expect(hasErrors || hasNullData).toBe(true);
     
