@@ -24,7 +24,7 @@
         <!-- Create New Task Tab -->
         <v-tabs-window-item value="create">
           <form @submit.prevent="onCreateSubmit">
-            <v-row>
+            <v-row class="mt-0">
               <!-- Task Name -->
               <v-col cols="12">
                 <v-text-field
@@ -125,7 +125,7 @@
         <!-- Select Existing Task Tab -->
         <v-tabs-window-item value="select">
           <form @submit.prevent="onSelectSubmit">
-            <v-row>
+            <v-row class="mt-0">
               <v-col cols="12">
                 <v-select
                   v-model="selectForm.childTaskId"
