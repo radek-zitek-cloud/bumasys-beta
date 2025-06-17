@@ -18,8 +18,19 @@ This directory contains Vue components for comprehensive task management operati
 
 ### 🔗 Task Dependency Management
 
-#### `TaskPredecessorCreateDialog.vue`
-- **Purpose**: Add predecessor relationships between tasks
+#### `TaskPredecessorDialog.vue` (Enhanced)
+- **Purpose**: Add predecessor relationships between tasks with dual modes
+- **Features**:
+  - **Tab 1 - Select Existing**: Choose from available tasks as predecessors
+  - **Tab 2 - Create New**: Create new task and set as predecessor
+  - Automatic filtering to prevent circular dependencies
+  - Cross-project predecessor support
+  - Full task creation form with project selection
+- **Props**: `availableTasks`, `availableProjects`, `availableStatuses`, `availablePriorities`, `availableComplexities`, `currentPredecessors`, `currentTaskId`
+- **Events**: `cancel`, `predecessor-selected(predecessorTaskId)`, `predecessor-created(taskData)`
+
+#### `TaskPredecessorCreateDialog.vue` (Legacy)
+- **Purpose**: Add predecessor relationships between tasks (select existing only)
 - **Features**:
   - Dropdown selection of available tasks from any project
   - Automatic filtering to prevent circular dependencies
@@ -30,7 +41,18 @@ This directory contains Vue components for comprehensive task management operati
 
 ### 👶 Child Task Management
 
-#### `TaskChildCreateDialog.vue`
+#### `TaskChildDialog.vue` (Enhanced)
+- **Purpose**: Add child task relationships with dual modes
+- **Features**:
+  - **Tab 1 - Create New**: Create new task as child (default)
+  - **Tab 2 - Select Existing**: Convert existing task to child
+  - Full task creation form with parent relationship pre-filled
+  - Intelligent filtering for same-project tasks without parents
+  - Status, priority, and complexity selection
+- **Props**: `parentTaskId`, `projectId`, `availableTasks`, `availableStatuses`, `availablePriorities`, `availableComplexities`, `currentChildTasks`
+- **Events**: `cancel`, `child-created(taskData)`, `child-selected(childTaskId)`
+
+#### `TaskChildCreateDialog.vue` (Legacy)
 - **Purpose**: Create new child tasks with parent relationship
 - **Features**:
   - Full task creation form (name, description, dates, etc.)
