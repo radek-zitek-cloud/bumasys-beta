@@ -1,0 +1,39 @@
+{
+  "timestamp": "2025-06-17T13:48:01.612Z",
+  "version": "1.0",
+  "tag": "default",
+  "auth": {
+    "users": [
+      {
+        "id": "97c5aa2e-96ce-4363-b8db-1943c0ff5c7f",
+        "email": "backup-test@example.com",
+        "password": "$2b$10$itESBA5IOArAWFLXVhrJOuNJRfMmu7vFzUiVzSJLNfJsUliMP/BXe"
+      }
+    ],
+    "sessions": [
+      {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk3YzVhYTJlLTk2Y2UtNDM2My1iOGRiLTE5NDNjMGZmNWM3ZiIsImlhdCI6MTc1MDE2ODA4MSwiZXhwIjoxNzUwNzcyODgxfQ.3Sd8uj6Uz_a64YWxa2Po2zTmGCw1h45g8cnszl32i6o",
+        "userId": "97c5aa2e-96ce-4363-b8db-1943c0ff5c7f",
+        "createdAt": "2025-06-17T13:48:01.600Z"
+      }
+    ]
+  },
+  "data": {
+    "organizations": [],
+    "departments": [],
+    "staff": [],
+    "statuses": [],
+    "priorities": [],
+    "complexities": [],
+    "projects": [],
+    "tasks": [],
+    "taskAssignees": [],
+    "taskPredecessors": [],
+    "taskProgress": [],
+    "taskEvaluations": [],
+    "taskStatusReports": [],
+    "projectStatusReports": [],
+    "teams": [],
+    "teamMembers": []
+  }
+}
