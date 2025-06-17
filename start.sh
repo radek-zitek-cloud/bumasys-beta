@@ -6,6 +6,9 @@
 set -e  # Exit on any error
 
 echo "🚀 Starting Fulcrum development environment..."
+# Stash any local changes to avoid conflicts (we do not develop here)
+echo "🗄️  Stashing local changes (if any)..."
+git stash push -u -m "Auto-stash by start.sh"
 
 # Pull latest changes
 echo "📥 Pulling latest changes..."
@@ -69,3 +72,19 @@ echo "🛑 To stop services:"
 echo "   kill $BACKEND_PID $FRONTEND_PID"
 echo ""
 echo "✨ Happy coding!"
+
+while true; do
+    read -n1 -s -r -p "Press [k] to kill both servers and exit, [q] to quit without stopping servers: " key
+    echo ""
+    if [[ "$key" == "k" ]]; then
+        echo "🛑 Stopping backend (PID: $BACKEND_PID) and frontend (PID: $FRONTEND_PID)..."
+        kill $BACKEND_PID $FRONTEND_PID
+        echo "✅ Both servers stopped. Exiting."
+        exit 0
+    elif [[ "$key" == "q" ]]; then
+        echo "🚪 Exiting script without stopping servers."
+        exit 0
+    else
+        echo "❓ Invalid key. Press [k] to kill servers, [q] to quit."
+    fi
+done
