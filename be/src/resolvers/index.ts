@@ -180,7 +180,7 @@ export function initializeResolvers(
 ): void {
   setDatabaseServices(databaseService);
   setReferenceDataServices(statusService, priorityService, complexityService);
-  setHealthServices(userService);
+  setHealthServices(userService, databaseService);
   setAuthServices(userService, authService);
   setUserServices(userService);
   initializeOrganizationResolvers({

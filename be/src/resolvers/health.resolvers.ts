@@ -15,11 +15,19 @@ import config from '../utils/config';
 let userService: any;
 
 /**
+ * Database service instance - will be set during application initialization
+ * Used to get current database tag information
+ */
+let databaseService: any;
+
+/**
  * Set the service instances for health check resolvers to use
  * @param user - UserService instance used for health verification
+ * @param database - DatabaseService instance used for database tag information
  */
-export function setServices(user: any): void {
+export function setServices(user: any, database: any): void {
   userService = user;
+  databaseService = database;
 }
 
 /**
@@ -36,6 +44,17 @@ export const healthResolvers = {
     const isHealthy = Boolean(userService);
     logger.info({ operation: 'health', isHealthy }, 'Health check completed');
     return isHealthy;
+  },
+
+  /**
+   * Get the current database tag
+   * @returns The tag name of the currently active database
+   */
+  databaseTag: (): string => {
+    logger.debug({ operation: 'databaseTag' }, 'Getting current database tag');
+    const tag = databaseService?.getCurrentTag() || 'default';
+    logger.info({ operation: 'databaseTag', tag }, 'Database tag retrieved');
+    return tag;
   },
 
   /**

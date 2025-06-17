@@ -730,6 +730,12 @@ export const typeDefs = gql`
     health: Boolean!
 
     """
+    Get the current database tag in use
+    Returns the tag name of the currently active database
+    """
+    databaseTag: String!
+
+    """
     Get backend configuration (sensitive values excluded)
     This returns a dynamic configuration object that includes all fields from JSON config files.
 

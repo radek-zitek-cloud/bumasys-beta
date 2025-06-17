@@ -44,6 +44,9 @@
       <span :class="ready ? 'text-success' : 'text-error'">
         Backend: {{ ready ? "ready" : "offline" }}
       </span>
+      <span v-if="ready && databaseTag" class="text-info">
+        &nbsp;|&nbsp;DB: {{ databaseTag }}
+      </span>
       <template v-if="userSummary">&nbsp;|&nbsp;Logged in as {{ userSummary }}</template>
       &nbsp;|&nbsp;© {{ new Date().getFullYear() }}
       <span class="d-none d-sm-inline-block">Radek Zitek</span>
@@ -83,6 +86,13 @@
    */
   const ready = ref<boolean | null>(null)
 
+  /**
+   * Current database tag indicator.
+   * Shows which database environment is currently active.
+   * Will be populated when backend health check succeeds.
+   */
+  const databaseTag = ref<string | null>(null)
+
   /** Authentication store for accessing user details */
   const auth = useAuthStore()
   const { user } = storeToRefs(auth)
@@ -105,19 +115,23 @@
   /**
    * Query the backend health endpoint and update the readiness state.
    * Called on component mount to check initial backend connectivity.
-   * Uses the GraphQL health query to verify backend availability.
+   * Uses the GraphQL health query to verify backend availability and get database tag.
    */
   onMounted(async () => {
     try {
       const res = await fetch('/graphql', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: 'query{ health }' }),
+        body: JSON.stringify({ 
+          query: 'query { health databaseTag }' 
+        }),
       })
       const json = await res.json()
       ready.value = json?.data?.health === true
+      databaseTag.value = json?.data?.databaseTag || null
     } catch {
       ready.value = false
+      databaseTag.value = null
     }
   })
 </script>
