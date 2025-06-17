@@ -27,9 +27,9 @@
       :items-per-page-options="tableConfig.itemsPerPageOptions"
       :loading="organizationManagement.organizationLoading.value"
       @create="organizationManagement.openCreateDialog"
+      @delete="organizationManagement.openDeleteDialog"
       @edit="organizationManagement.openEditDialog"
       @view="organizationManagement.openViewDialog"
-      @delete="organizationManagement.openDeleteDialog"
     />
 
     <!-- Departments Table -->
@@ -43,10 +43,10 @@
       :items-per-page-options="tableConfig.itemsPerPageOptions"
       :loading="departmentManagement.departmentLoading.value"
       @create="departmentManagement.openCreateDialog"
-      @edit="departmentManagement.openEditDialog"
-      @view="departmentManagement.openViewDialog"
       @delete="departmentManagement.openDeleteDialog"
+      @edit="departmentManagement.openEditDialog"
       @tree="departmentManagement.openTreeDialog"
+      @view="departmentManagement.openViewDialog"
     />
 
     <!-- Staff Table -->
@@ -109,175 +109,175 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
-import type { CreateDepartmentInput, UpdateDepartmentInput } from '../services/departments'
-import type { CreateOrganizationInput, UpdateOrganizationInput } from '../services/organizations'
-import type { CreateStaffInput, UpdateStaffInput } from '../services/staff'
-import type { CreateUserInput } from '../services/users'
+  import type { CreateDepartmentInput, UpdateDepartmentInput } from '../services/departments'
+  import type { CreateOrganizationInput, UpdateOrganizationInput } from '../services/organizations'
+  import type { CreateStaffInput, UpdateStaffInput } from '../services/staff'
+  import type { CreateUserInput } from '../services/users'
+  import { onMounted, ref } from 'vue'
 
-// Composables
-import { useOrganizationManagement } from '../composables/organization/useOrganizationManagement'
-import { useDepartmentManagement } from '../composables/department/useDepartmentManagement'
-import { useStaffManagement } from '../composables/staff/useStaffManagement'
-import { useDataTableConfig } from '../composables/shared/useDataTableConfig'
-import { useEntityHelpers } from '../composables/shared/useEntityHelpers'
-import { useNotifications } from '../composables/shared/useNotifications'
+  import DepartmentDialogs from '../components/department/DepartmentDialogs.vue'
+  import DepartmentTable from '../components/department/DepartmentTable.vue'
+  import OrganizationDialogs from '../components/organization/OrganizationDialogs.vue'
+  // Components
+  import OrganizationTable from '../components/organization/OrganizationTable.vue'
+  import StaffDialogs from '../components/staff/StaffDialogs.vue'
+  import StaffTable from '../components/staff/StaffTable.vue'
 
-// Components
-import OrganizationTable from '../components/organization/OrganizationTable.vue'
-import DepartmentTable from '../components/department/DepartmentTable.vue'
-import StaffTable from '../components/staff/StaffTable.vue'
-import OrganizationDialogs from '../components/organization/OrganizationDialogs.vue'
-import DepartmentDialogs from '../components/department/DepartmentDialogs.vue'
-import StaffDialogs from '../components/staff/StaffDialogs.vue'
+  import { useDepartmentManagement } from '../composables/department/useDepartmentManagement'
+  // Composables
+  import { useOrganizationManagement } from '../composables/organization/useOrganizationManagement'
+  import { useDataTableConfig } from '../composables/shared/useDataTableConfig'
+  import { useEntityHelpers } from '../composables/shared/useEntityHelpers'
+  import { useNotifications } from '../composables/shared/useNotifications'
+  import { useStaffManagement } from '../composables/staff/useStaffManagement'
 
-// Services
-import * as userService from '../services/users'
+  // Services
+  import * as userService from '../services/users'
 
-// Initialize composables
-const organizationManagement = useOrganizationManagement()
-const departmentManagement = useDepartmentManagement()
-const staffManagement = useStaffManagement()
-const tableConfig = useDataTableConfig()
-const notifications = useNotifications()
+  // Initialize composables
+  const organizationManagement = useOrganizationManagement()
+  const departmentManagement = useDepartmentManagement()
+  const staffManagement = useStaffManagement()
+  const tableConfig = useDataTableConfig()
+  const notifications = useNotifications()
 
-// Entity helpers
-const entityHelpers = useEntityHelpers(
-  organizationManagement.organizations,
-  departmentManagement.departments,
-  staffManagement.staff,
-)
+  // Entity helpers
+  const entityHelpers = useEntityHelpers(
+    organizationManagement.organizations,
+    departmentManagement.departments,
+    staffManagement.staff,
+  )
 
-// Data table configuration
-const itemsPerPage = ref(10)
+  // Data table configuration
+  const itemsPerPage = ref(10)
 
-/**
- * Organization event handlers
- */
-async function handleOrganizationCreated(data: CreateOrganizationInput) {
-  try {
-    await organizationManagement.createOrganization(data)
-    notifications.showSuccess('Organization created successfully')
-  } catch (error) {
-    console.error('Error creating organization:', error)
-    notifications.showError((error as Error).message)
+  /**
+   * Organization event handlers
+   */
+  async function handleOrganizationCreated (data: CreateOrganizationInput) {
+    try {
+      await organizationManagement.createOrganization(data)
+      notifications.showSuccess('Organization created successfully')
+    } catch (error) {
+      console.error('Error creating organization:', error)
+      notifications.showError((error as Error).message)
+    }
   }
-}
 
-async function handleOrganizationUpdated(data: UpdateOrganizationInput) {
-  try {
-    await organizationManagement.updateOrganization(data)
-    notifications.showSuccess('Organization updated successfully')
-  } catch (error) {
-    console.error('Error updating organization:', error)
-    notifications.showError((error as Error).message)
+  async function handleOrganizationUpdated (data: UpdateOrganizationInput) {
+    try {
+      await organizationManagement.updateOrganization(data)
+      notifications.showSuccess('Organization updated successfully')
+    } catch (error) {
+      console.error('Error updating organization:', error)
+      notifications.showError((error as Error).message)
+    }
   }
-}
 
-async function handleOrganizationDeleted(organizationId: string) {
-  try {
-    await organizationManagement.deleteOrganization(organizationId)
-    notifications.showSuccess('Organization deleted successfully')
-  } catch (error) {
-    console.error('Error deleting organization:', error)
-    notifications.showError((error as Error).message)
+  async function handleOrganizationDeleted (organizationId: string) {
+    try {
+      await organizationManagement.deleteOrganization(organizationId)
+      notifications.showSuccess('Organization deleted successfully')
+    } catch (error) {
+      console.error('Error deleting organization:', error)
+      notifications.showError((error as Error).message)
+    }
   }
-}
 
-/**
- * Department event handlers
- */
-async function handleDepartmentCreated(data: CreateDepartmentInput) {
-  try {
-    await departmentManagement.createDepartment(data)
-    notifications.showSuccess('Department created successfully')
-  } catch (error) {
-    console.error('Error creating department:', error)
-    notifications.showError((error as Error).message)
+  /**
+   * Department event handlers
+   */
+  async function handleDepartmentCreated (data: CreateDepartmentInput) {
+    try {
+      await departmentManagement.createDepartment(data)
+      notifications.showSuccess('Department created successfully')
+    } catch (error) {
+      console.error('Error creating department:', error)
+      notifications.showError((error as Error).message)
+    }
   }
-}
 
-async function handleDepartmentUpdated(data: UpdateDepartmentInput) {
-  try {
-    await departmentManagement.updateDepartment(data)
-    notifications.showSuccess('Department updated successfully')
-  } catch (error) {
-    console.error('Error updating department:', error)
-    notifications.showError((error as Error).message)
+  async function handleDepartmentUpdated (data: UpdateDepartmentInput) {
+    try {
+      await departmentManagement.updateDepartment(data)
+      notifications.showSuccess('Department updated successfully')
+    } catch (error) {
+      console.error('Error updating department:', error)
+      notifications.showError((error as Error).message)
+    }
   }
-}
 
-async function handleDepartmentDeleted(departmentId: string) {
-  try {
-    await departmentManagement.deleteDepartment(departmentId)
-    notifications.showSuccess('Department deleted successfully')
-  } catch (error) {
-    console.error('Error deleting department:', error)
-    notifications.showError((error as Error).message)
+  async function handleDepartmentDeleted (departmentId: string) {
+    try {
+      await departmentManagement.deleteDepartment(departmentId)
+      notifications.showSuccess('Department deleted successfully')
+    } catch (error) {
+      console.error('Error deleting department:', error)
+      notifications.showError((error as Error).message)
+    }
   }
-}
 
-/**
- * Staff event handlers
- */
-async function handleStaffCreated(data: CreateStaffInput) {
-  try {
-    await staffManagement.createStaff(data)
-    notifications.showSuccess('Staff member created successfully')
-  } catch (error) {
-    console.error('Error creating staff member:', error)
-    notifications.showError((error as Error).message)
+  /**
+   * Staff event handlers
+   */
+  async function handleStaffCreated (data: CreateStaffInput) {
+    try {
+      await staffManagement.createStaff(data)
+      notifications.showSuccess('Staff member created successfully')
+    } catch (error) {
+      console.error('Error creating staff member:', error)
+      notifications.showError((error as Error).message)
+    }
   }
-}
 
-async function handleStaffUpdated(data: UpdateStaffInput) {
-  try {
-    await staffManagement.updateStaff(data)
-    notifications.showSuccess('Staff member updated successfully')
-  } catch (error) {
-    console.error('Error updating staff member:', error)
-    notifications.showError((error as Error).message)
+  async function handleStaffUpdated (data: UpdateStaffInput) {
+    try {
+      await staffManagement.updateStaff(data)
+      notifications.showSuccess('Staff member updated successfully')
+    } catch (error) {
+      console.error('Error updating staff member:', error)
+      notifications.showError((error as Error).message)
+    }
   }
-}
 
-async function handleStaffDeleted(staffId: string) {
-  try {
-    await staffManagement.deleteStaff(staffId)
-    notifications.showSuccess('Staff member deleted successfully')
-  } catch (error) {
-    console.error('Error deleting staff member:', error)
-    notifications.showError((error as Error).message)
+  async function handleStaffDeleted (staffId: string) {
+    try {
+      await staffManagement.deleteStaff(staffId)
+      notifications.showSuccess('Staff member deleted successfully')
+    } catch (error) {
+      console.error('Error deleting staff member:', error)
+      notifications.showError((error as Error).message)
+    }
   }
-}
 
-/**
- * User creation from staff handler
- */
-async function handleUserCreatedFromStaff(userData: CreateUserInput) {
-  try {
-    const { createUser } = await userService.createUser(userData)
-    staffManagement.showCreateUserFromStaffDialog.value = false
-    staffManagement.userCreationData.value = null
-    notifications.showSuccess(`User account created successfully for ${createUser.firstName} ${createUser.lastName}`)
-  } catch (error) {
-    console.error('Error creating user from staff:', error)
-    notifications.showError((error as Error).message)
+  /**
+   * User creation from staff handler
+   */
+  async function handleUserCreatedFromStaff (userData: CreateUserInput) {
+    try {
+      const { createUser } = await userService.createUser(userData)
+      staffManagement.showCreateUserFromStaffDialog.value = false
+      staffManagement.userCreationData.value = null
+      notifications.showSuccess(`User account created successfully for ${createUser.firstName} ${createUser.lastName}`)
+    } catch (error) {
+      console.error('Error creating user from staff:', error)
+      notifications.showError((error as Error).message)
+    }
   }
-}
 
-/**
- * Initialize data on component mount
- */
-onMounted(async () => {
-  try {
-    await Promise.all([
-      organizationManagement.loadOrganizations(),
-      departmentManagement.loadDepartments(),
-      staffManagement.loadStaff(),
-    ])
-  } catch (error) {
-    console.error('Error loading data:', error)
-    notifications.showError('Failed to load organization data')
-  }
-})
+  /**
+   * Initialize data on component mount
+   */
+  onMounted(async () => {
+    try {
+      await Promise.all([
+        organizationManagement.loadOrganizations(),
+        departmentManagement.loadDepartments(),
+        staffManagement.loadStaff(),
+      ])
+    } catch (error) {
+      console.error('Error loading data:', error)
+      notifications.showError('Failed to load organization data')
+    }
+  })
 </script>

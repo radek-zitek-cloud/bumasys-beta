@@ -37,13 +37,15 @@
           >
             <!-- Project Node Template -->
             <template #node-project="{ data }">
-              <div class="custom-project-node">
-                <div class="node-icon">
-                  <v-icon color="white">mdi-folder-outline</v-icon>
+              <div class="custom-project-container">
+                <div class="project-header">
+                  <div class="project-icon">
+                    <v-icon color="white">mdi-folder-outline</v-icon>
+                  </div>
+                  <div class="project-title">{{ data.name }}</div>
                 </div>
-                <div class="node-content">
-                  <div class="node-name">{{ data.name }}</div>
-                  <div class="node-type">Project</div>
+                <div class="project-content">
+                  <!-- Project content area for child tasks -->
                 </div>
               </div>
             </template>
@@ -51,6 +53,12 @@
             <!-- Current Task Node Template -->
             <template #node-currentTask="{ data }">
               <div class="custom-current-task-node">
+                <!-- Connection handles -->
+                <Handle type="target" :position="Position.Left" class="task-handle" />
+                <Handle type="source" :position="Position.Right" class="task-handle" />
+                <Handle type="source" :position="Position.Bottom" class="task-handle" />
+                <Handle type="target" :position="Position.Top" class="task-handle" />
+                
                 <div class="node-icon">
                   <v-icon color="white">mdi-clipboard-text</v-icon>
                 </div>
@@ -64,6 +72,12 @@
             <!-- Predecessor Task Node Template -->
             <template #node-predecessor="{ data }">
               <div class="custom-predecessor-node">
+                <!-- Connection handles -->
+                <Handle type="target" :position="Position.Left" class="task-handle" />
+                <Handle type="source" :position="Position.Right" class="task-handle" />
+                <Handle type="source" :position="Position.Bottom" class="task-handle" />
+                <Handle type="target" :position="Position.Top" class="task-handle" />
+                
                 <div class="node-icon">
                   <v-icon color="white">mdi-arrow-right</v-icon>
                 </div>
@@ -78,6 +92,12 @@
             <!-- Child Task Node Template -->
             <template #node-childTask="{ data }">
               <div class="custom-child-task-node">
+                <!-- Connection handles -->
+                <Handle type="target" :position="Position.Left" class="task-handle" />
+                <Handle type="source" :position="Position.Right" class="task-handle" />
+                <Handle type="source" :position="Position.Bottom" class="task-handle" />
+                <Handle type="target" :position="Position.Top" class="task-handle" />
+                
                 <div class="node-icon">
                   <v-icon color="white">mdi-subdirectory-arrow-right</v-icon>
                 </div>
@@ -93,6 +113,12 @@
             <!-- Legacy Task Node Template (for backward compatibility) -->
             <template #node-task="{ data }">
               <div class="custom-task-node">
+                <!-- Connection handles -->
+                <Handle type="target" :position="Position.Left" class="task-handle" />
+                <Handle type="source" :position="Position.Right" class="task-handle" />
+                <Handle type="source" :position="Position.Bottom" class="task-handle" />
+                <Handle type="target" :position="Position.Top" class="task-handle" />
+                
                 <div class="node-icon">
                   <v-icon color="primary">mdi-clipboard-text</v-icon>
                 </div>
@@ -118,7 +144,7 @@
 <script lang="ts" setup>
   import type { Task } from '../../services/tasks'
 
-  import { VueFlow } from '@vue-flow/core'
+  import { VueFlow, Handle, Position } from '@vue-flow/core'
 
   import { computed, onMounted, ref } from 'vue'
 
@@ -162,54 +188,90 @@
       const nodes: any[] = []
       const edges: any[] = []
 
-      // Calculate positioning
-      const centerX = 400
-      const centerY = 300
-      const nodeSpacing = 250
-
-      // 1. Create project node (as a container/parent)
-      if (task.project) {
-        nodes.push({
-          id: `project-${task.project.id}`,
-          type: 'project',
-          position: { x: centerX - 150, y: centerY - 200 },
-          data: {
-            name: task.project.name,
-            type: 'project',
-          },
-        })
+      // Collect all tasks and group by project
+      const allTasks = [task]
+      if (task.predecessors) {
+        allTasks.push(...task.predecessors)
+      }
+      if (task.childTasks) {
+        allTasks.push(...task.childTasks)
       }
 
-      // 2. Create current task node (center)
-      nodes.push({
-        id: task.id,
-        type: 'currentTask',
-        position: { x: centerX, y: centerY },
-        data: {
-          name: task.name,
-          project: task.project?.name || 'Unknown Project',
-          type: 'current',
-        },
-      })
+      // Group tasks by project
+      const tasksByProject = new Map()
+      for (const t of allTasks) {
+        const projectId = t.project?.id || 'unknown'
+        if (!tasksByProject.has(projectId)) {
+          tasksByProject.set(projectId, {
+            project: t.project || { id: 'unknown', name: 'Unknown Project' },
+            tasks: []
+          })
+        }
+        tasksByProject.get(projectId).tasks.push(t)
+      }
 
-      // 3. Create predecessor nodes (to the left)
-      if (task.predecessors && task.predecessors.length > 0) {
-        for (const [index, predecessor] of task.predecessors.entries()) {
-          const predecessorX = centerX - nodeSpacing - 100
-          const predecessorY = centerY + (index - (task.predecessors!.length - 1) / 2) * 120
+      // Layout constants
+      const projectSpacing = 500
+      const taskSpacing = 200
+      let currentProjectX = 100
+
+      // Create nodes for each project and its tasks
+      for (const [projectId, { project, tasks }] of tasksByProject.entries()) {
+        // Calculate project dimensions based on contained tasks
+        const projectWidth = Math.max(300, tasks.length * taskSpacing)
+        const projectHeight = 400
+
+        // Create project container node
+        nodes.push({
+          id: `project-${projectId}`,
+          type: 'project',
+          position: { x: currentProjectX, y: 100 },
+          data: {
+            name: project.name,
+            type: 'project',
+          },
+          style: {
+            width: projectWidth,
+            height: projectHeight,
+          },
+        })
+
+        // Create task nodes as children of their project
+        for (const [taskIndex, taskItem] of tasks.entries()) {
+          let taskType = 'task'
+          if (taskItem.id === task.id) {
+            taskType = 'currentTask'
+          } else if (task.predecessors?.some(p => p.id === taskItem.id)) {
+            taskType = 'predecessor'
+          } else if (task.childTasks?.some(c => c.id === taskItem.id)) {
+            taskType = 'childTask'
+          }
+
+          // Position relative to parent project
+          const taskX = 50 + (taskIndex * 180)
+          const taskY = 80
 
           nodes.push({
-            id: predecessor.id,
-            type: 'predecessor',
-            position: { x: predecessorX, y: predecessorY },
+            id: taskItem.id,
+            type: taskType,
+            position: { x: taskX, y: taskY },
+            parentNode: `project-${projectId}`,
+            extent: 'parent',
             data: {
-              name: predecessor.name,
-              project: predecessor.project?.name || 'Unknown Project',
-              type: 'predecessor',
+              name: taskItem.name,
+              project: taskItem.project?.name || 'Unknown Project',
+              status: taskItem.status?.name || 'Unknown',
+              type: taskType === 'currentTask' ? 'current' : taskType,
             },
           })
+        }
 
-          // Add edge from predecessor to current task
+        currentProjectX += projectWidth + projectSpacing
+      }
+
+      // Create edges between tasks (same as before)
+      if (task.predecessors && task.predecessors.length > 0) {
+        for (const predecessor of task.predecessors) {
           edges.push({
             id: `edge-${predecessor.id}-${task.id}`,
             source: predecessor.id,
@@ -222,25 +284,8 @@
         }
       }
 
-      // 4. Create child task nodes (below)
       if (task.childTasks && task.childTasks.length > 0) {
-        for (const [index, childTask] of task.childTasks.entries()) {
-          const childX = centerX + (index - (task.childTasks!.length - 1) / 2) * 200
-          const childY = centerY + nodeSpacing
-
-          nodes.push({
-            id: childTask.id,
-            type: 'childTask',
-            position: { x: childX, y: childY },
-            data: {
-              name: childTask.name,
-              project: childTask.project?.name || task.project?.name || 'Unknown Project',
-              status: childTask.status?.name || 'Unknown',
-              type: 'child',
-            },
-          })
-
-          // Add edge from current task to child task
+        for (const childTask of task.childTasks) {
           edges.push({
             id: `edge-${task.id}-${childTask.id}`,
             source: task.id,
@@ -341,25 +386,57 @@
     transform: translateY(-1px);
   }
 
-  /* Project Node Styles */
-  .custom-project-node {
+  /* Project Container Styles */
+  .custom-project-container {
     background: linear-gradient(135deg, #6A1B9A, #8E24AA);
-    border: 2px solid #4A148C;
-    border-radius: 12px;
-    padding: 16px 20px;
-    min-width: 250px;
+    border: 3px solid #4A148C;
+    border-radius: 16px;
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Roboto', sans-serif;
+    box-shadow: 0 6px 24px rgba(106, 27, 154, 0.3);
+    transition: all 0.2s ease;
+    color: white;
+    position: relative;
+  }
+
+  .custom-project-container:hover {
+    box-shadow: 0 8px 32px rgba(106, 27, 154, 0.4);
+  }
+
+  .project-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    font-family: 'Roboto', sans-serif;
-    box-shadow: 0 4px 16px rgba(106, 27, 154, 0.3);
-    transition: all 0.2s ease;
-    color: white;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
   }
 
-  .custom-project-node:hover {
-    box-shadow: 0 6px 20px rgba(106, 27, 154, 0.4);
-    transform: translateY(-2px);
+  .project-icon {
+    flex-shrink: 0;
+  }
+
+  .project-title {
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1.2;
+  }
+
+  .project-content {
+    flex: 1;
+    position: relative;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    min-height: 200px;
+  }
+
+  /* Legacy Project Node Styles (hidden, replaced by container) */
+  .custom-project-node {
+    display: none;
   }
 
   /* Current Task Node Styles */
@@ -469,5 +546,22 @@
 
   .custom-task-node .node-project {
     color: #666;
+  }
+
+  /* Task Node Handle Styles */
+  .task-handle {
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border: 2px solid #666;
+    border-radius: 50%;
+  }
+
+  .task-handle.connectable {
+    border-color: #2196F3;
+  }
+
+  .task-handle.connectingfrom {
+    border-color: #FF9800;
   }
 </style>
