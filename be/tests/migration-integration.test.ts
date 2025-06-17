@@ -9,18 +9,17 @@ interface UserIdMapping {
 
 // Simple function to migrate user IDs for testing
 async function testMigrateUserIds(dbFilePath: string): Promise<void> {
-  console.log('Starting user ID migration to UUID...');
-  console.log(`Database file: ${dbFilePath}`);
+  // ...removed debug logging...
 
   // Check if database file exists
   if (!fs.existsSync(dbFilePath)) {
-    console.log('Database file does not exist. No migration needed.');
+    // ...removed debug logging...
     return;
   }
 
   // Create backup
   const backupPath = `${dbFilePath}.backup.${Date.now()}`;
-  console.log(`Creating backup at: ${backupPath}`);
+  // ...removed debug logging...
   fs.copyFileSync(dbFilePath, backupPath);
 
   // Read current database
@@ -31,7 +30,7 @@ async function testMigrateUserIds(dbFilePath: string): Promise<void> {
   const userIdMappings: UserIdMapping[] = [];
 
   // Convert user IDs
-  console.log(`Found ${db.users ? db.users.length : 0} users to migrate`);
+  // ...removed debug logging...
 
   if (db.users && db.users.length > 0) {
     db.users.forEach((user: any, index: number) => {
@@ -42,31 +41,22 @@ async function testMigrateUserIds(dbFilePath: string): Promise<void> {
       const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       if (uuidRegex.test(oldId)) {
-        console.log(
-          `User ${index + 1}: ID ${oldId} is already a UUID, skipping`,
-        );
+        // ...removed debug logging...
         return;
       }
 
       user.id = newId;
       userIdMappings.push({ oldId, newId });
 
-      console.log(`User ${index + 1}: ${oldId} -> ${newId} (${user.email})`);
+      // ...removed debug logging...
     });
   }
 
   // Update session userIds
-  console.log(
-    `Found ${db.sessions ? db.sessions.length : 0} sessions to update`,
-  );
-
   if (db.sessions && db.sessions.length > 0) {
-    db.sessions.forEach((session: any, index: number) => {
+    db.sessions.forEach((session: any) => {
       const mapping = userIdMappings.find((m) => m.oldId === session.userId);
       if (mapping) {
-        console.log(
-          `Session ${index + 1}: userId ${mapping.oldId} -> ${mapping.newId}`,
-        );
         session.userId = mapping.newId;
       }
     });
@@ -75,15 +65,13 @@ async function testMigrateUserIds(dbFilePath: string): Promise<void> {
   // Write updated database
   fs.writeFileSync(dbFilePath, JSON.stringify(db, null, 2));
 
-  console.log('Migration completed successfully!');
-  console.log(`Migrated ${userIdMappings.length} user IDs`);
-  console.log(`Backup saved at: ${backupPath}`);
+  // ...removed debug logging...
 
   if (userIdMappings.length > 0) {
     // Save ID mappings for reference
     const mappingPath = `${dbFilePath}.id-mapping.${Date.now()}.json`;
     fs.writeFileSync(mappingPath, JSON.stringify(userIdMappings, null, 2));
-    console.log(`ID mappings saved at: ${mappingPath}`);
+    // ...removed debug logging...
   }
 }
 
