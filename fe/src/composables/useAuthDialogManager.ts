@@ -1,13 +1,13 @@
 /**
- * @fileoverview Dialog Management Composable
+ * @fileoverview Authentication Dialog Management Composable
  *
- * This composable provides centralized dialog state management for the application.
- * It consolidates multiple dialog refs into a single, well-organized state manager
- * that ensures consistent behavior and provides a clean API for dialog operations.
+ * This composable provides centralized dialog state management for authentication and application-level dialogs.
+ * It consolidates authentication flow dialogs and app-level system dialogs into a single, well-organized state manager
+ * that ensures consistent behavior and provides a clean API for auth dialog operations.
  *
  * Features:
- * - Centralized dialog state management
- * - Type-safe dialog names and operations
+ * - Centralized authentication dialog state management
+ * - Type-safe auth dialog names and operations
  * - Single dialog open policy (optional)
  * - Bulk dialog operations
  * - Dialog state persistence (optional)
@@ -23,15 +23,15 @@
  *   closeAllDialogs,
  *   hasOpenDialog,
  *   activeDialog
- * } = useDialogManager()
+ * } = useAuthDialogManager()
  *
- * // Open a specific dialog
+ * // Open a specific authentication dialog
  * openDialog('login')
  *
  * // Close a specific dialog
  * closeDialog('login')
  *
- * // Check if any dialog is open
+ * // Check if any auth dialog is open
  * if (hasOpenDialog.value) {
  *   // Handle open dialog state
  * }
@@ -48,9 +48,9 @@ import { computed, reactive, readonly, watch } from 'vue'
 import { useLogger } from './useLogger'
 
 /**
- * Available dialog types in the application
+ * Available authentication dialog types in the application
  */
-export type DialogType =
+export type AuthDialogType =
   | 'login'
   | 'register'
   | 'reset'
@@ -76,7 +76,7 @@ export interface DialogConfig {
 /**
  * Dialog manager options
  */
-export interface DialogManagerOptions {
+export interface AuthDialogManagerOptions {
   /** Whether only one dialog can be open at a time */
   singleDialogMode?: boolean
   /** Whether to persist dialog state in localStorage */
@@ -90,7 +90,7 @@ export interface DialogManagerOptions {
 /**
  * Default dialog configurations
  */
-const defaultDialogConfigs: Record<DialogType, Omit<DialogConfig, 'isOpen'>> = {
+const defaultDialogConfigs: Record<AuthDialogType, Omit<DialogConfig, 'isOpen'>> = {
   login: { maxWidth: 400, persistent: true },
   register: { maxWidth: 400, persistent: true },
   reset: { maxWidth: 400, persistent: true },
@@ -101,9 +101,9 @@ const defaultDialogConfigs: Record<DialogType, Omit<DialogConfig, 'isOpen'>> = {
 }
 
 /**
- * Default options for dialog manager
+ * Default options for authentication dialog manager
  */
-const defaultOptions: Required<DialogManagerOptions> = {
+const defaultOptions: Required<AuthDialogManagerOptions> = {
   singleDialogMode: true,
   persistState: false,
   persistKey: 'dialog-manager-state',
@@ -111,21 +111,21 @@ const defaultOptions: Required<DialogManagerOptions> = {
 }
 
 /**
- * Dialog management composable
+ * Authentication dialog management composable
  * Provides centralized dialog state management with type safety and consistent behavior
  */
-export function useDialogManager (options: DialogManagerOptions = {}) {
+export function useAuthDialogManager (options: AuthDialogManagerOptions = {}) {
   const opts = { ...defaultOptions, ...options }
   const { logDebug, logWarn } = useLogger()
 
   /**
    * Initialize dialog states
    */
-  function initializeDialogs (): Record<DialogType, DialogConfig> {
-    const dialogStates: Record<DialogType, DialogConfig> = {} as Record<DialogType, DialogConfig>
+  function initializeDialogs (): Record<AuthDialogType, DialogConfig> {
+    const dialogStates: Record<AuthDialogType, DialogConfig> = {} as Record<AuthDialogType, DialogConfig>
 
     for (const [type, config] of Object.entries(defaultDialogConfigs)) {
-      dialogStates[type as DialogType] = {
+      dialogStates[type as AuthDialogType] = {
         isOpen: false,
         ...config,
       }
@@ -137,7 +137,7 @@ export function useDialogManager (options: DialogManagerOptions = {}) {
   /**
    * Load persisted dialog state from localStorage
    */
-  function loadPersistedState (): Record<DialogType, DialogConfig> {
+  function loadPersistedState (): Record<AuthDialogType, DialogConfig> {
     if (!opts.persistState || typeof window === 'undefined') {
       return initializeDialogs()
     }
@@ -150,9 +150,9 @@ export function useDialogManager (options: DialogManagerOptions = {}) {
 
         // Merge persisted state with default configs, but don't persist open states
         for (const [type, config] of Object.entries(persistedState)) {
-          if (initializedDialogs[type as DialogType] && config && typeof config === 'object') {
-            initializedDialogs[type as DialogType] = {
-              ...initializedDialogs[type as DialogType],
+          if (initializedDialogs[type as AuthDialogType] && config && typeof config === 'object') {
+            initializedDialogs[type as AuthDialogType] = {
+              ...initializedDialogs[type as AuthDialogType],
               ...(config as Partial<DialogConfig>),
               isOpen: false, // Never persist open state for security
             }
@@ -199,7 +199,7 @@ export function useDialogManager (options: DialogManagerOptions = {}) {
   /**
    * Reactive dialog states
    */
-  const dialogs = reactive<Record<DialogType, DialogConfig>>(loadPersistedState())
+  const dialogs = reactive<Record<AuthDialogType, DialogConfig>>(loadPersistedState())
 
   /**
    * Watch for changes and persist state if enabled
@@ -220,9 +220,9 @@ export function useDialogManager (options: DialogManagerOptions = {}) {
   /**
    * Computed property to get the currently active dialog
    */
-  const activeDialog = computed((): DialogType | null => {
+  const activeDialog = computed((): AuthDialogType | null => {
     const openDialog = Object.entries(dialogs).find(([, config]) => config.isOpen)
-    return openDialog ? (openDialog[0] as DialogType) : null
+    return openDialog ? (openDialog[0] as AuthDialogType) : null
   })
 
   /**
@@ -233,11 +233,11 @@ export function useDialogManager (options: DialogManagerOptions = {}) {
   )
 
   /**
-   * Open a specific dialog
+   * Open a specific authentication dialog
    * @param dialogType - The type of dialog to open
    * @param config - Optional configuration overrides
    */
-  function openDialog (dialogType: DialogType, config?: Partial<DialogConfig>): void {
+  function openDialog (dialogType: AuthDialogType, config?: Partial<DialogConfig>): void {
     if (!dialogs[dialogType]) {
       if (opts.enableLogging) {
         logWarn('Attempted to open unknown dialog type', { dialogType })
@@ -270,7 +270,7 @@ export function useDialogManager (options: DialogManagerOptions = {}) {
    * Close a specific dialog
    * @param dialogType - The type of dialog to close
    */
-  function closeDialog (dialogType: DialogType): void {
+  function closeDialog (dialogType: AuthDialogType): void {
     if (!dialogs[dialogType]) {
       if (opts.enableLogging) {
         logWarn('Attempted to close unknown dialog type', { dialogType })
@@ -294,12 +294,12 @@ export function useDialogManager (options: DialogManagerOptions = {}) {
    * Close all open dialogs
    */
   function closeAllDialogs (): void {
-    const openDialogs: DialogType[] = []
+    const openDialogs: AuthDialogType[] = []
 
     for (const [type, config] of Object.entries(dialogs)) {
       if (config.isOpen) {
         config.isOpen = false
-        openDialogs.push(type as DialogType)
+        openDialogs.push(type as AuthDialogType)
       }
     }
 
@@ -312,7 +312,7 @@ export function useDialogManager (options: DialogManagerOptions = {}) {
    * Toggle a dialog's open state
    * @param dialogType - The type of dialog to toggle
    */
-  function toggleDialog (dialogType: DialogType): void {
+  function toggleDialog (dialogType: AuthDialogType): void {
     if (dialogs[dialogType].isOpen) {
       closeDialog(dialogType)
     } else {
@@ -324,7 +324,7 @@ export function useDialogManager (options: DialogManagerOptions = {}) {
    * Check if a specific dialog is open
    * @param dialogType - The type of dialog to check
    */
-  function isDialogOpen (dialogType: DialogType): boolean {
+  function isDialogOpen (dialogType: AuthDialogType): boolean {
     return dialogs[dialogType]?.isOpen ?? false
   }
 
@@ -333,7 +333,7 @@ export function useDialogManager (options: DialogManagerOptions = {}) {
    * @param dialogType - The type of dialog to update
    * @param config - Configuration updates
    */
-  function updateDialogConfig (dialogType: DialogType, config: Partial<DialogConfig>): void {
+  function updateDialogConfig (dialogType: AuthDialogType, config: Partial<DialogConfig>): void {
     if (!dialogs[dialogType]) {
       if (opts.enableLogging) {
         logWarn('Attempted to update unknown dialog type', { dialogType })
@@ -352,7 +352,7 @@ export function useDialogManager (options: DialogManagerOptions = {}) {
    * Get dialog configuration
    * @param dialogType - The type of dialog to get config for
    */
-  function getDialogConfig (dialogType: DialogType): DialogConfig | null {
+  function getDialogConfig (dialogType: AuthDialogType): DialogConfig | null {
     return dialogs[dialogType] || null
   }
 
@@ -363,7 +363,7 @@ export function useDialogManager (options: DialogManagerOptions = {}) {
     const initialDialogs = initializeDialogs()
 
     for (const [type, config] of Object.entries(initialDialogs)) {
-      dialogs[type as DialogType] = config
+      dialogs[type as AuthDialogType] = config
     }
 
     if (opts.enableLogging) {
@@ -393,4 +393,4 @@ export function useDialogManager (options: DialogManagerOptions = {}) {
   }
 }
 
-export default useDialogManager
+export default useAuthDialogManager

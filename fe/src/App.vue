@@ -160,8 +160,8 @@
       v-model="isAuthLoading"
       class="align-center justify-center"
       contained
-      :persistent="true"
       :opacity="0.8"
+      :persistent="true"
     >
       <v-card class="pa-8 text-center" elevation="8" rounded="lg">
         <v-progress-circular
@@ -189,7 +189,7 @@
  * - Top navigation bar with theme toggle and user menu
  * - Side navigation drawer with main navigation items (managed by useNavigation composable)
  * - Main content area with router-view
- * - Authentication dialogs with loading states and notifications (managed by useDialogManager composable)
+ * - Authentication dialogs with loading states and notifications (managed by useAuthDialogManager composable)
  * - Footer component
  * - Global loading overlay for authentication operations with enhanced UX
  * - Keyboard shortcuts for common actions (Ctrl+L, Ctrl+T, Ctrl+D, Escape)
@@ -198,7 +198,7 @@
  * separation of concerns and reusability. All navigation state management, items
  * configuration, and access control is handled by the composable.
  *
- * The dialog management has been consolidated into the useDialogManager composable
+ * The dialog management has been consolidated into the useAuthDialogManager composable
  * for better state management, type safety, and consistent behavior across all dialogs.
  *
  * Loading states are implemented for all authentication operations to provide
@@ -218,6 +218,7 @@
  * TODO: Consider implementing navigation breadcrumbs for complex workflows
  */
 
+  import type { LoginCredentials, PasswordChangeData, ProfileUpdateData, RegistrationData } from './types/auth'
   import { computed, onMounted, onUnmounted } from 'vue'
   import { useTheme } from 'vuetify'
   import ChangePasswordCard from './components/auth/ChangePasswordCard.vue'
@@ -230,12 +231,11 @@
   import AppFooter from './components/common/AppFooter.vue'
   import NotificationContainer from './components/common/NotificationContainer.vue'
   import { useAuth } from './composables/useAuth'
-  import { useDialogManager } from './composables/useDialogManager'
+  import { useAuthDialogManager } from './composables/useAuthDialogManager'
   import { useLogger } from './composables/useLogger'
   import { useNavigation } from './composables/useNavigation'
   import { useNotifications } from './composables/useNotifications'
   import { useAuthStore } from './stores/auth'
-  import type { LoginCredentials, RegistrationData, PasswordChangeData, ProfileUpdateData } from './types/auth'
 
   const { logInfo, logError, logWarn } = useLogger()
   const { notifySuccess, notifyError } = useNotifications()
@@ -270,7 +270,7 @@
     openDialog,
     closeDialog,
     hasOpenDialog,
-  } = useDialogManager()
+  } = useAuthDialogManager()
 
   /** Authentication store controlling login state. */
   const auth = useAuthStore()
@@ -494,35 +494,35 @@
     const handleKeyboardShortcuts = (event: KeyboardEvent) => {
       // Only handle shortcuts when no dialogs are open to avoid conflicts
       if (hasOpenDialog.value) return
-      
+
       // Ctrl/Cmd + L for Login (when not logged in)
       if ((event.ctrlKey || event.metaKey) && event.key === 'l' && !auth.loggedIn) {
         event.preventDefault()
         openDialog('login')
         return
       }
-      
+
       // Ctrl/Cmd + Shift + L for Logout (when logged in)
       if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'L' && auth.loggedIn) {
         event.preventDefault()
         openDialog('logout')
         return
       }
-      
+
       // Ctrl/Cmd + D for drawer toggle
       if ((event.ctrlKey || event.metaKey) && event.key === 'd') {
         event.preventDefault()
         toggleDrawer()
         return
       }
-      
+
       // Ctrl/Cmd + T for theme toggle
       if ((event.ctrlKey || event.metaKey) && event.key === 't') {
         event.preventDefault()
         toggleTheme()
         return
       }
-      
+
       // Escape to close any open dialog
       if (event.key === 'Escape' && hasOpenDialog.value) {
         // Get the active dialog and close it
@@ -534,7 +534,7 @@
     }
 
     document.addEventListener('keydown', handleKeyboardShortcuts)
-    
+
     // Cleanup on unmount
     onUnmounted(() => {
       document.removeEventListener('keydown', handleKeyboardShortcuts)

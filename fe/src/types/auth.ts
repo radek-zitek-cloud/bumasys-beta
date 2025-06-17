@@ -1,6 +1,6 @@
 /**
  * @fileoverview Authentication-related TypeScript interfaces
- * 
+ *
  * Centralized type definitions for authentication operations to ensure
  * consistency across components and reduce code duplication.
  */

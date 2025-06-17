@@ -43,7 +43,7 @@
  * TODO: Implement notification rate limiting
  */
 
-import { computed, reactive, readonly, ref } from 'vue'
+import { computed, reactive, readonly } from 'vue'
 
 /**
  * Notification type enumeration

@@ -112,32 +112,32 @@
     </v-card>
 
     <!-- Dialogs -->
-    <v-dialog v-model="showCreateDialog" max-width="600" persistent>
+    <v-dialog v-model="dialogs.create.isOpen" max-width="600" persistent>
       <UserCreateDialog
-        @cancel="showCreateDialog = false"
+        @cancel="closeDialog('create')"
         @submit="handleCreateUser"
       />
     </v-dialog>
 
-    <v-dialog v-model="showEditDialog" max-width="600" persistent>
+    <v-dialog v-model="dialogs.edit.isOpen" max-width="600" persistent>
       <UserEditDialog
         :user="selectedUser"
-        @cancel="showEditDialog = false"
+        @cancel="closeDialog('edit')"
         @submit="handleUpdateUser"
       />
     </v-dialog>
 
-    <v-dialog v-model="showViewDialog" max-width="500" persistent>
+    <v-dialog v-model="dialogs.view.isOpen" max-width="500" persistent>
       <UserViewDialog
         :user="selectedUser"
-        @close="showViewDialog = false"
+        @close="closeDialog('view')"
       />
     </v-dialog>
 
-    <v-dialog v-model="showDeleteDialog" max-width="400" persistent>
+    <v-dialog v-model="dialogs.delete.isOpen" max-width="400" persistent>
       <UserDeleteDialog
         :user="selectedUser"
-        @cancel="showDeleteDialog = false"
+        @cancel="closeDialog('delete')"
         @confirm="handleDeleteUser"
       />
     </v-dialog>
@@ -150,26 +150,34 @@
       </v-card>
     </v-overlay>
 
-    <!-- Snackbar for notifications -->
-    <v-snackbar
-      v-model="snackbar.show"
-      :color="snackbar.color"
-      location="bottom"
-      timeout="4000"
-    >
-      {{ snackbar.message }}
-      <template #actions>
-        <v-btn variant="text" @click="snackbar.show = false">Close</v-btn>
-      </template>
-    </v-snackbar>
+    <!-- Global notification system handles notifications -->
   </v-container>
 </template>
 
 <script setup lang="ts">
   import type { VDataTable } from 'vuetify/components'
   import type { CreateUserInput, UpdateUserInput, User } from '../services/users'
-  import { computed, onMounted, reactive, ref } from 'vue'
-  import * as userService from '../services/users'
+  import { computed, onMounted, ref } from 'vue'
+  import { useUserDialogManager } from '../composables/useUserDialogManager'
+  import { useUserManagement } from '../composables/useUserManagement'
+
+  // Combined composables approach for cleaner, more maintainable code
+  const userManagement = useUserManagement()
+  const userDialogs = useUserDialogManager()
+
+  // Destructure for easier access
+  const { users, loading, processing, loadUsers, createUser, updateUser, deleteUser, getFullName } = userManagement
+  const {
+    dialogs,
+    selectedUser,
+    openCreateDialog,
+    openEditDialog,
+    openViewDialog,
+    openDeleteDialog,
+    closeDialog,
+    handleDialogSuccess,
+    handleDialogError,
+  } = userDialogs
 
   /** Data table configuration */
   type DataTableHeaders = VDataTable['$props']['headers']
@@ -198,12 +206,8 @@
     },
   ]
 
-  /** Reactive data */
-  const users = ref<User[]>([])
-  const selectedUser = ref<User | null>(null)
+  // Additional state for the page (not managed by composables)
   const search = ref('')
-  const loading = ref(false)
-  const processing = ref(false)
   const itemsPerPage = ref(10)
   const itemsPerPageOptions = [
     { value: 5, title: '5' },
@@ -212,19 +216,6 @@
     { value: 50, title: '50' },
     { value: -1, title: 'All' },
   ]
-
-  /** Dialog visibility flags */
-  const showCreateDialog = ref(false)
-  const showEditDialog = ref(false)
-  const showViewDialog = ref(false)
-  const showDeleteDialog = ref(false)
-
-  /** Snackbar for notifications */
-  const snackbar = reactive({
-    show: false,
-    message: '',
-    color: 'success' as 'success' | 'error' | 'warning' | 'info',
-  })
 
   /** Computed filtered users for the table */
   const filteredUsers = computed(() => {
@@ -239,116 +230,35 @@
     )
   })
 
-  /** Helper function to get full name */
-  function getFullName (user: User): string {
-    const firstName = user.firstName?.trim() || ''
-    const lastName = user.lastName?.trim() || ''
-    return [firstName, lastName].filter(Boolean).join(' ')
-  }
-
-  /** Show notification */
-  function notify (message: string, color: typeof snackbar.color = 'success') {
-    snackbar.message = message
-    snackbar.color = color
-    snackbar.show = true
-  }
-
-  /** Load users from the API */
-  async function loadUsers () {
-    try {
-      loading.value = true
-      const response = await userService.getUsers()
-      users.value = response.users
-    } catch (error) {
-      console.error('Failed to load users:', error)
-      notify(
-        error instanceof Error ? error.message : 'Failed to load users',
-        'error',
-      )
-    } finally {
-      loading.value = false
-    }
-  }
-
-  /** Open create user dialog */
-  function openCreateDialog () {
-    showCreateDialog.value = true
-  }
-
-  /** Open view user dialog */
-  function openViewDialog (user: User) {
-    selectedUser.value = user
-    showViewDialog.value = true
-  }
-
-  /** Open edit user dialog */
-  function openEditDialog (user: User) {
-    selectedUser.value = user
-    showEditDialog.value = true
-  }
-
-  /** Open delete confirmation dialog */
-  function openDeleteDialog (user: User) {
-    selectedUser.value = user
-    showDeleteDialog.value = true
-  }
-
   /** Handle user creation */
   async function handleCreateUser (userData: CreateUserInput) {
     try {
-      processing.value = true
-      await userService.createUser(userData)
-      notify('User created successfully')
-      showCreateDialog.value = false
-      await loadUsers() // Refresh the list
+      await createUser(userData)
+      handleDialogSuccess('create', 'create')
     } catch (error) {
-      console.error('Failed to create user:', error)
-      notify(
-        error instanceof Error ? error.message : 'Failed to create user',
-        'error',
-      )
-    } finally {
-      processing.value = false
+      handleDialogError('create', 'create', error as Error)
     }
   }
 
   /** Handle user update */
   async function handleUpdateUser (userData: UpdateUserInput) {
     try {
-      processing.value = true
-      await userService.updateUser(userData)
-      notify('User updated successfully')
-      showEditDialog.value = false
-      await loadUsers() // Refresh the list
+      await updateUser(userData)
+      handleDialogSuccess('edit', 'update')
     } catch (error) {
-      console.error('Failed to update user:', error)
-      notify(
-        error instanceof Error ? error.message : 'Failed to update user',
-        'error',
-      )
-    } finally {
-      processing.value = false
+      handleDialogError('edit', 'update', error as Error)
     }
   }
 
   /** Handle user deletion */
   async function handleDeleteUser () {
     if (!selectedUser.value) return
-
+    
     try {
-      processing.value = true
-      await userService.deleteUser(selectedUser.value.id)
-      notify('User deleted successfully')
-      showDeleteDialog.value = false
-      await loadUsers() // Refresh the list
+      await deleteUser(selectedUser.value.id, selectedUser.value.email)
+      handleDialogSuccess('delete', 'delete')
     } catch (error) {
-      console.error('Failed to delete user:', error)
-      notify(
-        error instanceof Error ? error.message : 'Failed to delete user',
-        'error',
-      )
-    } finally {
-      processing.value = false
+      handleDialogError('delete', 'delete', error as Error)
     }
   }
 
