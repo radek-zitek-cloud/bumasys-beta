@@ -75,11 +75,12 @@ export default defineConfig({
     extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue'],
   },
   server: {
+    allowedHosts: ['vm.zitek.cloud', 'localhost'],
     port: 3000,
     proxy: {
       // Proxy API requests during development to the backend GraphQL server
       '/graphql': {
-        target: 'http://localhost:4000',
+        target: 'http://vm.zitek.cloud:4000',
         changeOrigin: true,
       },
     },

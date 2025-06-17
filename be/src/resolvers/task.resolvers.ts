@@ -272,7 +272,7 @@ export const taskMutationResolvers = {
     if (!user) {
       throw new Error('Unauthenticated');
     }
-    return taskProgressService.createTaskProgress(args);
+    return taskProgressService.createTaskProgress(args, user.email);
   },
 
   /**
@@ -386,7 +386,7 @@ export const taskMutationResolvers = {
     if (!user) {
       throw new Error('Unauthenticated');
     }
-    return taskStatusReportService.createTaskStatusReport(args);
+    return taskStatusReportService.createTaskStatusReport(args, user.email);
   },
 
   /**
@@ -475,7 +475,10 @@ export const taskMutationResolvers = {
    */
   addTaskPredecessor: async (
     _: unknown,
-    { taskId, predecessorTaskId }: { taskId: string; predecessorTaskId: string },
+    {
+      taskId,
+      predecessorTaskId,
+    }: { taskId: string; predecessorTaskId: string },
     { user }: GraphQLContext,
   ) => {
     if (!user) {
@@ -494,7 +497,10 @@ export const taskMutationResolvers = {
    */
   removeTaskPredecessor: async (
     _: unknown,
-    { taskId, predecessorTaskId }: { taskId: string; predecessorTaskId: string },
+    {
+      taskId,
+      predecessorTaskId,
+    }: { taskId: string; predecessorTaskId: string },
     { user }: GraphQLContext,
   ) => {
     if (!user) {
@@ -561,6 +567,9 @@ export const taskProgressFieldResolvers = {
   task: (parent: { taskId: string }) => {
     return taskService.findById(parent.taskId);
   },
+  creator: (parent: { creatorId?: string }) => {
+    return parent.creatorId ? staffService.findById(parent.creatorId) : null;
+  },
 };
 
 /**
@@ -581,6 +590,9 @@ export const taskEvaluationFieldResolvers = {
 export const taskStatusReportFieldResolvers = {
   task: (parent: { taskId: string }) => {
     return taskService.findById(parent.taskId);
+  },
+  creator: (parent: { creatorId?: string }) => {
+    return parent.creatorId ? staffService.findById(parent.creatorId) : null;
   },
 };
 

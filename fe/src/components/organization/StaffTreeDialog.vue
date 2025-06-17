@@ -129,11 +129,8 @@
         throw new Error('No staff members found for this organization')
       }
 
-      // Find the root of the hierarchy for the selected staff member
-      const rootStaff = findRootStaff(allStaff, props.staff)
-
-      // Build tree structure starting from the root
-      const treeStructure = buildStaffTree(allStaff, rootStaff)
+      // Build tree structure starting from the selected staff member
+      const treeStructure = buildStaffTree(allStaff, props.staff)
 
       // Create the Vue D3 tree (no DOM manipulation needed)
       createTree(treeStructure, {

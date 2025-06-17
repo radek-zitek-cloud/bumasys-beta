@@ -77,7 +77,9 @@ export interface TaskProgress {
   reportDate: string
   progressPercent: number
   notes?: string
+  creatorId?: string
   task?: Task
+  creator?: Staff
 }
 
 /** Task status report interface */
@@ -86,7 +88,9 @@ export interface TaskStatusReport {
   taskId: string
   reportDate: string
   statusSummary?: string
+  creatorId?: string
   task?: Task
+  creator?: Staff
 }
 
 /** Interface for creating a new task progress report */
@@ -95,6 +99,7 @@ export interface CreateTaskProgressInput {
   reportDate: string
   progressPercent: number
   notes?: string
+  creatorId?: string
 }
 
 /** Interface for updating a task progress report */
@@ -103,6 +108,7 @@ export interface UpdateTaskProgressInput {
   reportDate?: string
   progressPercent?: number
   notes?: string
+  creatorId?: string
 }
 
 /** Interface for creating a new task status report */
@@ -110,6 +116,7 @@ export interface CreateTaskStatusReportInput {
   taskId: string
   reportDate: string
   statusSummary?: string
+  creatorId?: string
 }
 
 /** Interface for updating a task status report */
@@ -117,6 +124,7 @@ export interface UpdateTaskStatusReportInput {
   id: string
   reportDate?: string
   statusSummary?: string
+  creatorId?: string
 }
 
 /** Interface for creating a new task */
@@ -539,12 +547,26 @@ export function getTaskWithManagementData (id: string): Promise<{ task: Task | n
             reportDate
             progressPercent
             notes
+            creatorId
+            creator {
+              id
+              firstName
+              lastName
+              email
+            }
           }
           statusReports {
             id
             taskId
             reportDate
             statusSummary
+            creatorId
+            creator {
+              id
+              firstName
+              lastName
+              email
+            }
           }
         }
       }
@@ -644,18 +666,21 @@ export function createTaskProgress (progressData: CreateTaskProgressInput): Prom
         $reportDate: String!
         $progressPercent: Int!
         $notes: String
+        $creatorId: ID
       ) {
         createTaskProgress(
           taskId: $taskId
           reportDate: $reportDate
           progressPercent: $progressPercent
           notes: $notes
+          creatorId: $creatorId
         ) {
           id
           taskId
           reportDate
           progressPercent
           notes
+          creatorId
         }
       }
     `,
@@ -729,16 +754,19 @@ export function createTaskStatusReport (statusData: CreateTaskStatusReportInput)
         $taskId: ID!
         $reportDate: String!
         $statusSummary: String
+        $creatorId: ID
       ) {
         createTaskStatusReport(
           taskId: $taskId
           reportDate: $reportDate
           statusSummary: $statusSummary
+          creatorId: $creatorId
         ) {
           id
           taskId
           reportDate
           statusSummary
+          creatorId
         }
       }
     `,

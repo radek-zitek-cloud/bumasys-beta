@@ -241,9 +241,7 @@ export class TeamService {
     }
 
     // Validate staff exists
-    const staff = this.db.data.staff.find(
-      (s) => s.id === memberData.staffId,
-    );
+    const staff = this.db.data.staff.find((s) => s.id === memberData.staffId);
     if (!staff) {
       throw new Error('Staff member not found');
     }

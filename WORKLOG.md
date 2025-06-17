@@ -2,1391 +2,828 @@
 
 ## Change Log
 
-### 2025-01-16 - Task Management Dialog Implementation: Complete UI Enhancement for Task Operations
+### 2025-01-21 - Task Details Updates Implementation
 
 #### Root Cause Analysis:
-The existing task management page (`/task-management/:id`) provided a comprehensive view of task information and related data, but all action buttons were implemented as placeholder functions showing "coming soon" messages. Users could see assignees, predecessors, child tasks, progress reports, and status reports, but had no ability to actually create, edit, or manage these relationships and reports. This gap between the display interface and functional capabilities created a frustrating user experience and limited the practical utility of the task management system.
+The task management page had limited functionality for editing task details, and reports were displayed in list format which didn't provide optimal data visibility. The task details form lacked important fields like evaluator, parent task, and date fields, and there was no way to save changes to task information.
 
 #### Impact of Changes:
-- **Complete Dialog Implementation**: All 5 major task management operations now have fully functional dialog interfaces
-- **Enhanced User Experience**: Users can now perform all task management operations from a single, unified interface
-- **Improved Productivity**: Real-time updates and immediate feedback reduce context switching and improve workflow efficiency
-- **Professional Interface**: Consistent Material Design dialogs matching the existing application architecture
-- **Data Integrity**: Comprehensive form validation ensures data quality and prevents user errors
-- **Responsive Design**: All dialogs work seamlessly across desktop, tablet, and mobile devices
+- **Enhanced Task Editing**: Users can now edit all task fields directly in the task details page
+- **Improved Data Layout**: Reorganized task details into a more logical 4-row layout for better space utilization
+- **Better Data Visualization**: Converted progress and status reports from lists to data tables for improved readability
+- **Enhanced User Experience**: Added Save/Undo functionality with proper state management
 
 #### New Features Added:
-
-**Task Dialog Component Suite** (`/fe/src/components/tasks/`):
-- **TaskAssigneeCreateDialog.vue**: Add staff members as task assignees
-  - Smart filtering to exclude current assignees from selection
-  - Display staff role and department information for better identification
-  - Real-time assignee list updates after successful assignment
-  - Form validation ensuring required staff selection
-
-- **TaskPredecessorCreateDialog.vue**: Create task dependency relationships  
-  - Cross-project predecessor support for complex workflows
-  - Automatic filtering to prevent circular dependencies and invalid selections
-  - Task and project context display for clear predecessor identification
-  - Informational guidance about predecessor functionality
-
-- **TaskChildCreateDialog.vue**: Create child tasks with parent relationships
-  - Full task creation form with parent task ID pre-filled
-  - Project inheritance from parent task for consistency
-  - Optional status, priority, and complexity selection from reference data
-  - Date pickers for planned start/end dates with proper validation
-  - Informational alerts explaining child task behavior
-
-- **TaskProgressCreateDialog.vue**: Create detailed progress reports
-  - Date picker with intelligent default to current date
-  - Progress percentage input with dual interface (numeric input + visual slider)
-  - Color-coded progress visualization (red < 25%, yellow < 50%, blue < 75%, green < 100%, purple = 100%)
-  - Optional notes field for detailed progress descriptions
-  - Real-time visual feedback with progress chips
-
-- **TaskProgressEditDialog.vue**: Edit existing progress reports
-  - Pre-populated form with existing report data
-  - Date format conversion for proper form compatibility
-  - Same visual features as creation dialog for consistency
-  - Proper state management for editing workflow
-
-- **TaskStatusReportCreateDialog.vue**: Create status reports for stakeholder communication
-  - Date picker with intelligent default to current date
-  - Large text area for comprehensive status summary with character limits
-  - Informational guidance on effective status report content
-  - Form validation ensuring meaningful status information
-
-- **TaskStatusReportEditDialog.vue**: Edit existing status reports
-  - Pre-populated form with existing report data
-  - Date format conversion for proper form compatibility
-  - Same features as creation dialog for consistent experience
-  - Proper state management for editing workflow
-
-#### Technical Implementation:
-
-**Task Management Page Enhancement** (`/fe/src/pages/task-management/[id].vue`):
-- **Dialog Integration**: Added all 7 dialog components with proper props and event handling
-- **State Management**: Added reactive variables for dialog visibility and selected items
-- **Event Handlers**: Implemented comprehensive handlers for all dialog operations
-- **Service Integration**: Connected to existing GraphQL services for seamless data operations
-- **Reference Data Loading**: Enhanced dropdown data loading to include status, priority, and complexity
-- **Error Handling**: Comprehensive error handling with user-friendly notifications
-
-**Service Dependencies**:
-- **tasks.ts**: Task CRUD operations, assignment management, and relationship operations
-- **staff.ts**: Staff member data for assignee selection with department information
-- **status.ts**, **priority.ts**, **complexity.ts**: Reference data for task creation forms
-
-**Dialog Design Patterns**:
-- **Consistent UI/UX**: All dialogs use Vuetify Material Design components with consistent theming
-- **Form Validation**: Client-side validation with user-friendly error messages and visual indicators
-- **Responsive Design**: Mobile-first design ensuring usability across all device sizes
-- **Accessibility**: Proper ARIA labels, keyboard navigation, and screen reader compatibility
-- **Loading States**: Progress indicators during async operations with proper user feedback
-- **Event Architecture**: Clean separation between UI and business logic with structured event emission
-
-#### User Experience Improvements:
-
-**Form Validation and Feedback**:
-- Required field validation with clear visual indicators
-- Custom validation rules for business logic (progress percentages, date ranges, etc.)
-- Real-time validation feedback preventing user frustration
-- Contextual error messages guiding users to correct inputs
-
-**Visual Progress Indicators**:
-- Progress reports display percentage values in avatar format for quick scanning
-- Color-coded progress chips providing immediate visual status indication
-- Slider interface for progress entry with immediate visual feedback
-- Progress visualization helping users understand completion levels
-
-**Smart Filtering and Selection**:
-- Assignee selection automatically excludes current assignees to prevent duplicates
-- Predecessor selection prevents circular dependencies and invalid relationships
-- Task filtering excludes child tasks from predecessor selection for logical consistency
-- Department and role information displayed for better staff identification
-
-**Real-time Updates**:
-- Immediate UI updates after successful operations
-- Automatic data refresh ensuring consistency across the interface
-- Success notifications confirming operations completed
-- Error notifications with actionable guidance for resolution
-
-#### Testing Implementation:
-
-**Unit Test Coverage** (`/fe/tests/unit/components/TaskAssigneeCreateDialog.test.ts`):
-- Component rendering and prop validation
-- Form validation logic and user interaction scenarios
-- Event emission testing ensuring proper parent-child communication
-- Filter logic validation ensuring correct staff selection options
-- User interaction simulation confirming dialog behavior
-
-**Test Quality Metrics**:
-- All 5 tests passing for TaskAssigneeCreateDialog component
-- Comprehensive coverage of dialog functionality including edge cases
-- Proper mocking of Vuetify components for isolated testing
-- Event emission validation ensuring proper component communication
-
-#### Code Quality and Maintainability:
-
-**TypeScript Integration**:
-- Full TypeScript coverage with proper interface definitions
-- Type-safe props and event declarations
-- Integration with existing service interfaces for consistency
-- Compile-time validation preventing runtime errors
-
-**Documentation**:
-- Comprehensive README.md for tasks component directory
-- Detailed component documentation with usage examples
-- JSDoc comments explaining component behavior and integration patterns
-- Architecture documentation explaining design decisions
-
-**Architecture Benefits**:
-- **Modularity**: Each dialog is a self-contained component with clear responsibilities
-- **Reusability**: Dialog patterns can be reused for other task-related operations
-- **Maintainability**: Clean separation of concerns makes future updates easier
-- **Scalability**: Established patterns support easy addition of new task management features
-- **Consistency**: All dialogs follow the same design and interaction patterns
-
-#### Performance Considerations:
-
-**Optimized Loading**:
-- Reference data loaded once and reused across dialogs
-- Lazy loading of dialog components until needed
-- Efficient state management with minimal re-rendering
-- Proper component cleanup preventing memory leaks
-
-**Network Efficiency**:
-- Minimal API calls with proper data caching
-- Batch loading of reference data for dropdown options
-- Error retry mechanisms for transient network issues
-- Optimistic UI updates with rollback on failure
-
-#### Integration Testing Results:
-
-**Build Verification**:
-- ✅ TypeScript compilation successful with zero errors
-- ✅ Vite build process completed successfully
-- ✅ All existing tests continue to pass (263 tests)
-- ✅ New component tests pass (5 additional tests)
-- ✅ No breaking changes to existing functionality
-
-**Functionality Validation**:
-- ✅ All dialog components render correctly
-- ✅ Form validation works as expected across all dialogs
-- ✅ Event emission and parent communication functioning properly
-- ✅ Service integration working with proper error handling
-- ✅ Reference data loading and filtering working correctly
-
-#### Documentation Updates:
-- **Component README**: Created comprehensive documentation for tasks component directory
-- **Architecture Documentation**: Detailed explanation of dialog patterns and integration
-- **Testing Documentation**: Examples and patterns for testing dialog components
-- **WORKLOG.md**: Complete change summary with technical implementation details
-
-#### Follow-up Tasks:
-- [ ] Consider adding keyboard shortcuts for power users
-- [ ] Implement drag-and-drop for task relationship management
-- [ ] Add bulk operations for multiple assignee/predecessor management
-- [ ] Consider adding task template functionality
-- [ ] Evaluate adding real-time collaboration features
-
-#### Potential Issues and Risks Identified:
-- **Data Consistency**: Ensured proper error handling prevents orphaned relationships
-- **User Experience**: Confirmed all dialogs provide clear feedback and guidance
-- **Performance**: Verified efficient loading and minimal API calls
-- **Security**: All operations properly authenticated and validated server-side
-- **Compatibility**: Tested across different screen sizes and input methods
-
-#### Summary:
-This implementation completes the task management enhancement by providing full CRUD functionality for all task-related operations through a comprehensive suite of dialog components. The solution maintains high code quality standards, follows established design patterns, and provides an excellent user experience while seamlessly integrating with the existing application architecture. All placeholder functions have been replaced with fully functional implementations, giving users complete control over task management operations from a single, unified interface.
-
----
-
-### 2025-01-16 - Task Management Enhancement: Comprehensive Task Operations Management System
-
-#### Root Cause Analysis:
-The existing task management system provided basic CRUD operations (create, read, update, delete) for tasks but lacked comprehensive management capabilities for complex task operations. Users needed to manage task relationships (assignees, predecessors, child tasks) and track progress through reports, but this functionality was not available in a unified interface. The system required scattered operations across multiple interfaces or manual coordination, reducing productivity and oversight capabilities.
-
-#### Impact of Changes:
-- **Enhanced User Experience**: Single comprehensive interface for all task management operations
-- **Improved Task Oversight**: Centralized view of task relationships, assignments, and progress
-- **Better Project Management**: Enhanced task dependency and hierarchy management capabilities
-- **Streamlined Workflows**: Unified interface reduces context switching and improves efficiency
-- **Real-time Updates**: Immediate feedback and data refresh after operations
-- **Professional Interface**: Consistent design patterns matching existing system architecture
-
-#### New Features Added:
-- **Task Management Page** (`/task-management/:id`):
-  - Dedicated full-screen management interface with comprehensive task details display
-  - Navigation accessible via new "Manage Task" button (gear icon) in tasks table
-  - Back navigation buttons at top and bottom for easy return to tasks list
-  - Responsive layout optimized for desktop, tablet, and mobile devices
-
-- **Assignees Management Section**:
-  - Visual staff assignment interface with avatars and role information
-  - Add/remove staff assignments with real-time updates
-  - Department and role context display for better staff identification
-  - Immediate UI feedback with confirmation notifications
-
-- **Predecessors Management Section**:
-  - Task dependency management with visual predecessor relationships
-  - Add/remove predecessor tasks with project context display
-  - Cross-project predecessor support for complex workflows
-  - Real-time relationship updates with error handling
-
-- **Child Tasks Management Section**:
-  - Hierarchical task structure display with status indicators
-  - Visual child task relationships for project breakdown structures
-  - Status tracking for child task oversight from parent level
-  - Support for multi-level task hierarchies
-
-- **Progress Reports Management Section**:
-  - Create, edit, and delete progress reports with percentage tracking
-  - Visual progress displays with percentage in avatar format
-  - Optional notes for detailed progress descriptions
-  - Chronological ordering for progress tracking over time
-
-- **Status Reports Management Section**:
-  - Create, edit, and delete status reports for stakeholder communication
-  - Free-form status summaries for flexible reporting needs
-  - Date tracking for chronological status history
-  - Full CRUD operations with immediate UI updates
-
-#### Improvements Made:
-- **Service Layer Enhancement**: Extended `tasks.ts` service with comprehensive management functions
-- **Type Safety**: Added complete TypeScript interfaces for all new data structures
-- **GraphQL Integration**: Implemented service functions using existing backend mutations
-- **Error Handling**: Comprehensive error handling with user-friendly notifications
-- **Performance Optimization**: Single query (`getTaskWithManagementData`) for efficient data loading
-- **UI Consistency**: Followed established design patterns from user management interface
-- **Responsive Design**: Three-column layout for desktop with responsive breakpoints
-
-#### Technical Implementation:
-- **Frontend Service Functions**: Added 12 new service functions in `tasks.ts`:
-  - `getTaskWithManagementData()`: Fetch task with all related management data
-  - `assignStaffToTask()`, `removeStaffFromTask()`: Staff assignment operations
-  - `addTaskPredecessor()`, `removeTaskPredecessor()`: Predecessor relationship management
-  - `createTaskProgress()`, `updateTaskProgress()`, `deleteTaskProgress()`: Progress report CRUD
-  - `createTaskStatusReport()`, `updateTaskStatusReport()`, `deleteTaskStatusReport()`: Status report CRUD
-
-- **Interface Extensions**: Enhanced Task interface with assignees, predecessors, progressReports, statusReports
-- **New Type Definitions**: Added Staff, TaskProgress, TaskStatusReport interfaces with CRUD input types
-- **Route Implementation**: New dynamic route `/task-management/:id` with parameter handling
-- **Component Architecture**: Single comprehensive Vue component using Composition API
-- **GraphQL Utilization**: Leveraged existing backend schema without modifications
-
-#### Documentation Updates:
-- **Comprehensive Documentation**: Added detailed Task Management Enhancement section to PROJECTS_AND_TASKS_MANAGEMENT.md
-- **Feature Documentation**: Complete documentation of all new features and capabilities
-- **Technical Documentation**: Detailed service function documentation and implementation notes
-- **User Interface Documentation**: Design principles, navigation, and user interaction patterns
-- **Security Documentation**: Authentication requirements and error handling patterns
-
-#### Bugs Fixed:
-- **Type Safety Issues**: Resolved route parameter typing for dynamic routes
-- **Import Path Corrections**: Fixed service import paths for proper module resolution
-- **Error Boundary Handling**: Added proper error handling for task not found scenarios
-
-#### Testing:
-- **Existing Tests**: All existing tests continue to pass (263 tests)
-- **Type Checking**: Full TypeScript compilation without errors
-- **Integration Verification**: Service functions properly integrate with existing GraphQL backend
-
-#### Any TODOs or Follow-up Tasks:
-- **Dialog Components**: Future implementation of create/edit dialog components for more complex operations
-- **Advanced Filtering**: Enhanced filtering options for assignees and predecessors selection
-- **Bulk Operations**: Future support for bulk assignment and reporting operations
-- **Notification Enhancements**: Real-time notifications for task changes via WebSocket integration
-- **Advanced Reporting**: Future integration with reporting dashboards for progress analytics
-
-#### Any Potential Issues or Risks Identified:
-- **Performance Considerations**: Large datasets may require pagination for assignees and predecessors
-- **Concurrent Modifications**: Multiple users editing same task simultaneously may require conflict resolution
-- **Data Consistency**: Ensuring referential integrity when removing staff or tasks that are referenced elsewhere
-- **Mobile UX**: Complex interface may need additional mobile optimization for smaller screens
-
-### 2025-06-16 - GraphQL Resolver Refactoring: Organization and Department Module Extraction
-
-#### Root Cause Analysis:
-Organization and department queries, mutations, and field resolvers were mixed into the main query and mutation resolver files (`query.resolvers.ts` and `mutation.resolvers.ts`). This created large, monolithic resolver files that handled multiple distinct business domains, violating separation of concerns. The mixed responsibilities made it harder to maintain organization and department functionality independently and reduced code modularity.
-
-#### Impact of Changes:
-- **Dedicated Organization Module**: Complete extraction of all organization-related GraphQL operations
-- **Dedicated Department Module**: Complete extraction of all department-related GraphQL operations  
-- **Enhanced Separation of Concerns**: Organization, department, and core business logic are now completely separated
-- **Improved Maintainability**: Organization and department functionality can be modified independently
-- **Better Code Organization**: Clear, logical separation between different business domains
-- **Optimized Service Dependencies**: Each module only depends on the services it actually needs
-
-#### New Features Added:
-- **Complete Organization Module** (`organization.resolvers.ts`):
-  - Organization queries: `organizations`, `organization` resolvers
-  - Organization mutations: `createOrganization`, `updateOrganization`, `deleteOrganization` 
-  - Organization field resolvers: `departments` field resolver
-  - Staff-organization field resolver: `Staff.organization` resolver
-  - Dedicated service initialization with proper dependencies
-  - Comprehensive JSDoc documentation and error handling
-
-- **Complete Department Module** (`department.resolvers.ts`):
-  - Department queries: `departments`, `department` resolvers  
-  - Department mutations: `createDepartment`, `updateDepartment`, `deleteDepartment`
-  - Department field resolvers: `organization`, `parentDepartment`, `subDepartments` field resolvers
-  - Staff-department field resolver: `Staff.department` resolver
-  - Dedicated service initialization with proper dependencies
-  - Comprehensive JSDoc documentation and error handling
-
-#### Improvements Made:
-- **Modular Architecture**: Complete separation of organization and department logic from core resolvers
-- **Code Organization**: Updated resolver index to properly combine all resolver modules
-- **Documentation**: Updated comments and file descriptions to reflect new responsibilities  
-- **Service Initialization**: Proper organization and department service setup with correct dependencies
-- **Clean Dependencies**: Removed unused organization and department imports from query/mutation resolvers
-- **Field Resolver Distribution**: Staff organization and department field resolvers moved to appropriate modules
-
-#### Technical Implementation:
-- Extracted all organization queries, mutations, and field resolvers from core resolver files to `organization.resolvers.ts`
-- Extracted all department queries, mutations, and field resolvers from core resolver files to `department.resolvers.ts`
-- Removed organization and department field resolvers from `staffResolvers` in `query.resolvers.ts`
-- Updated resolver index to merge in new organization and department resolvers
-- Enhanced service initialization to call organization and department initializers with correct dependencies
-- Cleaned up imports and service variable declarations in affected files
-- Maintained existing GraphQL API interface - no breaking changes
-
-#### Complete Resolver Architecture Achieved:
-1. **System Monitoring** (`health.resolvers.ts`): health checks + configuration access
-2. **Authentication** (`auth.resolvers.ts`): authentication queries + authentication mutations  
-3. **User Management** (`user.resolvers.ts`): user queries + user mutations
-4. **Organization Management** (`organization.resolvers.ts`): organization queries + mutations + field resolvers
-5. **Department Management** (`department.resolvers.ts`): department queries + mutations + field resolvers
-6. **Core Business Logic** (`query.resolvers.ts`): staff, teams, projects, tasks, etc.
-7. **Core Business Mutations** (`mutation.resolvers.ts`): CRUD operations for core business entities
-
-#### Testing Validation:
-- All existing organization and department tests continue to pass without modification:
-  - `organization-crud.test.ts` (15 tests) - Complete organization CRUD operations
-  - `tests/unit/services/department.service.test.ts` (20 tests) - Department service unit tests
-  - `projects-tasks-crud.test.ts` - Integration tests including organization/department setup
-- Full test suite passes: **29 test suites, 365 tests passed**
-
-#### Follow-up Tasks:
-- None identified - refactoring is complete and all tests pass
-
-#### Potential Issues/Risks:
-- None identified - all existing functionality preserved with improved organization
-
----
-
-### 2025-06-16 - Complete Authentication Module Extraction and Resolver Architecture Finalization
-
-#### Root Cause Analysis:
-Authentication mutations (register, login, changePassword, logout, refreshToken) were mixed into the main mutation resolvers module (`mutation.resolvers.ts`) alongside business entity mutations. This created a monolithic mutation resolver that handled both authentication operations and business logic operations, violating separation of concerns. The mixed responsibilities made it harder to maintain authentication functionality independently and reduced code modularity.
-
-#### Impact of Changes:
-- **Complete Authentication Module**: Now have a fully dedicated authentication module handling both queries and mutations
-- **Clean Separation of Concerns**: Authentication, system monitoring, and business logic are completely separated
-- **Improved Maintainability**: All authentication-related code can be modified independently
-- **Enhanced Code Organization**: Clear, logical separation between different types of operations
-- **Better Service Dependencies**: Each module only depends on the services it actually needs
-
-#### New Features Added:
-- **Complete Authentication Module** (`auth.resolvers.ts`):
-  - Authentication queries: `me` resolver for current user information
-  - Authentication mutations: `register`, `login`, `changePassword`, `logout`, `refreshToken`
-  - Dedicated service initialization for both UserService and AuthService
-  - Comprehensive JSDoc documentation
-  - Follows established resolver patterns
-
-#### Improvements Made:
-- **Modular Architecture**: Complete separation of authentication from business mutations
-- **Code Organization**: Updated resolver index to properly combine all resolver modules
-- **Documentation**: Updated comments and file descriptions to reflect new responsibilities
-- **Service Initialization**: Proper auth service setup with both user and auth services
-- **Clean Dependencies**: Removed unused authentication imports from mutation resolvers
-
-#### Technical Implementation:
-- Moved all authentication mutations from `/be/src/resolvers/mutation.resolvers.ts` to `/be/src/resolvers/auth.resolvers.ts`
-- Added `authMutationResolvers` export containing all authentication mutations
-- Updated resolver index to combine auth mutations with other mutations
-- Enhanced auth service initialization to include AuthService
-- Removed unused imports (LoginInput, ChangePasswordInput) from mutation resolvers
-- Updated file-level documentation across all affected modules
-- Maintained existing API interface - no breaking changes
-
-#### Complete Resolver Architecture Achieved:
-1. **System Monitoring** (`health.resolvers.ts`): health checks + configuration access
-2. **Authentication** (`auth.resolvers.ts`): authentication queries + authentication mutations
-3. **Business Logic** (`query.resolvers.ts`): users, organizations, projects, tasks, etc.
-4. **Business Mutations** (`mutation.resolvers.ts`): CRUD operations for business entities
-
-#### Testing Validation:
-- All existing authentication tests continue to pass without modification:
-  - `auth.test.ts` (1 test) - Complete authentication flow
-  - `session-management.test.ts` (2 tests) - Session lifecycle management
-  - `user-crud.test.ts` (2 tests) - Business mutations still work correctly
-- Authentication functionality verified through comprehensive test suite
-- No breaking changes to existing GraphQL API
-- Confirmed no errors in TypeScript compilation
-
-#### Documentation Updates:
-- Updated file-level documentation in all affected modules
-- Enhanced JSDoc comments for complete auth resolver module
-- Updated resolver initialization documentation
-- Updated WORKLOG.md with comprehensive change summary
-
-### 2025-06-16 - Authentication Resolver Extraction and Complete Resolver Modularization (Previous Entry)
-
-#### Root Cause Analysis:
-The "me" resolver was mixed into the main query resolvers module (`query.resolvers.ts`) alongside business data queries. This violated the separation of concerns principle as authentication-related queries (current user information) were bundled with business entity queries (users, organizations, etc.). The monolithic approach reduced code modularity and made it harder to maintain authentication functionality independently from business logic.
-
-#### Impact of Changes:
-- **Complete Resolver Modularization**: Now have dedicated modules for different concerns:
-  - `health.resolvers.ts` - System monitoring (health checks + configuration)
-  - `auth.resolvers.ts` - Authentication queries (me resolver)
-  - `query.resolvers.ts` - Pure business data queries
-- **Better Separation of Concerns**: Authentication logic is now isolated from business query logic
-- **Improved Maintainability**: Authentication functionality can be modified independently
-- **Enhanced Code Organization**: Clear separation between system, auth, and business concerns
-
-#### New Features Added:
-- **Dedicated Authentication Resolver Module** (`auth.resolvers.ts`):
-  - Isolated "me" resolver for current user information
-  - Authentication-focused service initialization
-  - Comprehensive JSDoc documentation
-  - Follows established resolver patterns
-
-#### Improvements Made:
-- **Modular Architecture**: Extracted authentication queries into dedicated module
-- **Code Organization**: Updated resolver index to properly combine auth, health, and query resolvers
-- **Documentation**: Updated comments to reflect the new modular structure
-- **Service Initialization**: Added dedicated auth service setup in initialization process
-- **Clear Separation**: Now have distinct modules for system monitoring, authentication, and business logic
-
-#### Technical Implementation:
-- Created `/be/src/resolvers/auth.resolvers.ts` with "me" resolver
-- Removed "me" resolver from `/be/src/resolvers/query.resolvers.ts`
-- Updated `/be/src/resolvers/index.ts` to import and combine auth resolvers
-- Added auth service initialization to the initialization process
-- Maintained existing API interface - no breaking changes
-
-#### Complete Resolver Architecture:
-1. **System Monitoring** (`health.resolvers.ts`): health checks + configuration access
-2. **Authentication** (`auth.resolvers.ts`): current user information and auth status
-3. **Business Logic** (`query.resolvers.ts`): users, organizations, projects, tasks, etc.
-4. **Mutations** (`mutation.resolvers.ts`): all write operations
-
-#### Testing Validation:
-- All existing "me" query tests continue to pass without modification (2 tests)
-- All health and config tests continue to pass (6 test suites, 16 tests total)
-- Authentication functionality verified through `me-query.test.ts`
-- No breaking changes to existing GraphQL API
-- Confirmed no errors in TypeScript compilation
-
-#### Documentation Updates:
-- Updated file-level documentation in affected modules
-- Enhanced JSDoc comments for new auth resolver module
-- Updated WORKLOG.md with comprehensive change summary
-
-### 2025-06-16 - Health Check and Configuration Resolver Modularization (Previous Entry)
-
-#### Root Cause Analysis:
-Both the health check and configuration resolvers were mixed into the main query resolvers module (`query.resolvers.ts`), violating the separation of concerns principle. This made the query resolver module responsible for business logic queries (users, organizations), infrastructure monitoring (health checks), and system configuration access. The monolithic approach reduced code modularity and made it harder to maintain system monitoring functionality independently.
-
-#### Impact of Changes:
-- **Better Separation of Concerns**: System monitoring logic (health + config) is now isolated from business query logic
-- **Improved Maintainability**: Health and configuration functionality can be modified independently without affecting business queries
-- **Enhanced Code Organization**: Following the established pattern of modular resolver structure
-- **Logical Grouping**: Health checks and configuration access both relate to system monitoring and status
-
-#### New Features Added:
-- **Unified System Monitoring Module** (`health.resolvers.ts`):
-  - Combined health check and configuration access resolvers
-  - Isolated system monitoring logic from business queries
-  - Dedicated service initialization function
-  - Comprehensive JSDoc documentation
-  - Follows established resolver patterns
-
-#### Improvements Made:
-- **Modular Architecture**: Extracted system monitoring into its own dedicated module
-- **Code Organization**: Updated resolver index to properly combine health/config and query resolvers
-- **Documentation**: Updated comments to reflect the new modular structure
-- **Service Initialization**: Health service setup handles both health and config functionality
-- **Cleaner Dependencies**: Removed unused config import from query resolvers
-
-#### Technical Implementation:
-- Moved config resolver from `/be/src/resolvers/query.resolvers.ts` to `/be/src/resolvers/health.resolvers.ts`
-- Added config import to health.resolvers.ts for configuration access
-- Removed unused config import from query.resolvers.ts
-- Updated file-level documentation to reflect new responsibilities
-- Maintained existing API interface - no breaking changes
-
-#### Testing Validation:
-- All existing config tests continue to pass without modification (3 test suites, 13 tests)
-- All existing health tests continue to pass without modification
-- Configuration access functionality verified through `config.test.ts`
-- Health check functionality verified through `health.test.ts`
-- No breaking changes to existing GraphQL API
-- Confirmed no errors in TypeScript compilation
-
-#### Documentation Updates:
-- Updated file-level documentation in affected modules
-- Enhanced JSDoc comments for health resolver module to include configuration access
-- Updated WORKLOG.md with comprehensive change summary
-
-### 2025-06-16 - Health Check Resolver Modularization (Previous Entry)
-
-#### Root Cause Analysis:
-The health check resolver was mixed into the main query resolvers module (`query.resolvers.ts`), violating the separation of concerns principle. This made the query resolver module responsible for both business logic queries (users, organizations, config) and infrastructure monitoring (health checks). The monolithic approach reduced code modularity and made it harder to maintain health-related functionality independently.
-
-#### Impact of Changes:
-- **Better Separation of Concerns**: Health monitoring logic is now isolated from business query logic
-- **Improved Maintainability**: Health check functionality can be modified independently without affecting business queries
-- **Enhanced Code Organization**: Following the established pattern of modular resolver structure
-- **Cleaner Dependencies**: Health check only requires minimal dependencies (logger and userService for status verification)
-
-#### New Features Added:
-- **Dedicated Health Resolver Module** (`health.resolvers.ts`):
-  - Isolated health check resolver logic
-  - Dedicated service initialization function
-  - Comprehensive JSDoc documentation
-  - Follows established resolver patterns
-
-#### Improvements Made:
-- **Modular Architecture**: Extracted health check into its own dedicated module
-- **Code Organization**: Updated resolver index to properly combine health and query resolvers
-- **Documentation**: Updated comments to reflect the new modular structure
-- **Service Initialization**: Added dedicated health service setup in initialization process
-
-#### Technical Implementation:
-- Created `/be/src/resolvers/health.resolvers.ts` with health check resolver
-- Updated `/be/src/resolvers/index.ts` to import and combine health resolvers
-- Removed health check logic from `/be/src/resolvers/query.resolvers.ts`
-- Updated service initialization to include health service setup
-- Maintained existing API interface - no breaking changes
-
-#### Testing Validation:
-- All existing health tests continue to pass without modification
-- Health check functionality verified through `health.test.ts`
-- No breaking changes to existing GraphQL API
-- Confirmed no errors in TypeScript compilation
-
-#### Documentation Updates:
-- Updated file-level documentation in affected modules
-- Enhanced JSDoc comments for new health resolver module
-- Updated WORKLOG.md with comprehensive change summary
-
-### 2025-01-19 - Initial Project Setup
-- Created initial project structure with backend (Express.js, Apollo GraphQL, lowdb) and frontend (Vue 3, Vuetify, TypeScript)
-- Implemented comprehensive configuration system with environment-based settings
-- Set up authentication system with JWT tokens and session management
-- Created user management system with registration, login, and profile operations
-- Implemented organization and department management
-- Set up project and task management system with CRUD operations
-- Created comprehensive test suite with 123 tests covering all major functionality
-- Documented API and setup procedures
-
-### 2025-06-15 - Dialog Centering, Test Fixes, and Test Coverage Improvement
-
-#### Root Cause Analysis:
-1. **Frontend Dialog Centering Issues**: 
-   - Vuetify dialogs (DepartmentTreeDialog.vue and StaffTreeDialog.vue) were not centering properly
-   - Issue caused by explicit width/height CSS properties interfering with Vuetify's built-in centering mechanism
-   - The v-responsive wrapper in App.vue was also contributing to layout conflicts
-
-2. **Backend Test Failures**: 
-   - 4 test suites failing due to environment variable naming mismatches
-   - Tests were using generic environment variable names (PORT, JWT_SECRET, etc.) 
-   - Config system expected FCRM_*-prefixed names as defined in custom-environment-variables.json
-
-3. **Low Test Coverage in Service Layer**:
-   - Overall coverage was ~52% statements, ~38% branches, ~46% functions, ~52% lines
-   - Several critical service modules had minimal or no unit test coverage
-   - Missing validation and error handling tests for business logic
-
-#### Impact of Changes:
-- **Frontend**: All dialogs now properly center both vertically and horizontally on all screen sizes
-- **Backend**: All 214 tests now pass (89 new tests added), ensuring system reliability and configuration consistency
-- **Test Coverage**: Improved from ~52% to ~63% statement coverage (+11% improvement)
-- **Code Quality**: Enhanced reliability through comprehensive service layer testing
-
-#### New Features Added:
-- Global CSS dialog centering solution in App.vue that works for all Vuetify dialogs
-- Enhanced test environment configuration validation
-- **Comprehensive Unit Test Suites (89 new tests):**
-  - task-evaluation.service.test.ts (19 tests)
-  - task-status-report.service.test.ts (14 tests)
-  - project-status-report.service.test.ts (12 tests)
-  - priority.service.test.ts (14 tests)
-  - status.service.test.ts (12 tests)
-  - task-progress.service.test.ts (18 tests)
-
-#### Bugs Fixed:
-- Fixed dialog positioning issues in DepartmentTreeDialog.vue and StaffTreeDialog.vue
-- Resolved 4 failing backend test suites (config-env, dynamic-config, config-validation, logging-config)
-- Fixed environment variable naming inconsistencies between tests and configuration system
-- Corrected type errors in existing test data structures
-- Fixed invalid mock database properties to match actual Database interface
-
-#### Improvements Made:
-- **UI/UX**: Improved dialog user experience with proper centering
-- **Code Quality**: Cleaner CSS approach using max-width/max-height instead of fixed dimensions
-- **Test Reliability**: All tests now pass consistently, improving CI/CD reliability
-- **Configuration**: Standardized environment variable naming convention
-- **Test Coverage**: Significantly improved coverage across critical service modules
-- **Code Validation**: Added comprehensive validation testing for business logic
-- **Error Handling**: Enhanced error scenario testing for edge cases
-
-#### Test Coverage Improvements:
-**Before:** ~52% statements, ~38% branches, ~46% functions, ~52% lines
-**After:** ~63% statements, ~49% branches, ~59% functions, ~63% lines
-
-**Modules with New Comprehensive Test Coverage:**
-- **priority.service.ts**: 100% coverage - name validation, dependency checking, CRUD operations
-- **status.service.ts**: 100% coverage - similar to priority service with task dependency validation
-- **task-evaluation.service.ts**: 100% coverage - comprehensive evaluation workflow testing
-- **task-progress.service.ts**: 100% coverage - progress percentage validation, task existence checks
-- **task-status-report.service.ts**: 100% coverage - report CRUD with task validation
-- **project-status-report.service.ts**: 100% coverage - project report management
-
-#### Documentation Updates:
-- Updated WORKLOG.md with comprehensive change summary
-- Documented the root causes and solutions for frontend, backend, and testing issues
-- Added detailed test coverage analysis and improvement metrics
-
-#### Supertest Integration Testing Evaluation:
-**Current Status**: Supertest is already properly installed and extensively used throughout the project.
-
-**Existing Implementation**:
-- Supertest v7.1.1 and @types/supertest v2.0.12 are installed as devDependencies
-- 8 integration test files actively use Supertest for GraphQL endpoint testing:
-  - `auth.test.ts` - Authentication flow testing (register, login, refresh, logout)
-  - `user-crud.test.ts` - User management operations testing  
-  - `organization-crud.test.ts` - Organization management testing
-  - `projects-tasks-crud.test.ts` - Project and task management testing
-  - `session-management.test.ts` - Session lifecycle testing
-  - `me-query.test.ts` - User profile query testing
-  - `health.test.ts` - Application health endpoint testing
-  - `config.test.ts` - Configuration endpoint testing
-
-**Test Coverage**: 365 total tests passing (100% success rate), including:
-- 214+ unit tests for service layer business logic
-- 80+ integration tests using Supertest for GraphQL API endpoints
-- 71+ additional tests for configuration, database, and utility functions
-
-**Integration Test Quality**:
-- Proper Express app initialization and cleanup in beforeAll/afterAll hooks
-- Isolated test databases for each test suite to prevent data contamination
-- Complete GraphQL mutation and query testing with authentication flows
-- Error handling and edge case validation
-- Session management and token refresh testing
-
-**Recommendation**: No additional Supertest setup required. The existing integration test suite provides comprehensive API testing coverage and follows testing best practices. The current implementation effectively tests the GraphQL API layer, authentication flows, and data persistence operations.
-
-#### Follow-up Tasks:
-- Monitor dialog behavior across different screen sizes and devices
-- Continue improving test coverage for remaining low-coverage modules (staff.service.ts, project.service.ts, task.service.ts)
-- Add integration tests for GraphQL resolvers
-- Consider adding end-to-end tests for critical user workflows
-
-#### Potential Issues/Risks Identified:
-- None identified - all changes follow established patterns and best practices
-- Global CSS changes are minimal and targeted, reducing risk of unintended side effects
-- Comprehensive test coverage reduces risk of regressions in service layer
-
-### Key Features Implemented:
-- **Authentication**: JWT-based auth with access/refresh tokens
-- **User Management**: Registration, login, profile management, role-based access
-- **Organization Management**: CRUD operations for organizations and departments
-- **Project Management**: Project creation, updates, task management
-- **Task Management**: Task CRUD with status tracking, priorities, and assignments
-- **Configuration**: Environment-based config system with validation
-- **Testing**: Comprehensive test coverage (214 tests, all passing, 63% statement coverage)
-- **Frontend**: Vue 3 + Vuetify responsive interface with properly centered dialogs
-- **Backend**: Express.js + Apollo GraphQL API with robust service layer testing
-
-### Test Quality Metrics:
-- **Total Tests**: 214 (89 new tests added)
-- **Test Success Rate**: 100% (all tests passing)
-- **Statement Coverage**: 63.43% (+11% improvement)
-- **Branch Coverage**: 48.97% (+10% improvement)
-- **Function Coverage**: 59.44% (+13% improvement)
-- **Line Coverage**: 62.87% (+10% improvement)
-
-### Next Steps:
-- Continue improving test coverage for remaining modules
-- Implement real-time updates
-- Add more advanced task management features
-- Performance optimizations
-- Add component-level tests for frontend
-- Consider adding Playwright tests for end-to-end workflows
-
-### 2025-06-15 - Complete Service Layer Test Suite Fix
-
-#### Root Cause Analysis:
-The remaining 3 failing tests were due to test isolation and mock data contamination issues:
-
-1. **Staff Service Filtering Tests**: Expected 3 staff members in dept-1, but only getting 2
-   - Root cause: Previous tests (updateStaff) were modifying the original mockStaff object's departmentId from 'dept-1' to 'dept-2'
-   - The beforeEach block was using references to the modified objects instead of creating fresh instances
-
-2. **Task Service Child Relationship Test**: Expected 0 children for task-1, but getting 1
-   - Root cause: A deletion test was setting task-parent.parentTaskId = 'task-1', creating a circular relationship
-   - The beforeEach block in getChildTasks was using shallow copies that preserved these modifications
-
-#### Impact of Changes:
-- **100% Service Test Success Rate**: All 285+ service layer tests now pass consistently
-- **Improved Test Isolation**: Each test now starts with completely fresh mock data objects
-- **Eliminated Test Contamination**: Fixed cross-test state pollution that caused intermittent failures
-- **Enhanced Test Reliability**: Tests are now independent and can run in any order without failures
-
-#### Bugs Fixed:
-- Fixed dialog centering issues by removing explicit width/height CSS that conflicted with Vuetify's centering
-- Fixed all backend test failures by correctly configuring environment variables with FCRM_ prefixes
-- **Service Layer Test Fixes**: All unit tests for service layer now pass (285+ tests total)
-  - Fixed TypeScript interface mismatches in test mock data
-  - Resolved test isolation issues where shared mock objects carried state between tests
-  - Fixed parent-child relationship logic in task and department tests
-  - Corrected filtering and statistical aggregation logic in staff service tests
-  - Updated test expectations to match actual service behavior for field updates
-
-#### Technical Improvements:
-- Replaced object references with inline object definitions in critical beforeEach blocks
-- Ensured test isolation by preventing shared mock object mutations between tests
-- Updated test expectations to match the actual fresh object state rather than potentially modified references
-- Maintained consistent test patterns across all service test files
-
-#### Test Coverage Maintained:
-- All existing functionality coverage preserved while fixing isolation issues
-- No regression in test quality or coverage metrics
-- Enhanced test reliability without reducing test scope
-
-#### Documentation Updates:
-- Updated WORKLOG.md with comprehensive change summary
-- Documented the root causes and solutions for frontend, backend, and testing issues
-- Added detailed test coverage analysis and improvement metrics
-
----
-
-### 2025-01-19 - Frontend Test Suite Fixes and Comprehensive Coverage Assessment
-
-#### Root Cause Analysis:
-1. **Frontend Test Failures**: Multiple test suites failing due to configuration and component issues
-   - Playwright e2e tests being executed by Vitest unit test runner
-   - Missing components required by existing tests (HomeCard.vue)
-   - Incorrect file paths in tests due to CI environment assumptions
-   - Insufficient Vuetify component stubbing causing rendering failures
-   - Store mocking issues preventing proper component state testing
-
-2. **Test Infrastructure Issues**:
-   - Vitest configuration excluded e2e tests but included them in test runs
-   - Component stubs were too simple (boolean `true`) preventing text content validation
-   - Missing sophisticated component mocking for Vuetify UI components
-
-#### Impact of Changes:
-- **Frontend Test Success**: All 119 frontend tests now pass across 21 test files
-- **Test Reliability**: Fixed inconsistent test behavior and environment dependencies  
-- **Component Testing**: Improved component rendering and validation in test environment
-- **CI/CD Compatibility**: Tests now work consistently across different environments
-
-#### New Features Added:
-- **HomeCard.vue Component**: Created missing component required by existing test
-- **Sophisticated Vuetify Component Stubs**: Implemented content-preserving stubs for all Vuetify components
-- **Enhanced Test Setup**: Improved test environment configuration with proper component rendering
-
-#### Bugs Fixed:
-1. **Test Exclusion**: Fixed Vitest configuration to properly exclude e2e tests from unit test runs
-2. **Component Dependencies**: Created missing HomeCard.vue component to satisfy test requirements
-3. **Path Resolution**: Fixed hardcoded file paths in App.logout.test.ts to use dynamic resolution
-4. **Component Stubbing**: Enhanced Vuetify component stubs to preserve content for testing while avoiding CSS issues
-5. **Store Mocking**: Fixed Pinia store integration in component tests using proper setup patterns
-
-#### Improvements Made:
-- **Test Infrastructure**: Comprehensive Vuetify component stubbing system preserving content for assertions
-- **Test Coverage**: All 21 test files now execute successfully with 119 passing tests
-- **Component Testing**: Enhanced component rendering capabilities in test environment
-- **Store Integration**: Proper Pinia store setup and testing patterns for components using stores
-- **Error Handling**: Improved test error reporting and debugging capabilities
-
-#### Frontend Test Coverage Summary:
-- **Test Files**: 21 test files covering all major frontend functionality
-- **Test Cases**: 119 individual test cases all passing
-- **Coverage Areas**:
-  - **Services**: 11 service test files (GraphQL client, authentication, data services)
-  - **Components**: 6 component test files (dialogs, display cards, trees)
-  - **App Integration**: 3 app-level test files (navigation, logout, core functionality)
-  - **Utils**: 1 utility test file (logging)
-  - **Configuration**: Configuration and backend integration tests
-
-#### Test Categories:
-1. **Service Layer Tests (77 tests)**:
-   - Authentication and GraphQL client integration
-   - CRUD operations for all data entities (teams, projects, tasks, users, etc.)
-   - Error handling and validation
-   - Data transformation and business logic
-
-2. **Component Tests (28 tests)**:
-   - Dialog components (TeamViewDialog, UserViewDialog, TreeDialog)
-   - Display components (DebugInfoCard, ConfigDisplayCard, HomeCard)
-   - Component state management and props handling
-   - User interaction and event emission
-
-3. **Integration Tests (14 tests)**:
-   - App-level navigation and authentication
-   - Configuration loading and validation
-   - Cross-component communication
-   - Route handling and logout functionality
-
-#### Documentation Updates:
-- Enhanced component documentation with proper Vue 3 Composition API patterns
-- Improved test setup documentation for Vuetify integration
-- Updated testing best practices for Vue 3 + Pinia + Vuetify stack
-
-#### TODOs and Follow-up Tasks:
-- Expand individual page component test coverage
-- Add more comprehensive App.vue component testing
-- Implement router configuration and guard testing
-- Add plugin configuration testing
-- Consider E2E testing setup for critical user workflows
-- Implement visual regression testing for UI components
-
-#### Potential Issues and Risks Identified:
-- Some areas still have 0% coverage and need attention
-- Page components are complex and may need more sophisticated testing approaches
-- Router and plugin testing may require additional mocking infrastructure
-- Need to maintain test coverage as new features are added
-
-#### Next Steps:
-1. **Priority 1**: Add comprehensive page component testing
-2. **Priority 2**: Expand App.vue and router test coverage  
-3. **Priority 3**: Implement plugin configuration testing
-4. **Priority 4**: Set up E2E testing framework for user workflows
-5. **Priority 5**: Establish coverage thresholds and CI/CD integration
-
-### 2025-06-15 - Menu Positioning Fix
-
-#### Root Cause Analysis:
-**Three Dots Menu Positioning Issue**: 
-- The v-menu component in App.vue was opening in the center of the screen instead of below the three dots icon
-- Issue caused by overly broad CSS selectors (`.v-overlay__content`) that applied dialog-specific positioning rules to all overlay content
-- Vuetify 3 uses the same overlay system for both dialogs and menus, but they require different positioning strategies
-- Missing `location` attribute on v-menu component prevented proper anchor positioning
-
-#### Impact of Changes:
-- **UI/UX**: Three dots menu now properly opens below and aligned to the right of the activator icon
-- **Code Quality**: More specific CSS selectors prevent interference between dialog and menu positioning
-- **User Experience**: Improved navigation usability with properly positioned dropdown menu
-
-#### Bugs Fixed:
-- **Menu Positioning**: Fixed three dots menu opening in screen center instead of below icon
-- **CSS Specificity**: Resolved overly broad overlay CSS affecting menu positioning
-
-#### Improvements Made:
-- **Enhanced v-menu Configuration**: Added `location="bottom end"` and `offset="8"` for proper positioning
-- **Improved CSS Specificity**: Changed `.v-overlay__content` to `.v-dialog .v-overlay__content` to target only dialogs
-- **Better Component Separation**: Ensured menu and dialog overlays have independent positioning logic
-
-#### Technical Details:
-- Updated v-menu in App.vue with proper location and offset attributes
-- Refined CSS selectors to prevent dialog positioning rules from affecting menus
-- Maintained existing dialog centering functionality while fixing menu positioning
-
-### 2025-01-19 - Frontend Architecture Refactor and UI Improvements
-
-#### Root Cause Analysis:
-1. **Frontend Component Organization Issues**:
-   - Flat component structure with 53+ components in `/fe/src/components/` making navigation difficult
-   - Poor discoverability and maintainability for new team members
-   - No logical grouping based on domain boundaries or feature areas
-   - Monolithic approach conflicting with domain-driven design principles
-
-2. **App Bar Three Dots Menu Positioning**:
-   - `v-menu` component not properly positioned relative to trigger button
-   - Missing `location` and `offset` properties causing menu to appear in unexpected positions
-   - CSS overlay centering rules inadvertently affecting menu positioning
-
-#### Impact of Changes:
-- **Frontend Architecture**: Completely reorganized component structure into domain-based folders for improved maintainability
-- **Developer Experience**: Enhanced discoverability with clear domain boundaries and comprehensive documentation
-- **Build Process**: Maintained auto-import functionality and verified all compilation processes work correctly
-- **UI/UX**: Fixed three dots menu positioning for better user experience
-
-#### New Features Added:
-- **Domain-Based Component Architecture:**
-  - `common/` - Shared UI components (AppBar, AppFooter, ConfirmDialog, etc.)
-  - `auth/` - Authentication-related components (LoginForm, etc.)
-  - `organization/` - Organization management components (dialogs, forms)
-  - `teams/` - Team management components (dialogs, lists)
-  - `projects/` - Project and task management components
-  - `references/` - Reference data management components
-  - `users/` - User management components
-  - `debug/` - Development and debugging utilities
-
-- **Comprehensive Documentation System:**
-  - Main `/fe/src/components/README.md` with architecture overview
-  - Individual README.md files for each domain folder explaining purpose and components
-  - Clear guidelines for component placement and organization
-
-#### Bugs Fixed:
-- Three dots menu positioning in app bar (added `location="bottom end"` and `offset="8"`)
-- CSS overlay centering affecting menus (updated to target only dialogs)
-- Import path issues after component reorganization (updated all relative imports)
-- Type error in `UserCreateDialog.vue` form data initialization
-- Auto-import functionality maintained across all moved components
-
-#### Improvements Made:
-- **Code Organization**: Migrated from flat to domain-based folder structure
-- **Import Management**: Removed manual component imports in favor of auto-imports
-- **Path Resolution**: Updated all relative import paths to match new folder depth
-- **Type Safety**: Fixed type errors and ensured TypeScript compilation success
-- **Build Verification**: Confirmed all build processes work correctly after refactor
-
-#### Documentation Updates:
-- Created comprehensive component architecture documentation
-- Added domain-specific README files with component inventories
-- Updated main components README with folder structure and guidelines
-- Documented component placement rules and best practices
-
-#### Follow-up Tasks:
-- Monitor application performance after refactor
-- Consider adding component-level unit tests for critical components
-- Evaluate potential for further domain boundary refinements
-- Update team onboarding documentation to reflect new structure
-
-#### Technical Details:
-- **Components Moved**: 53+ components reorganized into 8 domain folders
-- **Files Updated**: 15+ page files updated to use auto-imports
-- **Import Paths Fixed**: 20+ component files with updated relative imports
-- **Build Status**: ✅ Type-check passed, ✅ Build completed successfully, ✅ Dev server running
-- **Verification**: Manual testing confirmed all dialogs and menus work correctly
-
-#### Architecture Benefits:
-- **Scalability**: New components can be easily placed in appropriate domains
-- **Maintainability**: Clear separation of concerns and logical grouping
-- **Team Collaboration**: Reduced conflicts through better organization
-- **Code Discovery**: Faster navigation and understanding for new developers
-- **Domain Alignment**: Component structure matches business domain boundaries
-
-### 2025-01-19 - Test Discovery Issues and Resolution
-
-#### Root Cause Analysis:
-1. **VS Code Test Detection Issues**:
-   - VS Code's test explorer requires successful file compilation before showing tests
-   - Test files with import errors prevent VS Code from detecting any tests in the project
-   - Missing Vitest extension prevents proper integration with VS Code's test runner
-
-2. **Post-Refactor Import Path Issues**:
-   - Component reorganization into domain-based folders broke existing test import paths
-   - 10+ test files still using old component import paths from before the refactor
-   - Test files unable to import moved components causing compilation failures
-
-#### Impact of Changes:
-- **Test Discovery**: VS Code can now properly detect and display Vitest tests in test explorer
-- **Test Execution**: All test files can now compile and execute (with some test logic failures remaining)
-- **Developer Experience**: Tests are visible and runnable from VS Code interface
-- **Import Consistency**: All test imports updated to match new component structure
-
-#### Issues Resolved:
-- **VS Code Extension**: Installed Vitest extension (`vitest.explorer`) for proper test detection
-- **Import Path Updates**: Fixed 10+ test files with broken component import paths:
-  - `HomeCard.vue` → `components/debug/HomeCard.vue`
-  - `ComplexityCreateDialog.vue` → `components/references/ComplexityCreateDialog.vue`
-  - `ConfigDisplayCard.vue` → `components/debug/ConfigDisplayCard.vue`
-  - `DebugInfoCard.vue` → `components/debug/DebugInfoCard.vue`
-  - `OrganizationCreateDialog.vue` → `components/organization/OrganizationCreateDialog.vue`
-  - `PriorityCreateDialog.vue` → `components/references/PriorityCreateDialog.vue`
-  - `StatusCreateDialog.vue` → `components/references/StatusCreateDialog.vue`
-  - `TeamViewDialog.vue` → `components/teams/TeamViewDialog.vue`
-  - `UserViewDialog.vue` → `components/users/UserViewDialog.vue`
-  - `DepartmentTreeDialog.vue` → `components/organization/DepartmentTreeDialog.vue`
-  - `StaffTreeDialog.vue` → `components/organization/StaffTreeDialog.vue`
-
-#### Solution Summary:
-The issue was caused by our component refactor breaking test import paths. VS Code couldn't detect tests because the files had compilation errors. After installing the Vitest extension and fixing all import paths, tests are now discoverable and executable in VS Code.
-
-#### Technical Details:
-- **Tests Status**: ✅ Discoverable in VS Code, ✅ Compilation successful, ⚠️ Some test logic failures remain
-- **Extension Installed**: `vitest.explorer` for VS Code test integration
-- **Files Updated**: 11 test files with corrected import paths
-- **Test Runner**: Vitest integration now working properly in VS Code
-
-#### Remaining Issues:
-- Minor test assertion failures in validation and loading tests (unrelated to component refactor)
-- Some TypeScript type compatibility issues in older test files (pre-existing)
-- These are test logic issues, not discovery/import problems
-
-#### Follow-up Actions:
-- Monitor VS Code test discovery functionality
-- Address remaining test assertion failures as separate task
-- Update test documentation to reflect new component structure
-
-### 2025-01-15 - Frontend Test Fix: Numeric Validation
-
-#### Root Cause Analysis:
-- One failing test in `useValidation.test.ts` was expecting legacy permissive numeric validation behavior
-- Legacy test expected `"12a"` to be considered valid (using `parseFloat` behavior)
-- Updated `validateNumeric` function now uses strict validation with `Number()` constructor
-- Conflict between old test expectations and new stricter validation logic
-
-#### Impact of Changes:
-- All 263 frontend tests now pass
-- Validation behavior is now consistent between legacy and new tests
-- Numeric input validation is stricter and more reliable for user inputs
-
-#### Bugs Fixed:
-- **Frontend Test Failure**: Updated legacy test in `useValidation.test.ts` to expect strict numeric validation
-  - Changed expectation for `"12a"` from `true` to `"Must be a valid number"`
-  - Aligned test with new stricter validation that rejects strings with trailing non-numeric characters
-  - Maintains backwards compatibility for valid numeric inputs while improving input validation quality
-
-#### Code Changes:
-- **Updated Files:**
-  - `/fe/tests/unit/composables/useValidation.test.ts`: Updated test expectation to match strict validation behavior
-
-### 2025-06-16 - Complete Resolver Refactoring: User Module Extraction and Final Architecture
-
-#### Root Cause Analysis:
-User-related operations (users queries, user queries, and user mutations) were scattered across multiple files. User queries (`users`, `user`) were in `query.resolvers.ts` alongside business entity queries, and user mutations (`createUser`, `updateUser`, `deleteUser`) were in `mutation.resolvers.ts` alongside other business mutations. This made user management operations harder to locate and maintain as a cohesive unit.
-
-#### Impact of Changes:
-- **Dedicated User Module**: All user-related operations now consolidated in a single module
-- **Clean Query/Mutation Separation**: User queries and mutations properly separated but in the same module  
-- **Service Dependencies Cleanup**: Removed unused UserService dependencies from non-user modules
-- **Architecture Consistency**: All resolver modules now follow the same modular pattern
-- **Improved Maintainability**: User management operations can be maintained independently
-
-#### New Features Added:
-- **Complete User Module** (`user.resolvers.ts`):
-  - User queries: `users` (get all users), `user` (get user by ID)
-  - User mutations: `createUser`, `updateUser`, `deleteUser`
-  - Dedicated UserService initialization
-  - Proper export structure with `userResolvers` and `userMutationResolvers`
-  - Comprehensive authentication checks and logging
-
-#### Improvements Made:
-- **Service Optimization**: Removed UserService dependencies from query and mutation resolvers that no longer need them
-- **Import Cleanup**: Removed unused imports (RegisterInput, UpdateUserInput) from mutation resolvers
-- **Function Signature Updates**: Updated setServices functions to match actual requirements
-- **Resolver Index Enhancement**: Properly combines user resolvers into Query and Mutation root types
-- **Documentation Updates**: Updated file-level documentation to reflect new responsibilities
-
-#### Technical Implementation:
-- **User Queries Moved**: Extracted `users` and `user` resolvers from `/be/src/resolvers/query.resolvers.ts`
-- **User Mutations Moved**: Extracted `createUser`, `updateUser`, `deleteUser` from `/be/src/resolvers/mutation.resolvers.ts`
-- **Service Dependencies Updated**:
-  - Removed UserService from `query.resolvers.ts` setServices function
-  - Removed UserService from `mutation.resolvers.ts` setServices function  
-  - Added UserService initialization to `user.resolvers.ts`
-- **Resolver Index Updated**: Added user resolver imports and proper Query/Mutation merging
-- **Import Cleanup**: Removed unused type imports and service imports from affected modules
-
-#### Final Resolver Architecture Achieved:
-1. **System Monitoring** (`health.resolvers.ts`): health checks + configuration access
-2. **Authentication** (`auth.resolvers.ts`): me query + authentication mutations (register, login, etc.)
-3. **User Management** (`user.resolvers.ts`): user queries + user mutations (CRUD operations)
-4. **Business Queries** (`query.resolvers.ts`): organizations, projects, tasks, and other business entities
-5. **Business Mutations** (`mutation.resolvers.ts`): CRUD operations for business entities (organizations, projects, etc.)
-
-#### Testing Validation:
-All relevant tests continue to pass after the refactoring:
-- `user-crud.test.ts` (2 tests) - User CRUD operations
-- `auth.test.ts` (1 test) - Authentication flow
-- `session-management.test.ts` (1 test) - Session management
-- `health.test.ts` (1 test) - Health check functionality
-- `config.test.ts` (3 tests) - Configuration access
-- `me-query.test.ts` (2 tests) - User identity queries
-- All unit tests for UserService and AuthService
-
-#### Service Initialization Optimization:
-- **health.resolvers.ts**: Only requires UserService (for user count in health checks)
-- **auth.resolvers.ts**: Requires both UserService and AuthService
-- **user.resolvers.ts**: Only requires UserService
-- **query.resolvers.ts**: No longer requires UserService - only business entity services
-- **mutation.resolvers.ts**: No longer requires UserService or AuthService - only business entity services
-
-#### Breaking Changes: None
-- All existing GraphQL API endpoints remain unchanged
-- All service interfaces remain the same
-- All authentication flows continue to work as before
-- No changes required for client applications
-
-#### Code Quality Improvements:
-- **Better Separation of Concerns**: Each module has a single, well-defined responsibility
-- **Reduced Coupling**: Modules only import services they actually use
-- **Clearer Intent**: Module names clearly indicate their purpose and scope
-- **Easier Testing**: Each module can be tested independently with minimal mocking
-- **Maintenance Efficiency**: Changes to user management only require touching user.resolvers.ts
-
-#### Documentation Updates:
-- Updated file-level JSDoc comments to reflect new module responsibilities
-- Removed references to user management from business entity resolver documentation
-- Added clear descriptions of service dependencies for each module
-- Maintained consistent documentation patterns across all resolver modules
-
-#### Summary:
-This completes the comprehensive refactoring of the GraphQL resolver architecture. The codebase now has a clean, modular structure where each resolver module has a single responsibility and minimal dependencies. User management, authentication, system monitoring, and business entity operations are all properly separated while maintaining full backward compatibility.
-
----
-
-### 2025-06-16 - GraphQL Resolver Refactoring: Staff, Team, Project, and Task Module Extraction
-
-#### Root Cause Analysis:
-The previous refactoring efforts successfully extracted authentication, user management, organization, and department modules, but the remaining business entity mutations (staff, team, project, and task operations) were still monolithically organized in `mutation.resolvers.ts`. This created a large, complex mutation resolver file handling multiple distinct business domains, violating separation of concerns and making it difficult to maintain these business operations independently.
-
-#### Impact of Changes:
-- **Complete Modular Architecture**: All major business entities now have dedicated resolver modules
-- **Enhanced Separation of Concerns**: Staff, team, project, and task operations are completely separated
-- **Improved Maintainability**: Each business entity can be maintained independently
-- **Better Code Organization**: Clear, logical separation between different business domains
-- **Optimized Service Dependencies**: Each module only depends on the services it actually needs
-- **Cleaner Reference Data Management**: Only reference data mutations remain in the main mutation resolver
-
-#### New Features Added:
-- **Complete Staff Module** (`staff.resolvers.ts`):
-  - Staff mutations: `createStaff`, `updateStaff`, `deleteStaff`
-  - Staff field resolvers: `organization`, `department`, `user` field resolvers
-  - Dedicated service initialization with StaffService and related dependencies
-  - Comprehensive JSDoc documentation and error handling
-
-- **Complete Team Module** (`team.resolvers.ts`):
-  - Team mutations: `createTeam`, `updateTeam`, `deleteTeam`
-  - Team field resolvers: `members`, `leader` field resolvers
-  - Staff-team field resolver: `Staff.teams` resolver
-  - Dedicated service initialization with TeamService and StaffService
-  - Comprehensive JSDoc documentation and error handling
-
-- **Complete Project Module** (`project.resolvers.ts`):
-  - Project queries: `projects`, `project` resolvers
-  - Project mutations: `createProject`, `updateProject`, `deleteProject`
-  - Project field resolvers: `tasks`, `organization` field resolvers
-  - Dedicated service initialization with ProjectService and related dependencies
-  - Comprehensive JSDoc documentation and error handling
-
-- **Complete Task Module** (`task.resolvers.ts`):
-  - Task queries: `tasks`, `task` resolvers  
-  - Task mutations: `createTask`, `updateTask`, `deleteTask`
-  - Task assignment mutations: `assignStaffToTask`, `removeStaffFromTask`
-  - Task relationship mutations: `addTaskPredecessor`, `removeTaskPredecessor`
-  - Task field resolvers: `assignedStaff`, `predecessors`, `project`, `status`, `priority`, `complexity` field resolvers
-  - Dedicated service initialization with TaskService and related dependencies
-  - Comprehensive JSDoc documentation and error handling
-
-#### Improvements Made:
-- **Modular Architecture**: Complete separation of business entity logic from core resolvers
-- **Code Organization**: Updated resolver index to properly combine all resolver modules
-- **Documentation**: Updated comments and file descriptions to reflect new responsibilities
-- **Service Initialization**: Proper service setup for each module with correct dependencies
-- **Clean Dependencies**: Removed unused service imports from mutation resolvers
-- **Field Resolver Distribution**: Moved all related field resolvers to appropriate modules
-
-#### Technical Implementation:
-- **Staff Operations**: Extracted all staff mutations and field resolvers from core resolver files
-- **Team Operations**: Extracted all team mutations and field resolvers from core resolver files  
-- **Project Operations**: Extracted all project queries, mutations, and field resolvers from core resolver files
-- **Task Operations**: Extracted all task queries, mutations, and field resolvers from core resolver files
-- **Service Dependencies Updated**:
-  - Removed StaffService, TeamService, ProjectService, TaskService from `mutation.resolvers.ts`
-  - Removed ProjectService, TaskService from `query.resolvers.ts`
-  - Added proper service initialization to each new resolver module
-- **Resolver Index Updated**: Added all new resolver imports and proper Query/Mutation merging
-- **Import Cleanup**: Removed unused type imports and service imports from affected modules
-
-#### Final Complete Resolver Architecture Achieved:
-1. **System Monitoring** (`health.resolvers.ts`): health checks + configuration access
-2. **Authentication** (`auth.resolvers.ts`): me query + authentication mutations  
-3. **User Management** (`user.resolvers.ts`): user queries + user mutations
-4. **Organization Management** (`organization.resolvers.ts`): organization queries + mutations + field resolvers
-5. **Department Management** (`department.resolvers.ts`): department queries + mutations + field resolvers
-6. **Staff Management** (`staff.resolvers.ts`): staff mutations + staff field resolvers
-7. **Team Management** (`team.resolvers.ts`): team mutations + team field resolvers
-8. **Project Management** (`project.resolvers.ts`): project queries + mutations + field resolvers
-9. **Task Management** (`task.resolvers.ts`): task queries + mutations + field resolvers + assignment operations
-10. **Reference Data** (`mutation.resolvers.ts`): status, priority, complexity mutations only
-
-#### Service Initialization Optimization:
-- **staff.resolvers.ts**: StaffService, UserService, OrganizationService, DepartmentService
-- **team.resolvers.ts**: TeamService, StaffService  
-- **project.resolvers.ts**: ProjectService, OrganizationService
-- **task.resolvers.ts**: TaskService, ProjectService, StaffService, StatusService, PriorityService, ComplexityService
-- **mutation.resolvers.ts**: Only StatusService, PriorityService, ComplexityService (reference data only)
-- **query.resolvers.ts**: Only services for remaining reference data queries
-
-#### Testing Validation:
-- All existing tests continue to pass without modification:
-  - `projects-tasks-crud.test.ts` (1 test) - Complete project and task CRUD operations
-  - `organization-crud.test.ts` (15 tests) - Organization and department operations
-  - `user-crud.test.ts` (2 tests) - User management operations
-  - All unit tests for individual services continue to pass
-- **Full test suite passes**: 29 test suites, 365 tests passed
-- **Critical test verification**: `projects-tasks-crud.test.ts` specifically validates all moved functionality
-
-#### Missing Mutations Fixed:
-During testing, identified and added missing task assignment and relationship mutations:
-- `assignStaffToTask` - Assign staff members to tasks
-- `removeStaffFromTask` - Remove staff assignments from tasks  
-- `addTaskPredecessor` - Create task dependency relationships
-- `removeTaskPredecessor` - Remove task dependency relationships
-
-These were properly added to `task.resolvers.ts` ensuring complete task management functionality.
-
-#### Breaking Changes: None
-- All existing GraphQL API endpoints remain unchanged
-- All service interfaces remain the same
-- All business operations continue to work as before
-- No changes required for client applications
-- Complete backward compatibility maintained
-
-#### Code Quality Improvements:
-- **Perfect Separation of Concerns**: Each module handles a single business entity
-- **Minimal Dependencies**: Modules only import services they actually use
-- **Clear Responsibilities**: Module names clearly indicate their business domain
-- **Independent Maintainability**: Each business entity can be modified independently
-- **Scalable Architecture**: Easy to add new business entities following established patterns
-
-#### Documentation Updates:
-- Updated file-level JSDoc comments for all affected modules
-- Enhanced documentation for each business entity module
-- Added clear descriptions of service dependencies for each module
-- Maintained consistent documentation patterns across all resolver modules
-- Updated main resolver index documentation
-
-#### Performance Benefits:
-- **Reduced Memory Footprint**: Modules only load required services
-- **Faster Development**: Developers can focus on specific business domains
-- **Better Caching**: Smaller, focused modules enable better bundling and caching
-- **Improved Tree Shaking**: Unused resolver code can be eliminated more effectively
-
-#### Summary:
-This completes the comprehensive refactoring of the GraphQL resolver architecture from a monolithic structure to a fully modular, domain-driven architecture. Each business entity (staff, teams, projects, tasks, organizations, departments, users) now has its own dedicated module with clear responsibilities and minimal dependencies. Reference data operations remain centralized for efficiency. The architecture now follows best practices for separation of concerns, maintainability, and scalability while maintaining full backward compatibility.
-
----
-
-### 2025-06-16 - GraphQL Reference Data Resolver Extraction Complete
-
-#### Root Cause Analysis:
-The status, complexity, and priority reference data queries and mutations had already been extracted from the main resolver files (`query.resolvers.ts` and `mutation.resolvers.ts`) into a dedicated `reference.data.resolvers.ts` module. This modular extraction was completed as part of a previous refactoring effort to improve separation of concerns and code organization.
-
-#### Impact of Changes:
-- **Verification Complete**: All reference data (status, priority, complexity) resolvers are properly modularized
-- **Clean Architecture**: Reference data logic is completely separated from other business domains
-- **Proper Integration**: New reference data module is correctly integrated into the resolver index
-- **Test Coverage Maintained**: All 29 test suites with 365 tests continue to pass
-
-#### Features Verified:
-- **Reference Data Module** (`reference.data.resolvers.ts`):
-  - Status queries: `statuses`, `status` resolvers with authentication checks
-  - Priority queries: `priorities`, `priority` resolvers with authentication checks  
-  - Complexity queries: `complexities`, `complexity` resolvers with authentication checks
-  - Status mutations: `createStatus`, `updateStatus`, `deleteStatus` with validation
-  - Priority mutations: `createPriority`, `updatePriority`, `deletePriority` with validation
-  - Complexity mutations: `createComplexity`, `updateComplexity`, `deleteComplexity` with validation
-  - Service initialization function: `setServices()` for dependency injection
-  - Comprehensive JSDoc documentation with parameter descriptions and error handling
-
-#### Code Quality Verified:
-- **Clean Separation**: Original resolver files properly cleared of reference data logic
-- **Proper Documentation**: Clear comments indicating where queries/mutations have been moved
-- **Service Integration**: Reference data services properly initialized in resolver index
-- **Type Safety**: All resolvers use proper TypeScript types and GraphQL context
-- **Error Handling**: Authentication checks and error responses properly implemented
-- **Test Compatibility**: Full test suite passes without any regressions
-
-#### Technical Implementation Verified:
-- Reference data resolvers properly exported from `reference.data.resolvers.ts` 
-- Resolver index correctly imports and merges reference data resolvers
-- Service initialization function `setReferenceDataServices()` properly called during startup
-- Main query and mutation resolvers cleared of reference data code with appropriate placeholders
-- GraphQL API interface maintained - no breaking changes to client contracts
-- All resolver dependencies and service injections working correctly
-
-#### Testing Results:
-- **29 test suites passed**: All existing functionality maintained
-- **365 tests passed**: No regressions introduced by the modular architecture
-- **Full coverage**: Status, priority, and complexity operations tested and working
-- **Integration verified**: Reference data module properly integrated with application startup
-
-#### Documentation Updates:
-- Updated resolver file documentation to reflect extraction completion
-- Added clear indicators of where reference data functionality has been moved
-- Maintained comprehensive JSDoc documentation in the reference data module
-- Updated resolver index comments to reflect modular architecture
-
-#### No TODOs or Follow-up Tasks:
-The reference data resolver extraction is complete and fully verified. The modular architecture is working correctly with all tests passing.
-
----
-
-### 2025-06-16 - Reference Data Resolver Modularization and Empty File Cleanup (COMPLETED)
-
-#### Root Cause Analysis:
-The original GraphQL resolver structure had all status, priority, and complexity queries and mutations scattered in the main `query.resolvers.ts` and `mutation.resolvers.ts` files. After previous modularization efforts, these main resolver files became empty but were still being imported and included in the resolver index, creating unnecessary complexity and potential confusion for developers.
-
-#### Impact of Changes:
-- **Complete Reference Data Modularization**: All status, priority, and complexity operations consolidated into a dedicated module
-- **Codebase Cleanup**: Removed empty/redundant resolver files that served no purpose
-- **Streamlined Architecture**: Simplified resolver index with only active, functional modules
-- **Improved Developer Experience**: Cleaner file structure with clear separation of concerns
-- **Enhanced Maintainability**: Reference data operations now have a single, focused home
-
-#### Changes Made:
-
-**Phase 1 - Reference Data Extraction** (Previously Completed):
-- Extracted all status, priority, and complexity queries and mutations from main resolvers
-- Created dedicated `reference.data.resolvers.ts` module with:
-  - **Queries**: `statuses`, `priorities`, `complexities`
-  - **Mutations**: `createStatus`, `updateStatus`, `deleteStatus`, `createPriority`, `updatePriority`, `deletePriority`, `createComplexity`, `updateComplexity`, `deleteComplexity`
-- Properly integrated with service layer (StatusService, PriorityService, ComplexityService)
-
-**Phase 2 - Empty File Cleanup** (Completed):
-- **Removed Empty Files**: 
-  - ❌ `src/resolvers/query.resolvers.ts` (was empty after modularization)
-  - ❌ `src/resolvers/mutation.resolvers.ts` (was empty after modularization)
-- **Updated Resolver Index**: 
-  - Removed imports for deleted files
-  - Removed spread operators (`...queryResolvers`, `...mutationResolvers`) from resolver merging
-  - Maintained all functional resolver modules
+1. **Editable Task Details Form**:
+   - All task fields are now editable (name, description, parent task, evaluator, status, priority, complexity, dates)
+   - Added Save/Undo buttons with proper form state tracking
+   - Real-time validation and feedback
+
+2. **Improved Layout Organization**:
+   - Row 1: Task name, Project, Parent task
+   - Row 2: Description (full width)
+   - Row 3: Evaluator, Status, Priority, Complexity
+   - Row 4: Planned start/end dates, Actual start/end dates
+
+3. **Enhanced Field Types**:
+   - Date pickers for start/end dates
+   - Dropdown selectors for parent task, evaluator, status, priority, complexity
+   - Proper form controls with validation
+
+4. **Data Table Conversion**:
+   - Progress reports: 5-column table (percentage, note, creator, date, actions)
+   - Status reports: 4-column table (summary, creator, date, actions)
+   - Improved sorting by date (descending)
+   - Color-coded progress indicators
 
 #### Technical Implementation:
 ```typescript
-// Current resolver structure after cleanup:
-src/resolvers/
-├── index.ts (streamlined - only imports active modules)
-├── reference.data.resolvers.ts (all status/priority/complexity logic)
-├── organization.resolvers.ts
-├── department.resolvers.ts  
-├── user.resolvers.ts
-├── project.resolvers.ts
-├── task.resolvers.ts
-├── staff.resolvers.ts
-└── team.resolvers.ts
+// Added reactive form data structure
+const taskForm = reactive({
+  name: '', description: '', parentTaskId: '', evaluatorId: '',
+  statusId: '', priorityId: '', complexityId: '',
+  plannedStartDate: '', plannedEndDate: '', actualStartDate: '', actualEndDate: ''
+})
+
+// State management for form modifications
+const taskFormModified = ref(false)
+watch(taskForm, () => { taskFormModified.value = true }, { deep: true })
+
+// Save functionality
+async function saveTaskChanges() {
+  const updateData: UpdateTaskInput = { id: task.value.id, ...taskForm }
+  const { updateTask: updatedTask } = await updateTask(updateData)
+  task.value = updatedTask
+  taskFormModified.value = false
+}
 ```
 
-#### Quality Assurance Results:
-- ✅ **All 29 test suites passed** (before and after cleanup)
-- ✅ **All 365 individual tests passed** (verified twice)
-- ✅ **No breaking changes detected**
-- ✅ **Full GraphQL API functionality preserved**
-- ✅ **Linting and type checking successful**
-- ✅ **No unused imports or dead code remaining**
+#### Bugs Fixed:
+- Task details were previously read-only, preventing users from making necessary updates
+- Progress reports were sorted by percentage instead of date
+- Reports displayed in list format made data comparison difficult
+- Missing important task fields (evaluator, parent task, dates) in the UI
 
-#### Benefits Achieved:
-1. **Clean Architecture**: Eliminated empty/redundant files for better code organization
-2. **Focused Modules**: Each resolver file has a clear, single responsibility
-3. **Maintainability**: Reference data operations centralized in one location
-4. **Developer Experience**: Easier navigation and understanding of codebase structure
-5. **Code Quality**: Removed technical debt from empty files and unused imports
-6. **Scalability**: Clear pattern established for future reference data types
+#### Improvements Made:
+- **Performance**: Optimized form reactivity with proper watchers
+- **UX**: Added compact density to forms for better space utilization  
+- **Accessibility**: Proper form labels and validation feedback
+- **Visual Design**: Color-coded progress chips and consistent styling
+- **Data Management**: Proper TypeScript typing and error handling
 
-#### Future Considerations:
-- 🔄 Consider further modularization if other resolver files grow too large
-- 🔄 Implement additional reference data types using the established pattern
-- 🔄 Add more comprehensive unit tests for the modular structure
-- 🔄 Document best practices for resolver modularization
+#### Documentation Updates:
+- Updated component documentation with new functionality
+- Added proper JSDoc comments for new functions
+- Updated type definitions for enhanced form data
 
-#### Follow-up Tasks Completed:
-- ✅ Successfully extracted reference data resolvers  
-- ✅ Verified all tests pass after extraction
-- ✅ Identified and removed empty resolver files
-- ✅ Updated resolver index appropriately
-- ✅ Confirmed no breaking changes or functionality loss
-- ✅ Updated documentation in WORKLOG.md
+#### TODOs and Follow-up Tasks:
+- [ ] Consider enhancing predecessor/child task dialogs to support both "select existing" and "create new" options
+- [ ] Add form validation rules for date fields (start date should be before end date)
+- [ ] Consider adding keyboard shortcuts for Save (Ctrl+S) and Undo (Ctrl+Z)
+- [ ] Add confirmation dialog for unsaved changes when navigating away
+- [ ] Consider adding auto-save functionality for long editing sessions
+
+#### Potential Issues and Risks Identified:
+- **Data Loss Risk**: Users might accidentally navigate away without saving changes
+- **Validation**: Date field validation could be enhanced to prevent logical errors
+- **Performance**: Large numbers of reports in tables might impact rendering performance
+- **Browser Compatibility**: Date input fields may render differently across browsers
+
+#### Testing Status:
+- ✅ TypeScript compilation successful
+- ✅ Build process successful  
+- ✅ All existing tests pass
+- ✅ Lint checks pass (file-specific)
+- ✅ Form state management works correctly
+- ✅ Table rendering and sorting functional
+
+### 2025-06-17 - Dynamic Project Sizing and Parent-Child Nesting Restoration
+
+#### Improvements Made:
+**Re-enabled Parent-Child Nesting:**
+- Restored `parentNode` and `extent: 'parent'` properties for proper task nesting
+- Tasks are now properly contained within their project nodes
+- Maintained working edge connections with proper handle targeting
+
+**Dynamic Project Node Sizing:**
+- Implemented intelligent project container sizing based on number of contained tasks
+- Projects now arrange tasks in a grid layout (roughly square) for optimal space usage
+- Dynamic width/height calculation: `projectWidth = max(300, (tasksPerRow * taskWidth) + spacing + padding)`
+- Projects automatically resize to fit all their tasks without overflow
+
+**Grid Layout for Tasks Within Projects:**
+- Tasks positioned in grid formation within project containers
+- Calculated positioning: `taskX = padding + (col * (taskWidth + spacing))`
+- Tasks arranged in rows and columns for clean organization
+- Header space reserved for project title and metadata
+
+**Improved Styling:**
+- Fixed task node dimensions to consistent 200px width × 80px min-height
+- Added `overflow: visible` to project content area for proper child visibility
+- Consistent spacing and padding throughout the layout
+- Project containers have minimum dimensions for proper display
+
+**Technical Implementation:**
+```typescript
+// Dynamic sizing algorithm
+const tasksInProject = tasks.length
+const tasksPerRow = Math.ceil(Math.sqrt(tasksInProject))
+const projectWidth = Math.max(300, (tasksPerRow * taskWidth) + spacing + padding)
+const projectHeight = Math.max(200, (rows * taskHeight) + spacing + padding + headerHeight)
+
+// Grid positioning within project
+const row = Math.floor(taskIndex / tasksPerRow)
+const col = taskIndex % tasksPerRow
+const taskX = projectPadding + (col * (taskWidth + taskSpacing))
+const taskY = projectPadding + 60 + (row * (taskHeight + taskSpacing))
+```
+
+**Result:**
+- ✅ Tasks properly nested inside project containers
+- ✅ Project nodes dynamically resize to fit their content
+- ✅ Clean grid layout for multiple tasks within projects
+- ✅ Maintained proper edge connections (predecessor: right→left, child: bottom→top)
+- ✅ Professional visual hierarchy and organization
 
 ---
+
+### 2025-06-16 - Task Status Report and Progress Report Creator Staff Implementation
+
+#### Root Cause Analysis:
+The main WORKLOG.md file had grown very large with entries spanning multiple dates, making it difficult to navigate and find specific changes. The file contained comprehensive daily entries that would benefit from better organization by date for improved maintainability and readability.
+
+#### Impact of Changes:
+- **Improved Organization**: WORKLOG entries now organized into separate date-based files
+- **Better Navigation**: Each date has its own dedicated file for easier reference
+- **Reduced File Size**: Main WORKLOG.md is now smaller and more focused
+- **Historical Preservation**: All original content preserved in appropriate date files
+- **Enhanced Maintainability**: Future WORKLOG entries can follow the established date-based pattern
+
+#### New Features Added:
+- **Date-Based WORKLOG Files**:
+  - `WORKLOG 20250616.md`: All June 16, 2025 entries (6 major GraphQL resolver refactoring entries)
+  - `WORKLOG 20250615.md`: All June 15, 2025 entries (3 entries covering dialog fixes, test improvements, and menu positioning)
+  - `WORKLOG 20250119.md`: All January 19, 2025 entries (4 entries covering initial setup, frontend architecture, and test fixes)
+  - `WORKLOG 20250116.md`: All January 16, 2025 entries (6 entries covering task management, UI improvements, and bug fixes)
+  - `WORKLOG 20250115.md`: January 15, 2025 entry (frontend test fix)
+
+#### Improvements Made:
+- **File Organization**: Clear separation of entries by date for better structure
+- **Content Preservation**: All original content maintained with full detail
+- **Consistent Formatting**: Maintained original markdown formatting and structure
+- **Complete Coverage**: Every entry from the original WORKLOG properly categorized
+
+#### Technical Implementation:
+- **WORKLOG 20250616.md**: Contains 6 major GraphQL resolver refactoring entries
+- **WORKLOG 20250615.md**: Contains dialog centering fixes, service layer test improvements, and menu positioning
+- **WORKLOG 20250119.md**: Contains initial project setup, frontend architecture refactor, and comprehensive test fixes
+- **WORKLOG 20250116.md**: Contains task management enhancements, UI consistency improvements, and staff organization chart fixes
+- **WORKLOG 20250115.md**: Contains numeric validation test fix
+
+#### Documentation Structure:
+Each date-based WORKLOG file follows the same structure:
+- Clear date-based filename format: `WORKLOG YYYYMMDD.md`
+- Consistent header format: `# WORKLOG YYYYMMDD.md`
+- Date-specific subtitle: `## Change Log for [Month Day, Year]`
+- All original entry content preserved exactly as written
+- Proper markdown formatting maintained throughout
+
+#### Benefits Achieved:
+- **Faster Navigation**: Users can quickly find entries by date
+- **Reduced Cognitive Load**: Smaller files are easier to read and comprehend
+- **Better Version Control**: Changes to specific dates won't affect other date entries
+- **Scalable Organization**: Pattern established for future WORKLOG organization
+- **Historical Access**: Complete change history preserved and easily accessible
+
+#### Follow-up Tasks:
+- Consider implementing this pattern for future WORKLOG entries
+- Update documentation references to point to appropriate date-based files
+- Monitor file sizes to determine if further subdivision becomes necessary
+
+#### Summary:
+Successfully split the large WORKLOG copy.md file into 5 date-based files covering all entries from January 15, 2025 through June 16, 2025. This reorganization improves navigability while preserving all historical information and establishing a scalable pattern for future WORKLOG management.
+
+---
+
+### 2025-06-16 - Task Graph Nesting Implementation with Vue Flow Parent-Child Relationships
+
+#### Root Cause Analysis:
+The task graph visualization system had a fundamental design issue where tasks were displayed as separate, independent nodes rather than being properly nested inside their project containers. This made it difficult to understand project structure and task relationships at a glance.
+
+Key issues identified:
+1. **No True Nesting**: Tasks appeared near but not inside project nodes
+2. **Poor Visual Hierarchy**: Project-task relationships were unclear
+3. **Missing Container Semantics**: Project nodes didn't act as proper containers
+4. **Scattered Layout**: Tasks from same project could appear anywhere on the graph
+
+#### Impact of Changes:
+- **True Hierarchical Visualization**: Tasks are now nested inside their project containers
+- **Improved User Understanding**: Clear visual representation of project-task relationships
+- **Better Organization**: Tasks grouped by project with proper container boundaries
+- **Enhanced Navigation**: Users can easily identify which tasks belong to which projects
+- **Multi-Project Support**: Handles complex scenarios with tasks spanning multiple projects
+
+#### New Features Added:
+- **Parent-Child Node Relationships**: Implemented Vue Flow `parentNode` property for proper nesting
+- **Project Container Nodes**: Project nodes act as true containers with headers and content areas
+- **Task Grouping Logic**: Algorithm to group all related tasks by their project
+- **Connection Handle System**: Proper Vue Flow handles for all connection directions
+- **Multi-Project Layout**: Horizontal layout for multiple project containers
+- **Relative Positioning**: Task positions calculated relative to their parent project
+
+#### Technical Implementation:
+
+**Vue Flow Integration:**
+- Implemented `parentNode: projectId` for child task nodes
+- Added `extent: 'parent'` to constrain task movement within projects
+- Used `Position` enum for proper handle positioning (Left, Right, Top, Bottom)
+- Imported `Handle` component for connection points on all task nodes
+
+**Core Algorithm Changes:**
+```typescript
+// Group all tasks by project
+const tasksByProject = new Map()
+for (const task of allTasks) {
+  const projectId = task.project?.id || 'unknown'
+  if (!tasksByProject.has(projectId)) {
+    tasksByProject.set(projectId, { project, tasks: [] })
+  }
+  tasksByProject.get(projectId).tasks.push(task)
+}
+
+// Create project containers and nested task nodes
+for (const [projectId, { project, tasks }] of tasksByProject.entries()) {
+  // Project container node
+  nodes.push({
+    id: `project-${projectId}`,
+    type: 'project',
+    style: { width: projectWidth, height: projectHeight }
+  })
+  
+  // Nested task nodes
+  for (const task of tasks) {
+    nodes.push({
+      id: task.id,
+      parentNode: `project-${projectId}`,
+      extent: 'parent',
+      position: { x: relativeX, y: relativeY }
+    })
+  }
+}
+```
+
+**UI Component Enhancements:**
+- **Project Container Template**: New container design with header and content sections
+- **Handle Integration**: Added Vue Flow handles to all task node templates
+- **Container Styling**: Purple gradient containers with proper headers
+- **Task Node Updates**: Enhanced with connection handles for all directions
+- **Responsive Layout**: Dynamic container sizing based on contained tasks
+
+**Edge Connection Preservation:**
+- Maintained predecessor→current task connections (right handle → left handle)
+- Preserved current task→child task connections (bottom handle → top handle)
+- Edge styling and behavior unchanged from previous implementation
+
+#### Files Modified:
+- `fe/src/components/tasks/TaskGraphDialog.vue` - Complete nesting implementation
+- `fe/tests/unit/components/TaskGraphDialog.test.ts` - Fixed merge conflicts and enhanced tests
+- `fe/tests/unit/components/TaskGraphNesting.test.ts` - New comprehensive nesting tests
+
+#### Testing Results:
+- **11/11 tests passing** (7 existing + 4 new nesting tests)
+- **Type checking successful** with proper Vue Flow type imports
+- **Logic verification** for task grouping and parent-child relationships
+- **Edge connection testing** to ensure proper handle connections
+
+#### Documentation Updates:
+- Enhanced component documentation to reflect nesting capabilities
+- Added technical notes about Vue Flow parent-child relationships
+- Documented the task grouping algorithm and positioning logic
+
+#### Follow-up Tasks:
+- Consider adding node interaction features (click to navigate to task/project)
+- Potential enhancement: resize handles for project containers
+- Future consideration: expand to show multi-level task hierarchies
+- Performance optimization for large numbers of tasks per project
+
+#### Potential Risks Identified:
+- Large numbers of tasks in single project might need layout optimization
+- Very wide project names could affect container sizing
+- Future Vue Flow version compatibility considerations
+- Performance considerations for complex multi-project hierarchies
+
+---
+
+### 2025-06-16 - Enhanced Report Editing & Display with Creator Management and Progress Sorting
+
+#### Root Cause Analysis:
+The task management system needed several improvements in how reports are handled:
+1. Edit dialogs for both progress and status reports lacked creator selection functionality
+2. Progress reports needed better display format with all key information on one line
+3. Progress reports needed to be sorted by completion percentage in descending order
+4. Creator field was missing from edit operations in both backend and frontend
+
+#### Impact of Changes:
+- **Enhanced Report Editing**: Users can now change the creator when editing reports
+- **Improved Progress Display**: Progress reports show all key information in a compact single line format
+- **Better Data Organization**: Progress reports are automatically sorted by completion percentage (highest first)
+- **Consistent UX**: Edit dialogs now match create dialogs in functionality
+- **Full Creator Management**: Both create and edit operations support creator assignment
+
+#### New Features Added:
+- **Creator Selection in Edit Dialogs**: Both progress and status report edit dialogs now include creator dropdown
+- **Enhanced Progress Display**: Format changed to "Report from: [date] | [notes] | [creator] | [%] complete"
+- **Progress Report Sorting**: Reports automatically sorted by completion percentage (descending)
+- **Status Report Sorting**: Reports sorted by date (newest first)
+- **Backend Creator Updates**: Full support for updating creator in both report types
+
+#### Technical Implementation:
+
+**Backend Enhancements:**
+- Added `creatorId` field to `UpdateTaskProgressInput` interface
+- Added `creatorId` field to `UpdateTaskStatusReportInput` interface  
+- Enhanced task-progress service to handle creator updates
+- Enhanced task-status-report service to handle creator updates
+- Maintained backward compatibility with existing data
+
+**Frontend Improvements:**
+- Added `eligibleStaff` prop to both edit dialog components
+- Enhanced edit dialogs with creator selection dropdowns
+- Added sorted computed properties for both report types
+- Updated display templates to use sorted data
+- Implemented single-line progress report format
+- Added proper TypeScript interfaces and validation
+
+**UI/UX Enhancements:**
+- **Progress Reports**: Compact single-line format with all key information
+- **Sorted Lists**: Progress by percentage (desc), Status by date (desc)  
+- **Creator Selection**: Dropdown with formatted names and emails
+- **Visual Consistency**: Matching styles between create and edit dialogs
+- **Responsive Design**: Proper handling of long text content
+
+#### Files Modified:
+
+**Backend:**
+- `be/src/types/index.ts` - Added creatorId to update interfaces
+- `be/src/services/task-progress.service.ts` - Enhanced with creator update support
+- `be/src/services/task-status-report.service.ts` - Enhanced with creator update support
+
+**Frontend:**
+- `fe/src/services/tasks.ts` - Updated interfaces with creatorId field
+- `fe/src/pages/task-management/[id].vue` - Enhanced display and sorting
+- `fe/src/components/tasks/TaskProgressEditDialog.vue` - Added creator selection
+- `fe/src/components/tasks/TaskStatusReportEditDialog.vue` - Added creator selection
+
+#### Code Quality:
+- **Type Safety**: Proper TypeScript interfaces with nullable creator handling
+- **Backward Compatibility**: Graceful handling of existing reports without creators
+- **Validation**: Form validation maintains data integrity
+- **Error Handling**: Proper null/undefined checks for creator fields
+- **Testing**: All existing tests continue to pass
+
+#### User Experience Impact:
+- **Comprehensive Editing**: Users can modify all report fields including creator
+- **Better Organization**: Progress reports sorted by completion helps prioritize high-progress tasks
+- **Compact Display**: Single-line format shows more information in less space
+- **Consistent Interface**: Edit and create operations have matching functionality
+- **Clear Information**: All key report details visible at a glance
+
+### 2025-06-16 - Enhanced Progress and Status Report Lists UI
+
+#### Root Cause Analysis:
+The progress reports and status reports lists in the task management page needed better visual hierarchy, improved information display, and more modern design patterns. The original lists had minimal styling and didn't make optimal use of available space or provide clear visual separation between different types of information.
+
+#### Impact of Changes:
+- **Improved Visual Hierarchy**: Better spacing, typography, and layout structure
+- **Enhanced Information Display**: More prominent creator information using chips
+- **Better UX**: Clearer visual separation between reports and improved readability
+- **Modern Design**: Updated to follow contemporary UI patterns with chips and better spacing
+- **Consistent Styling**: Unified approach across both progress and status report lists
+
+#### New Features Added:
+- **Enhanced Layout**: Larger avatars (40px) with better spacing and margins
+- **Chip-based Information Display**: Creator and progress/date information shown in styled chips
+- **Visual Separators**: Border-bottom on list items for clear separation
+- **Improved Typography**: Better text hierarchy with proper emphasis levels
+- **Color-coded Information**: Different chip colors for different types of information
+
+#### UI/UX Improvements:
+
+**Progress Reports List:**
+- Larger warning-colored avatar with percentage display
+- Report title shows "Report from [date]" for better context
+- Notes displayed with proper emphasis (high for content, medium for placeholders)
+- Creator information in outlined primary chip with account icon
+- Progress percentage in success-colored chip with trending-up icon
+- Better spacing and padding throughout
+
+**Status Reports List:**
+- Larger info-colored avatar with flag icon
+- Report title shows "Status Report from [date]" for clarity
+- Status summary with proper text emphasis
+- Creator information in outlined primary chip
+- Report date in info-colored chip with calendar-clock icon
+- Consistent styling with progress reports
+
+#### Technical Implementation:
+- Enhanced list styling with `pa-0` class for better control
+- Added `py-3` padding and `border-b` for visual separation
+- Improved `flex-grow-1` layout for better space utilization
+- Used `v-chip` components for better information hierarchy
+- Added color coding: primary for creators, success for progress, info for dates
+- Maintained existing functionality while improving visual presentation
+
+#### Files Modified:
+- `fe/src/pages/task-management/[id].vue` - Enhanced both progress and status report list layouts
+
+#### Design Improvements:
+- **Better Visual Weight**: Larger avatars and improved spacing create better visual balance
+- **Information Hierarchy**: Primary information (title) is more prominent, secondary info (chips) is clearly grouped
+- **Consistent Patterns**: Both lists follow the same design patterns for consistency
+- **Accessibility**: Better contrast and visual separation for improved readability
+- **Responsive Design**: Chips wrap gracefully on smaller screens with `flex-wrap`
+
+### 2025-01-16 - Creator Display in Task Report Lists (Completed Issue #104)
+
+#### Root Cause Analysis:
+The Task Details page was missing creator information in the lists of status reports and progress reports. While the creator functionality was fully implemented in the backend and creation dialogs (as part of issue #102), the report lists only displayed date and content (summary/notes) without showing who created each report. Users needed visibility into report authorship for better accountability and traceability.
+
+#### Impact of Changes:
+- **Enhanced User Experience**: Report lists now display creator information alongside existing content
+- **Improved Accountability**: Users can easily identify who created each report
+- **Consistent Information Architecture**: Creator information follows established design patterns
+- **Backward Compatibility**: Graceful handling of existing reports without creator information
+- **Minimal UI Changes**: Non-disruptive integration that maintains existing layouts
+
+#### New Features Added:
+- **Creator Display in Progress Reports**: Shows "Creator: FirstName LastName" with account icon
+- **Creator Display in Status Reports**: Shows "Creator: FirstName LastName" with account icon  
+- **Conditional Rendering**: Only displays creator information when available
+- **GraphQL Data Enhancement**: Extended query to fetch creator staff details
+
+#### Technical Implementation:
+
+**GraphQL Query Enhancement:**
+- Enhanced `getTaskWithManagementData` query in `fe/src/services/tasks.ts`
+- Added `creatorId` and `creator` fields to both report types
+- Included staff details: id, firstName, lastName, email
+
+**UI Component Updates:**
+- Modified report list items in `fe/src/pages/task-management/[id].vue`
+- Added creator information as small caption text below main content
+- Used conditional rendering with `v-if="report.creator"`
+- Maintained existing prepend/append action button layouts
+
+#### Code Quality:
+- **Minimal Changes**: Only 2 files modified with targeted enhancements
+- **Consistent Styling**: Used existing Vuetify design tokens and patterns
+- **Type Safety**: Leveraged existing TypeScript interfaces
+- **Linting Compliance**: All changes pass ESLint validation
+- **Test Coverage**: Existing test suite continues to pass
+
+#### Files Modified:
+- `fe/src/services/tasks.ts` - Enhanced GraphQL query for creator data
+- `fe/src/pages/task-management/[id].vue` - Added creator display in both report lists
+
+#### User Experience Impact:
+- **Seamless Integration**: Creator information appears naturally in existing lists
+- **Visual Hierarchy**: Creator shown as subtle caption text that doesn't compete with primary content
+- **Icon Context**: Account icon provides visual cue for creator information
+- **No Breaking Changes**: Existing functionality and workflows remain unchanged
+
+This implementation successfully addresses the requirement to display creator information in task report lists while maintaining design consistency and user experience quality. The changes are surgical and focused, adding value without disrupting existing workflows.
+
+### 2025-06-16 - UI Creator Field Implementation for Task Reports (Completed Issue #102)
+
+#### Root Cause Analysis:
+The backend creator field functionality was already implemented, but the UI components lacked the necessary fields for manual creator selection. Users needed a way to select the report creator from eligible staff members (those assigned to the task or the evaluator) with automatic preset based on their email.
+
+#### Impact of Changes:
+- **Enhanced User Experience**: Added intuitive creator selection dropdowns in report creation dialogs
+- **Smart Auto-Assignment**: Automatically presets creator when user email matches eligible staff
+- **Manual Override Capability**: Users can manually select a different eligible creator
+- **Consistent UI Patterns**: Follows established dialog component design patterns
+- **Type Safety**: Full TypeScript support with proper interface definitions
+- **Comprehensive Testing**: Unit tests validate all creator field functionality
+
+#### Technical Implementation:
+
+**Frontend Interface Updates:**
+- Enhanced `CreateTaskStatusReportInput` and `CreateTaskProgressInput` to include `creatorId?: string`
+- Updated `TaskStatusReport` and `TaskProgress` interfaces to include creator information
+- Modified GraphQL mutations to pass `creatorId` parameter to backend
+
+**UI Component Enhancements:**
+```vue
+<!-- Creator Selection Dropdown -->
+<v-select
+  v-model="form.creatorId"
+  clearable
+  item-title="displayName"
+  item-value="id"
+  :items="staffOptions"
+  label="Creator"
+  prepend-icon="mdi-account-supervisor"
+  variant="outlined"
+/>
+```
+
+**Eligible Staff Logic:**
+- Created computed property to identify eligible staff (assignees + evaluator)
+- Prevents duplicate entries when evaluator is also assigned to task
+- Formats staff display as "FirstName LastName (email)" for clarity
+
+**Auto-Preset Functionality:**
+```typescript
+function presetCreator() {
+  if (!authStore.user?.email || !props.eligibleStaff) return
+  
+  const matchingStaff = props.eligibleStaff.find(staff => 
+    staff.email.toLowerCase() === authStore.user?.email.toLowerCase()
+  )
+  
+  if (matchingStaff) {
+    form.creatorId = matchingStaff.id
+  }
+}
+```
+
+**Component Props Enhancement:**
+- Added `eligibleStaff?: Staff[]` prop to both dialog components
+- Updated task management page to pass eligible staff data
+- Maintained backward compatibility with existing usage
+
+#### New Features Added:
+- **Manual Creator Selection**: Dropdown allowing selection from eligible staff members
+- **Smart Auto-Preset**: Automatically selects creator when user email matches staff
+- **Visual Guidance**: Helper text explaining creator selection rules
+- **Eligible Staff Filtering**: Only shows staff assigned to task or evaluator
+- **Email-Based Matching**: Case-insensitive email matching for auto-assignment
+
+#### Code Quality Improvements:
+- **Comprehensive Unit Tests**: Created test suite validating all creator field functionality
+- **Linting Compliance**: Fixed style issues in modified files
+- **Type Safety**: Full TypeScript integration with proper interfaces
+- **Error Handling**: Graceful handling of missing or invalid creator data
+
+#### Testing Coverage:
+- Creator dropdown display validation
+- Auto-preset logic based on user email matching
+- Form submission with creator data inclusion
+- Staff options formatting verification
+- Edge cases for non-matching emails
+
+#### Files Modified:
+- `fe/src/services/tasks.ts` - Interface and GraphQL mutation updates
+- `fe/src/components/tasks/TaskStatusReportCreateDialog.vue` - Creator field UI
+- `fe/src/components/tasks/TaskProgressCreateDialog.vue` - Creator field UI  
+- `fe/src/pages/task-management/[id].vue` - Eligible staff logic and prop passing
+- `fe/tests/unit/components/TaskStatusReportCreateDialog.creator.test.ts` - Unit tests
+
+#### User Experience Impact:
+- **Seamless Workflow**: Most users will have creator auto-selected based on their email
+- **Flexibility**: Manual override available when needed
+- **Clear Guidance**: Helper text explains selection criteria
+- **Consistent Design**: Matches other form elements in the application
+
+This implementation successfully bridges the gap between the existing backend creator functionality and the frontend user interface, providing an intuitive and user-friendly way to manage report creators while maintaining all business rules and validation logic.
+
+### 2025-01-03 - Enhanced Task Graph Dialog with Project, Predecessor, and Child Task Visualization
+
+#### Root Cause Analysis:
+The TaskGraphDialog component was displaying only a single task node without showing the broader context of task relationships. Users needed to see the task's position within its project hierarchy and understand its dependencies and breakdown structure. The existing implementation lacked visual representation of:
+- Project context as a parent container
+- Predecessor task dependencies (left-side positioning)
+- Child task breakdown structure (bottom positioning)
+- Proper edge connections between related nodes
+
+#### Impact of Changes:
+- **Enhanced Visualization**: Task graph now displays comprehensive relationship mapping
+- **Improved UX**: Users can visually understand task context and dependencies at a glance
+- **Data Utilization**: Leverages existing backend relationship data (predecessors, childTasks, project)
+- **Maintainable Code**: Preserved backward compatibility while adding new node types
+- **Professional Appearance**: Color-coded nodes with distinct styling for each relationship type
+
+#### New Features Added:
+- **Project Node Visualization**: Purple gradient nodes representing the project container
+- **Current Task Emphasis**: Blue gradient nodes with emphasized styling for the focal task
+- **Predecessor Mapping**: Orange gradient nodes positioned to the left with connecting edges
+- **Child Task Hierarchy**: Green gradient nodes positioned below with connecting edges
+- **Edge Connections**: Color-coded edges showing relationship flow:
+  - Blue edges: predecessor → current task
+  - Green edges: current task → child tasks
+- **Smart Positioning**: Calculated positioning algorithm for optimal layout
+- **Multiple Node Types**: Vue Flow templates for project, currentTask, predecessor, and childTask nodes
+- **Responsive Layout**: Adaptive positioning based on number of relationships
+
+#### Bugs Fixed:
+- **Limited Context**: Users can now see full task context instead of isolated single node
+- **Missing Relationships**: All task relationships are now visualized properly
+- **Poor User Experience**: Enhanced graph provides meaningful visual information
+
+#### Improvements Made:
+- **Visual Hierarchy**: Clear distinction between different node types using color coding
+- **User Navigation**: Better understanding of task flow and dependencies
+- **Data Integration**: Full utilization of existing GraphQL endpoint `getTaskWithManagementData`
+- **Code Quality**: Maintained TypeScript compliance and linting standards
+- **Test Coverage**: Enhanced test suite covering new node types and relationships
+
+#### Technical Implementation:
+
+**Enhanced Component Features:**
+- Fetches complete task data including relationships via `getTaskWithManagementData`
+- Implements smart positioning algorithm for different node types
+- Creates Vue Flow elements array with nodes and edges
+- Handles edge cases when relationships don't exist
+- Maintains proper error handling and loading states
+
+**Node Type Styling:**
+```css
+/* Project nodes: Purple gradient */
+.custom-project-node { background: linear-gradient(135deg, #6A1B9A, #8E24AA); }
+
+/* Current task: Blue gradient (emphasized) */
+.custom-current-task-node { background: linear-gradient(135deg, #1976D2, #2196F3); }
+
+/* Predecessors: Orange gradient */
+.custom-predecessor-node { background: linear-gradient(135deg, #FF8F00, #FFA726); }
+
+/* Child tasks: Green gradient */
+.custom-child-task-node { background: linear-gradient(135deg, #388E3C, #4CAF50); }
+```
+
+**Positioning Algorithm:**
+- Project node: Above center as container (centerX - 150, centerY - 200)
+- Current task: Center position (centerX, centerY)
+- Predecessors: Left side with vertical distribution for multiple items
+- Child tasks: Below center with horizontal distribution for multiple items
+
+**Vue Flow Integration:**
+- Custom node templates for each relationship type
+- Proper edge configuration with handles and styling
+- Maintained zoom and pan functionality
+- Responsive viewport settings
+
+#### Files Modified:
+- `fe/src/components/tasks/TaskGraphDialog.vue` - Complete enhancement of graph visualization
+- `fe/tests/unit/components/TaskGraphDialog.test.ts` - Enhanced test coverage for new features
+
+#### Testing Results:
+- All existing tests pass
+- New tests cover project, predecessor, and child task visualization
+- TypeScript compilation successful
+- Linting compliance maintained
+- Build process successful
+
+#### Documentation Updates:
+- Component documentation updated to reflect new visualization capabilities
+- Test documentation enhanced with relationship testing scenarios
+
+#### Follow-up Tasks:
+- Consider adding node interaction features (click to navigate)
+- Potential enhancement: edge labels showing relationship types
+- Future consideration: expand to show multi-level hierarchies
+
+#### Potential Risks Identified:
+- Large numbers of predecessors or children might need layout optimization
+- Performance considerations for complex task hierarchies
+- Future Vue Flow version compatibility
+
+---
+
+### 2025-06-17 - Task Graph Edge Connection Fix
+
+#### Bug Fixed:
+Fixed incorrect edge connections in the task graph visualization where predecessor tasks were connecting to the wrong handle on the current task.
+
+**Root Cause:**
+- Predecessor task edges were using string values (`'right'`, `'left'`) instead of `Position` enum values
+- This caused Vue Flow to default to connecting to the bottom handle instead of the left handle for the target
+
+**Fix Applied:**
+- Updated predecessor edge creation to use `Position.Right` for source handle and `Position.Left` for target handle
+- Ensured consistent use of `Position` enum for all edge connections
+- Child task edges also updated to use `Position.Bottom` and `Position.Top` for consistency
+
+**Impact:**
+- Predecessor tasks now correctly connect from their right handle to the current task's left handle
+- Visual flow now properly represents the logical task dependency direction (left to right)
+- Improved graph readability and intuitive understanding of task relationships
+
+**Files Modified:**
+- `fe/src/components/tasks/TaskGraphDialog.vue`: Fixed edge handle positioning
+
+**Troubleshooting Edge Connection Issue:**
+- Added unique IDs to all Handle components (`id="left"`, `id="right"`, `id="top"`, `id="bottom"`)
+- Temporarily disabled parent-child nesting to isolate edge connection issue
+- Adjusted absolute positioning to place tasks outside project containers
+- This will help determine if the issue is with edge targeting or parent-child positioning
+
+**Next Steps:**
+- Test edge connections with simplified layout
+- Re-enable parent-child nesting once edge connections are confirmed working
+
+---
+
+### Project Node Transparency Update:
+- Changed project container background from gradient to transparent
+- Updated text color from white to dark purple (#4A148C) for better readability
+- Made project content area fully transparent
+- Updated project header border to use semi-transparent dark purple
+- Added explicit icon color override to maintain visibility
+- Maintained border and shadow for visual definition without background fill
+
+**Visual Impact:**
+- Project containers now act as transparent frames around task groups
+- Better integration with overall graph background
+- Cleaner, less cluttered appearance
+- Task nodes remain fully visible and prominent within their project boundaries
+
+---
+
+### 2025-01-16 - Teams Search Input UI Consistency Fix (Issue #106)
+
+#### Root Cause Analysis:
+The Teams Management page had an inconsistent UI pattern where the search input field was positioned inside the card title section alongside the "Create Team" button. This violated the established design pattern used throughout the application, where search inputs should be positioned in a separate card subtitle section below the heading and action buttons.
+
+Examination of the Projects page (`fe/src/pages/tasks.vue`) revealed the correct pattern:
+- `v-card-title`: Contains heading and action buttons only
+- `v-card-subtitle`: Contains search input field
+- `v-data-table`: The data table itself
+
+#### Impact of Changes:
+- **UI Consistency**: Teams page now follows the same design pattern as Projects and other data management pages
+- **Improved User Experience**: Search input is now properly positioned below the Teams heading as requested
+- **Design System Compliance**: Maintains consistency with established UI patterns throughout the application
+- **Better Layout**: Cleaner separation between action buttons and search functionality
+- **Enhanced Accessibility**: Search input has dedicated section with proper hide-details prop
+
+#### New Features Added:
+- **Proper Card Structure**: Moved search input to dedicated `v-card-subtitle` section
+- **Consistent Styling**: Added `hide-details` prop to match Projects page pattern
+- **Improved Layout**: Simplified card title to contain only heading and action button
+
+#### Bugs Fixed:
+- **UI Inconsistency**: Fixed incorrect placement of search input mixed with action buttons
+- **Design Pattern Violation**: Search input now follows established application patterns
+
+#### Technical Changes:
+
+**Modified Files:**
+- `fe/src/pages/teams.vue`: Restructured Teams card to match Projects page pattern
+
+**Code Changes:**
+```diff
+- <!-- Mixed search input with buttons in card title -->
+  <v-card-title>
+    <div class="d-flex justify-space-between align-center w-100">
+      <span>Teams ({{ filteredTeams.length }})</span>
+-     <div class="d-flex gap-2 align-center">
+-       <v-btn color="primary" prepend-icon="mdi-plus" size="small" @click="openCreateDialog">
+-         Create Team
+-       </v-btn>
+-       <v-text-field
+-         v-model="teamSearch"
+-         clearable
+-         density="compact"
+-         label="Search teams..."
+-         prepend-inner-icon="mdi-magnify"
+-         style="max-width: 300px"
+-         variant="outlined"
+-       />
+-     </div>
++     <v-btn color="primary" prepend-icon="mdi-plus" size="small" @click="openCreateDialog">
++       Create Team
++     </v-btn>
+    </div>
+  </v-card-title>
+
++ <!-- Dedicated search input section -->
++ <v-card-subtitle>
++   <v-text-field
++     v-model="teamSearch"
++     clearable
++     density="compact"
++     hide-details
++     label="Search teams..."
++     prepend-inner-icon="mdi-magnify"
++     variant="outlined"
++   />
++ </v-card-subtitle>
+```
+
+#### Improvements Made:
+- **Simplified Card Title**: Removed unnecessary wrapper div and styling constraints
+- **Enhanced Search Field**: Added `hide-details` prop for better visual integration
+- **Better Spacing**: Search input now spans full width of card subtitle section
+- **Cleaner Code**: Removed inline styles and unnecessary flex containers
+
+#### User Experience Impact:
+- **Consistent Navigation**: Users can find search inputs in the same location across all management pages
+- **Visual Clarity**: Search field is clearly separated from action buttons
+- **Improved Usability**: Search input is more prominent and easier to locate
+- **Professional Appearance**: Matches design standards established in Projects and other pages
+
+#### Summary:
+Successfully implemented the requested UI change to move the Teams search input below the heading, matching the design pattern used in Projects page. The change maintains all existing functionality while improving UI consistency and user experience. The modification required only 20 lines added and 19 lines removed, representing a minimal and focused improvement that addresses the specific issue raised.
+

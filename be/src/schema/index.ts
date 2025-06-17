@@ -563,9 +563,19 @@ export const typeDefs = gql`
     notes: String
 
     """
+    Staff member who created this progress report
+    """
+    creatorId: ID
+
+    """
     Task object this progress report belongs to
     """
     task: Task!
+
+    """
+    Creator staff member (if set)
+    """
+    creator: Staff
   }
 
   """
@@ -638,9 +648,19 @@ export const typeDefs = gql`
     statusSummary: String
 
     """
+    Staff member who created this status report
+    """
+    creatorId: ID
+
+    """
     Task object this status report belongs to
     """
     task: Task!
+
+    """
+    Creator staff member (if set)
+    """
+    creator: Staff
   }
 
   """
@@ -1049,21 +1069,12 @@ export const typeDefs = gql`
     """
     Create a new team (requires authentication)
     """
-    createTeam(
-      name: String!
-      description: String
-      leadId: ID
-    ): Team!
+    createTeam(name: String!, description: String, leadId: ID): Team!
 
     """
     Update an existing team (requires authentication)
     """
-    updateTeam(
-      id: ID!
-      name: String
-      description: String
-      leadId: ID
-    ): Team!
+    updateTeam(id: ID!, name: String, description: String, leadId: ID): Team!
 
     """
     Delete a team by ID (requires authentication)
@@ -1073,19 +1084,12 @@ export const typeDefs = gql`
     """
     Add a staff member to a team (requires authentication)
     """
-    addTeamMember(
-      teamId: ID!
-      staffId: ID!
-      memberRole: String!
-    ): TeamMember!
+    addTeamMember(teamId: ID!, staffId: ID!, memberRole: String!): TeamMember!
 
     """
     Update a team member's role (requires authentication)
     """
-    updateTeamMember(
-      id: ID!
-      memberRole: String
-    ): TeamMember!
+    updateTeamMember(id: ID!, memberRole: String): TeamMember!
 
     """
     Remove a team member by ID (requires authentication)
@@ -1095,10 +1099,7 @@ export const typeDefs = gql`
     """
     Remove a staff member from a team (requires authentication)
     """
-    removeStaffFromTeam(
-      teamId: ID!
-      staffId: ID!
-    ): Boolean!
+    removeStaffFromTeam(teamId: ID!, staffId: ID!): Boolean!
 
     """
     Create a new status (requires authentication)
@@ -1246,6 +1247,7 @@ export const typeDefs = gql`
       reportDate: String!
       progressPercent: Int!
       notes: String
+      creatorId: ID
     ): TaskProgress!
 
     """
@@ -1297,6 +1299,7 @@ export const typeDefs = gql`
       taskId: ID!
       reportDate: String!
       statusSummary: String
+      creatorId: ID
     ): TaskStatusReport!
 
     """

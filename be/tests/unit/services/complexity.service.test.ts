@@ -1,12 +1,16 @@
 /**
  * @fileoverview Unit tests for ComplexityService
- * 
+ *
  * Tests complexity management functionality including creation, updates,
  * deletion, and retrieval of complexity reference data.
  */
 
 import { ComplexityService } from '../../../src/services/complexity.service';
-import type { Database, Complexity, CreateComplexityInput } from '../../../src/types';
+import type {
+  Database,
+  Complexity,
+  CreateComplexityInput,
+} from '../../../src/types';
 
 describe('ComplexityService', () => {
   let complexityService: ComplexityService;
@@ -47,7 +51,7 @@ describe('ComplexityService', () => {
       mockDatabase.data.complexities.push(
         { id: 'comp1', name: 'Low' },
         { id: 'comp2', name: 'Medium' },
-        { id: 'comp3', name: 'High' }
+        { id: 'comp3', name: 'High' },
       );
 
       const complexities = await complexityService.getAllComplexities();
@@ -69,7 +73,7 @@ describe('ComplexityService', () => {
     beforeEach(() => {
       mockDatabase.data.complexities.push(
         { id: 'comp1', name: 'Low' },
-        { id: 'comp2', name: 'Medium' }
+        { id: 'comp2', name: 'Medium' },
       );
     });
 
@@ -115,9 +119,9 @@ describe('ComplexityService', () => {
         name: 'Low',
       };
 
-      await expect(complexityService.createComplexity(inputData)).rejects.toThrow(
-        'Complexity name already exists'
-      );
+      await expect(
+        complexityService.createComplexity(inputData),
+      ).rejects.toThrow('Complexity name already exists');
     });
 
     it('should handle case-insensitive name uniqueness', async () => {
@@ -128,9 +132,9 @@ describe('ComplexityService', () => {
         name: 'LOW',
       };
 
-      await expect(complexityService.createComplexity(inputData)).rejects.toThrow(
-        'Complexity name already exists'
-      );
+      await expect(
+        complexityService.createComplexity(inputData),
+      ).rejects.toThrow('Complexity name already exists');
     });
 
     it('should generate unique IDs for different complexities', async () => {
@@ -149,7 +153,7 @@ describe('ComplexityService', () => {
     beforeEach(() => {
       mockDatabase.data.complexities.push(
         { id: 'comp1', name: 'Low' },
-        { id: 'comp2', name: 'Medium' }
+        { id: 'comp2', name: 'Medium' },
       );
     });
 
@@ -159,13 +163,16 @@ describe('ComplexityService', () => {
         name: 'Very Low',
       };
 
-      const updatedComplexity = await complexityService.updateComplexity(updateData);
+      const updatedComplexity =
+        await complexityService.updateComplexity(updateData);
 
       expect(updatedComplexity.id).toBe('comp1');
       expect(updatedComplexity.name).toBe('Very Low');
 
       // Verify database was updated
-      const dbComplexity = mockDatabase.data.complexities.find(c => c.id === 'comp1');
+      const dbComplexity = mockDatabase.data.complexities.find(
+        (c) => c.id === 'comp1',
+      );
       expect(dbComplexity?.name).toBe('Very Low');
       expect(mockDatabase.write).toHaveBeenCalled();
     });
@@ -176,9 +183,9 @@ describe('ComplexityService', () => {
         name: 'Updated Name',
       };
 
-      await expect(complexityService.updateComplexity(updateData)).rejects.toThrow(
-        'Complexity not found'
-      );
+      await expect(
+        complexityService.updateComplexity(updateData),
+      ).rejects.toThrow('Complexity not found');
     });
 
     it('should throw error if new name conflicts with another complexity', async () => {
@@ -187,9 +194,9 @@ describe('ComplexityService', () => {
         name: 'Medium', // This name already exists for comp2
       };
 
-      await expect(complexityService.updateComplexity(updateData)).rejects.toThrow(
-        'Complexity name already exists'
-      );
+      await expect(
+        complexityService.updateComplexity(updateData),
+      ).rejects.toThrow('Complexity name already exists');
     });
 
     it('should allow updating complexity with same name (no change)', async () => {
@@ -198,7 +205,8 @@ describe('ComplexityService', () => {
         name: 'Low', // Same name as current
       };
 
-      const updatedComplexity = await complexityService.updateComplexity(updateData);
+      const updatedComplexity =
+        await complexityService.updateComplexity(updateData);
 
       expect(updatedComplexity.name).toBe('Low');
       expect(mockDatabase.write).toHaveBeenCalled();
@@ -210,9 +218,9 @@ describe('ComplexityService', () => {
         name: 'MEDIUM', // Conflicts with existing 'Medium'
       };
 
-      await expect(complexityService.updateComplexity(updateData)).rejects.toThrow(
-        'Complexity name already exists'
-      );
+      await expect(
+        complexityService.updateComplexity(updateData),
+      ).rejects.toThrow('Complexity name already exists');
     });
   });
 
@@ -220,7 +228,7 @@ describe('ComplexityService', () => {
     beforeEach(() => {
       mockDatabase.data.complexities.push(
         { id: 'comp1', name: 'Low' },
-        { id: 'comp2', name: 'Medium' }
+        { id: 'comp2', name: 'Medium' },
       );
     });
 
@@ -234,9 +242,9 @@ describe('ComplexityService', () => {
     });
 
     it('should throw error if complexity not found', async () => {
-      await expect(complexityService.deleteComplexity('nonexistent')).rejects.toThrow(
-        'Complexity not found'
-      );
+      await expect(
+        complexityService.deleteComplexity('nonexistent'),
+      ).rejects.toThrow('Complexity not found');
     });
 
     it('should throw error if complexity is being used by tasks', async () => {
@@ -254,7 +262,7 @@ describe('ComplexityService', () => {
       });
 
       await expect(complexityService.deleteComplexity('comp1')).rejects.toThrow(
-        'Cannot delete complexity: it is being used by tasks'
+        'Cannot delete complexity: it is being used by tasks',
       );
     });
 

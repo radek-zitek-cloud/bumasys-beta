@@ -3,7 +3,14 @@
  */
 
 import { DepartmentService } from '../../../src/services/department.service';
-import type { Database, Department, CreateDepartmentInput, UpdateDepartmentInput, Organization, Staff } from '../../../src/types';
+import type {
+  Database,
+  Department,
+  CreateDepartmentInput,
+  UpdateDepartmentInput,
+  Organization,
+  Staff,
+} from '../../../src/types';
 
 describe('DepartmentService', () => {
   let departmentService: DepartmentService;
@@ -105,7 +112,8 @@ describe('DepartmentService', () => {
     });
 
     it('should return empty array for non-existent organization', () => {
-      const result = departmentService.getDepartmentsByOrganization('org-nonexistent');
+      const result =
+        departmentService.getDepartmentsByOrganization('org-nonexistent');
       expect(result).toHaveLength(0);
     });
 
@@ -123,7 +131,9 @@ describe('DepartmentService', () => {
 
       const result = departmentService.getDepartmentsByOrganization('org-1');
       expect(result).toHaveLength(2);
-      expect(result.every(dept => dept.organizationId === 'org-1')).toBe(true);
+      expect(result.every((dept) => dept.organizationId === 'org-1')).toBe(
+        true,
+      );
     });
   });
 
@@ -154,7 +164,9 @@ describe('DepartmentService', () => {
     };
 
     it('should create new department successfully', async () => {
-      const result = await departmentService.createDepartment(createDepartmentInput);
+      const result = await departmentService.createDepartment(
+        createDepartmentInput,
+      );
 
       expect(result).toMatchObject({
         name: 'New Department',
@@ -168,25 +180,39 @@ describe('DepartmentService', () => {
     });
 
     it('should create department without parent department', async () => {
-      const inputWithoutParent = { ...createDepartmentInput, parentDepartmentId: undefined };
-      
-      const result = await departmentService.createDepartment(inputWithoutParent);
-      
+      const inputWithoutParent = {
+        ...createDepartmentInput,
+        parentDepartmentId: undefined,
+      };
+
+      const result =
+        await departmentService.createDepartment(inputWithoutParent);
+
       expect(result.parentDepartmentId).toBeUndefined();
       expect(mockDb.write).toHaveBeenCalled();
     });
 
     it('should throw error when organization not found', async () => {
-      const invalidInput = { ...createDepartmentInput, organizationId: 'org-invalid' };
-      
-      await expect(departmentService.createDepartment(invalidInput)).rejects.toThrow('Organization not found');
+      const invalidInput = {
+        ...createDepartmentInput,
+        organizationId: 'org-invalid',
+      };
+
+      await expect(
+        departmentService.createDepartment(invalidInput),
+      ).rejects.toThrow('Organization not found');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when parent department not found', async () => {
-      const invalidInput = { ...createDepartmentInput, parentDepartmentId: 'dept-invalid' };
-      
-      await expect(departmentService.createDepartment(invalidInput)).rejects.toThrow('Parent department not found');
+      const invalidInput = {
+        ...createDepartmentInput,
+        parentDepartmentId: 'dept-invalid',
+      };
+
+      await expect(
+        departmentService.createDepartment(invalidInput),
+      ).rejects.toThrow('Parent department not found');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
@@ -202,10 +228,15 @@ describe('DepartmentService', () => {
       };
       mockDb.data.departments.push(otherOrgDept);
 
-      const invalidInput = { ...createDepartmentInput, parentDepartmentId: 'dept-other' };
-      
-      await expect(departmentService.createDepartment(invalidInput)).rejects.toThrow(
-        'Parent department must belong to the same organization'
+      const invalidInput = {
+        ...createDepartmentInput,
+        parentDepartmentId: 'dept-other',
+      };
+
+      await expect(
+        departmentService.createDepartment(invalidInput),
+      ).rejects.toThrow(
+        'Parent department must belong to the same organization',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -217,9 +248,9 @@ describe('DepartmentService', () => {
         organizationId: 'org-1',
         parentDepartmentId: undefined,
       };
-      
+
       const result = await departmentService.createDepartment(minimalInput);
-      
+
       expect(result.name).toBe('Minimal Department');
       expect(result.organizationId).toBe('org-1');
       expect(result.parentDepartmentId).toBeUndefined();
@@ -239,12 +270,14 @@ describe('DepartmentService', () => {
       // Reset departments to clean state for each test
       mockDb.data.departments = [
         { ...mockDepartment },
-        { ...mockChildDepartment }
+        { ...mockChildDepartment },
       ];
     });
 
     it('should update department successfully', async () => {
-      const result = await departmentService.updateDepartment(updateDepartmentInput);
+      const result = await departmentService.updateDepartment(
+        updateDepartmentInput,
+      );
 
       expect(result.name).toBe('Updated Engineering');
       expect(result.description).toBe('Updated Engineering Department');
@@ -254,8 +287,10 @@ describe('DepartmentService', () => {
 
     it('should throw error when department not found', async () => {
       const invalidUpdate = { ...updateDepartmentInput, id: 'dept-invalid' };
-      
-      await expect(departmentService.updateDepartment(invalidUpdate)).rejects.toThrow('Department not found');
+
+      await expect(
+        departmentService.updateDepartment(invalidUpdate),
+      ).rejects.toThrow('Department not found');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
@@ -271,30 +306,42 @@ describe('DepartmentService', () => {
       };
       mockDb.data.departments.push(newRootDept);
 
-      const parentUpdate = { ...updateDepartmentInput, id: 'dept-2', parentDepartmentId: 'dept-root-2' };
-      
+      const parentUpdate = {
+        ...updateDepartmentInput,
+        id: 'dept-2',
+        parentDepartmentId: 'dept-root-2',
+      };
+
       const result = await departmentService.updateDepartment(parentUpdate);
-      
+
       expect(result.parentDepartmentId).toBe('dept-root-2');
       expect(mockDb.write).toHaveBeenCalled();
     });
 
     it('should not update parent department when set to undefined', async () => {
-      const clearParentUpdate = { ...updateDepartmentInput, id: 'dept-2', parentDepartmentId: undefined };
-      
-      const result = await departmentService.updateDepartment(clearParentUpdate);
-      
+      const clearParentUpdate = {
+        ...updateDepartmentInput,
+        id: 'dept-2',
+        parentDepartmentId: undefined,
+      };
+
+      const result =
+        await departmentService.updateDepartment(clearParentUpdate);
+
       // Should remain unchanged (the original value from mockChildDepartment)
       expect(result.parentDepartmentId).toBe('dept-1');
       expect(mockDb.write).toHaveBeenCalled();
     });
 
     it('should throw error when parent department not found', async () => {
-      const invalidParentUpdate = { ...updateDepartmentInput, parentDepartmentId: 'dept-invalid' };
-      
-      await expect(departmentService.updateDepartment(invalidParentUpdate)).rejects.toThrow(
-        'Parent department not found'
-      );
+      const invalidParentUpdate = {
+        ...updateDepartmentInput,
+        parentDepartmentId: 'dept-invalid',
+      };
+
+      await expect(
+        departmentService.updateDepartment(invalidParentUpdate),
+      ).rejects.toThrow('Parent department not found');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
@@ -310,38 +357,48 @@ describe('DepartmentService', () => {
       };
       mockDb.data.departments.push(otherOrgDept);
 
-      const invalidParentUpdate = { ...updateDepartmentInput, parentDepartmentId: 'dept-other' };
-      
-      await expect(departmentService.updateDepartment(invalidParentUpdate)).rejects.toThrow(
-        'Parent department must belong to the same organization'
+      const invalidParentUpdate = {
+        ...updateDepartmentInput,
+        parentDepartmentId: 'dept-other',
+      };
+
+      await expect(
+        departmentService.updateDepartment(invalidParentUpdate),
+      ).rejects.toThrow(
+        'Parent department must belong to the same organization',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when department tries to be its own parent', async () => {
-      const selfParentUpdate = { ...updateDepartmentInput, parentDepartmentId: 'dept-1' };
-      
-      await expect(departmentService.updateDepartment(selfParentUpdate)).rejects.toThrow(
-        'Department cannot be its own parent'
-      );
+      const selfParentUpdate = {
+        ...updateDepartmentInput,
+        parentDepartmentId: 'dept-1',
+      };
+
+      await expect(
+        departmentService.updateDepartment(selfParentUpdate),
+      ).rejects.toThrow('Department cannot be its own parent');
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should throw error when update would create circular reference', async () => {
       // Try to make the parent department a child of its current child
       const circularUpdate = { id: 'dept-1', parentDepartmentId: 'dept-2' };
-      
-      await expect(departmentService.updateDepartment(circularUpdate)).rejects.toThrow(
-        'Update would create circular reference in department hierarchy'
+
+      await expect(
+        departmentService.updateDepartment(circularUpdate),
+      ).rejects.toThrow(
+        'Update would create circular reference in department hierarchy',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
 
     it('should update manager when valid', async () => {
       const managerUpdate = { ...updateDepartmentInput, managerId: 'staff-1' };
-      
+
       const result = await departmentService.updateDepartment(managerUpdate);
-      
+
       expect(result.managerId).toBe('staff-1');
       expect(mockDb.write).toHaveBeenCalled();
     });
@@ -349,20 +406,29 @@ describe('DepartmentService', () => {
     it('should not update manager when set to undefined', async () => {
       // First set a manager
       const originalManagerId = mockDb.data.departments[0].managerId;
-      
-      const clearManagerUpdate = { ...updateDepartmentInput, managerId: undefined };
-      
-      const result = await departmentService.updateDepartment(clearManagerUpdate);
-      
+
+      const clearManagerUpdate = {
+        ...updateDepartmentInput,
+        managerId: undefined,
+      };
+
+      const result =
+        await departmentService.updateDepartment(clearManagerUpdate);
+
       expect(result.managerId).toBe(originalManagerId); // Should remain unchanged
       expect(mockDb.write).toHaveBeenCalled();
     });
 
     it('should throw error when manager not found or belongs to different organization', async () => {
-      const invalidManagerUpdate = { ...updateDepartmentInput, managerId: 'staff-invalid' };
-      
-      await expect(departmentService.updateDepartment(invalidManagerUpdate)).rejects.toThrow(
-        'Manager not found or does not belong to this organization'
+      const invalidManagerUpdate = {
+        ...updateDepartmentInput,
+        managerId: 'staff-invalid',
+      };
+
+      await expect(
+        departmentService.updateDepartment(invalidManagerUpdate),
+      ).rejects.toThrow(
+        'Manager not found or does not belong to this organization',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -382,10 +448,15 @@ describe('DepartmentService', () => {
       };
       mockDb.data.staff.push(otherOrgStaff);
 
-      const invalidManagerUpdate = { ...updateDepartmentInput, managerId: 'staff-other' };
-      
-      await expect(departmentService.updateDepartment(invalidManagerUpdate)).rejects.toThrow(
-        'Manager not found or does not belong to this organization'
+      const invalidManagerUpdate = {
+        ...updateDepartmentInput,
+        managerId: 'staff-other',
+      };
+
+      await expect(
+        departmentService.updateDepartment(invalidManagerUpdate),
+      ).rejects.toThrow(
+        'Manager not found or does not belong to this organization',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -413,8 +484,10 @@ describe('DepartmentService', () => {
     });
 
     it('should throw error when department has child departments', async () => {
-      await expect(departmentService.deleteDepartment('dept-1')).rejects.toThrow(
-        'Cannot delete department with existing child departments or staff members'
+      await expect(
+        departmentService.deleteDepartment('dept-1'),
+      ).rejects.toThrow(
+        'Cannot delete department with existing child departments or staff members',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -423,8 +496,10 @@ describe('DepartmentService', () => {
       // Remove child departments but keep staff
       mockDb.data.departments = [mockDepartment];
 
-      await expect(departmentService.deleteDepartment('dept-1')).rejects.toThrow(
-        'Cannot delete department with existing child departments or staff members'
+      await expect(
+        departmentService.deleteDepartment('dept-1'),
+      ).rejects.toThrow(
+        'Cannot delete department with existing child departments or staff members',
       );
       expect(mockDb.write).not.toHaveBeenCalled();
     });
@@ -447,7 +522,7 @@ describe('DepartmentService', () => {
       // Reset to clean state and remove staff from child department
       mockDb.data.departments = [
         { ...mockDepartment },
-        { ...mockChildDepartment }
+        { ...mockChildDepartment },
       ];
       mockDb.data.staff = [];
 
@@ -465,10 +540,10 @@ describe('DepartmentService', () => {
       // Reset to clean state
       mockDb.data.departments = [
         { ...mockDepartment },
-        { ...mockChildDepartment }
+        { ...mockChildDepartment },
       ];
       mockDb.data.staff = [mockStaff];
-      
+
       // Add more staff to different departments
       const staff2: Staff = {
         id: 'staff-2',
@@ -510,16 +585,16 @@ describe('DepartmentService', () => {
       const result = departmentService.getDepartmentsWithStats();
 
       expect(result).toHaveLength(3);
-      
-      const engineeringDept = result.find(d => d.id === 'dept-1');
+
+      const engineeringDept = result.find((d) => d.id === 'dept-1');
       expect(engineeringDept?.staffCount).toBe(1);
       expect(engineeringDept?.childDepartmentCount).toBe(1);
-      
-      const frontendDept = result.find(d => d.id === 'dept-2');
+
+      const frontendDept = result.find((d) => d.id === 'dept-2');
       expect(frontendDept?.staffCount).toBe(2);
       expect(frontendDept?.childDepartmentCount).toBe(1);
-      
-      const uiDept = result.find(d => d.id === 'dept-3');
+
+      const uiDept = result.find((d) => d.id === 'dept-3');
       expect(uiDept?.staffCount).toBe(0);
       expect(uiDept?.childDepartmentCount).toBe(0);
     });
@@ -539,7 +614,7 @@ describe('DepartmentService', () => {
       const result = departmentService.getDepartmentsWithStats('org-1');
 
       expect(result).toHaveLength(3);
-      expect(result.every(d => d.organizationId === 'org-1')).toBe(true);
+      expect(result.every((d) => d.organizationId === 'org-1')).toBe(true);
     });
 
     it('should return all departments when no organization filter is provided', () => {
@@ -560,7 +635,8 @@ describe('DepartmentService', () => {
     });
 
     it('should return empty array for non-existent organization', () => {
-      const result = departmentService.getDepartmentsWithStats('org-nonexistent');
+      const result =
+        departmentService.getDepartmentsWithStats('org-nonexistent');
 
       expect(result).toHaveLength(0);
     });

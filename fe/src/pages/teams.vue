@@ -9,20 +9,11 @@
 <template>
   <v-container fluid>
     <!-- Page Header -->
-    <div class="d-flex justify-space-between align-center mb-6">
-      <div>
-        <h1 class="text-h4 mb-2">Teams Management</h1>
-        <p class="text-subtitle-1 text-medium-emphasis">
-          Manage teams and team member assignments
-        </p>
-      </div>
-      <v-btn
-        color="primary"
-        prepend-icon="mdi-account-multiple-plus"
-        @click="openCreateDialog"
-      >
-        Create Team
-      </v-btn>
+    <div class="mb-6">
+      <h1 class="text-h4 mb-2">Teams Management</h1>
+      <p class="text-subtitle-1 text-medium-emphasis">
+        Manage teams and team member assignments
+      </p>
     </div>
 
     <!-- Teams Table -->
@@ -32,17 +23,28 @@
           <v-card-title>
             <div class="d-flex justify-space-between align-center w-100">
               <span>Teams ({{ filteredTeams.length }})</span>
-              <v-text-field
-                v-model="teamSearch"
-                clearable
-                density="compact"
-                label="Search teams..."
-                prepend-inner-icon="mdi-magnify"
-                style="max-width: 300px"
-                variant="outlined"
-              />
+              <v-btn
+                color="primary"
+                prepend-icon="mdi-plus"
+                size="small"
+                @click="openCreateDialog"
+              >
+                Create Team
+              </v-btn>
             </div>
           </v-card-title>
+
+          <v-card-subtitle>
+            <v-text-field
+              v-model="teamSearch"
+              clearable
+              density="compact"
+              hide-details
+              label="Search teams..."
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
+            />
+          </v-card-subtitle>
 
           <v-data-table
             class="elevation-0"
@@ -694,7 +696,6 @@
       if (selectedTeamForMembers.value) {
         await loadTeamMembers(selectedTeamForMembers.value.id)
       }
-      await loadAllTeamMembers()
     } catch (error) {
       console.error('Failed to add team member:', error)
       notify(
@@ -716,7 +717,6 @@
       if (selectedTeamForMembers.value) {
         await loadTeamMembers(selectedTeamForMembers.value.id)
       }
-      await loadAllTeamMembers()
     } catch (error) {
       console.error('Failed to update team member:', error)
       notify(
@@ -740,7 +740,6 @@
       if (selectedTeamForMembers.value) {
         await loadTeamMembers(selectedTeamForMembers.value.id)
       }
-      await loadAllTeamMembers()
     } catch (error) {
       console.error('Failed to remove team member:', error)
       notify(
