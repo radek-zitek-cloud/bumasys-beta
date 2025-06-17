@@ -12,16 +12,16 @@
 
     <v-card-text>
       <!-- Mode Selection Tabs -->
-      <v-tabs v-model="selectedTab" align-tabs="center" color="primary">
+      <v-tabs v-model="selectedTab" align-tabs="center" color="primary" class="">
         <v-tab value="select">Select Existing Task</v-tab>
         <v-tab value="create">Create New Task</v-tab>
       </v-tabs>
 
-      <v-tabs-window v-model="selectedTab" class="mt-4">
+      <v-tabs-window v-model="selectedTab" class="mt-2">
         <!-- Select Existing Task Tab -->
         <v-tabs-window-item value="select">
           <form @submit.prevent="onSelectSubmit">
-            <v-row>
+            <v-row class="mt-2">
               <v-col cols="12">
                 <v-select
                   v-model="selectForm.predecessorTaskId"
