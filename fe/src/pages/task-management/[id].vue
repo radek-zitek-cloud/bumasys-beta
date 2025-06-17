@@ -549,25 +549,33 @@
       />
     </v-dialog>
 
-    <v-dialog v-model="showPredecessorCreateDialog" max-width="600" persistent>
-      <TaskPredecessorCreateDialog
+    <v-dialog v-model="showPredecessorCreateDialog" max-width="700" persistent>
+      <TaskPredecessorDialog
+        :available-complexities="availableComplexities"
+        :available-priorities="availablePriorities"
+        :available-projects="availableProjects"
+        :available-statuses="availableStatuses"
         :available-tasks="availableTasks"
         :current-predecessors="predecessors"
         :current-task-id="taskId"
         @cancel="showPredecessorCreateDialog = false"
-        @created="handlePredecessorCreated"
+        @predecessor-created="handlePredecessorCreated"
+        @predecessor-selected="handlePredecessorSelected"
       />
     </v-dialog>
 
     <v-dialog v-model="showChildTaskCreateDialog" max-width="700" persistent>
-      <TaskChildCreateDialog
+      <TaskChildDialog
         :available-complexities="availableComplexities"
         :available-priorities="availablePriorities"
         :available-statuses="availableStatuses"
+        :available-tasks="availableTasks"
+        :current-child-tasks="childTasks"
         :parent-task-id="taskId"
         :project-id="task?.projectId || ''"
         @cancel="showChildTaskCreateDialog = false"
-        @created="handleChildTaskCreated"
+        @child-created="handleChildTaskCreated"
+        @child-selected="handleChildTaskSelected"
       />
     </v-dialog>
 
@@ -643,9 +651,9 @@
   import { useRoute, useRouter } from 'vue-router'
   // Import dialog components
   import TaskAssigneeCreateDialog from '../../components/tasks/TaskAssigneeCreateDialog.vue'
-  import TaskChildCreateDialog from '../../components/tasks/TaskChildCreateDialog.vue'
+  import TaskChildDialog from '../../components/tasks/TaskChildDialog.vue'
   import TaskGraphDialog from '../../components/tasks/TaskGraphDialog.vue'
-  import TaskPredecessorCreateDialog from '../../components/tasks/TaskPredecessorCreateDialog.vue'
+  import TaskPredecessorDialog from '../../components/tasks/TaskPredecessorDialog.vue'
   import TaskProgressCreateDialog from '../../components/tasks/TaskProgressCreateDialog.vue'
   import TaskProgressEditDialog from '../../components/tasks/TaskProgressEditDialog.vue'
 
@@ -653,6 +661,7 @@
   import TaskStatusReportEditDialog from '../../components/tasks/TaskStatusReportEditDialog.vue'
   import { getComplexities } from '../../services/complexity'
   import { getPriorities } from '../../services/priority'
+  import { getProjects } from '../../services/projects'
   import { getStaff } from '../../services/staff'
   import { getStatuses } from '../../services/status'
   import {
@@ -691,6 +700,7 @@
   // Available data for dropdowns
   const availableStaff = ref<Staff[]>([])
   const availableTasks = ref<Task[]>([])
+  const availableProjects = ref<Array<{ id: string, name: string }>>([])
   const availableStatuses = ref<Array<{ id: string, name: string }>>([])
   const availablePriorities = ref<Array<{ id: string, name: string }>>([])
   const availableComplexities = ref<Array<{ id: string, name: string }>>([])
@@ -885,7 +895,7 @@
     showPredecessorCreateDialog.value = true
   }
 
-  async function handlePredecessorCreated (predecessorTaskId: string) {
+  async function handlePredecessorSelected (predecessorTaskId: string) {
     try {
       await addTaskPredecessor(taskId.value, predecessorTaskId)
       showNotification('Predecessor added successfully')
@@ -894,6 +904,21 @@
     } catch (error) {
       console.error('Failed to add predecessor:', error)
       showNotification(`Failed to add predecessor: ${(error as Error).message}`, false)
+    }
+  }
+
+  async function handlePredecessorCreated (taskData: CreateTaskInput) {
+    try {
+      // First create the task
+      const { createTask: newTask } = await createTask(taskData)
+      // Then add it as a predecessor
+      await addTaskPredecessor(taskId.value, newTask.id)
+      showNotification(`Task "${newTask.name}" created and added as predecessor`)
+      showPredecessorCreateDialog.value = false
+      await loadTaskData()
+    } catch (error) {
+      console.error('Failed to create predecessor task:', error)
+      showNotification(`Failed to create predecessor task: ${(error as Error).message}`, false)
     }
   }
 
@@ -921,6 +946,22 @@
     } catch (error) {
       console.error('Failed to create child task:', error)
       showNotification(`Failed to create child task: ${(error as Error).message}`, false)
+    }
+  }
+
+  async function handleChildTaskSelected (childTaskId: string) {
+    try {
+      // Update the selected task to set its parent
+      await updateTask({
+        id: childTaskId,
+        parentTaskId: taskId.value,
+      })
+      showNotification('Task converted to child task successfully')
+      showChildTaskCreateDialog.value = false
+      await loadTaskData()
+    } catch (error) {
+      console.error('Failed to set task as child:', error)
+      showNotification(`Failed to set task as child: ${(error as Error).message}`, false)
     }
   }
 
@@ -1053,9 +1094,10 @@
   // Load available staff and tasks for dropdowns
   async function loadDropdownData () {
     try {
-      const [staffResponse, tasksResponse, statusesResponse, prioritiesResponse, complexitiesResponse] = await Promise.all([
+      const [staffResponse, tasksResponse, projectsResponse, statusesResponse, prioritiesResponse, complexitiesResponse] = await Promise.all([
         getStaff(),
         getTasks(),
+        getProjects(),
         getStatuses(),
         getPriorities(),
         getComplexities(),
@@ -1063,6 +1105,7 @@
 
       availableStaff.value = staffResponse.staff || []
       availableTasks.value = tasksResponse.tasks || []
+      availableProjects.value = projectsResponse.projects?.map(p => ({ id: p.id, name: p.name })) || []
       availableStatuses.value = statusesResponse.statuses || []
       availablePriorities.value = prioritiesResponse.priorities || []
       availableComplexities.value = complexitiesResponse.complexities || []
