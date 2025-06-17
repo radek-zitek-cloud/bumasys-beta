@@ -49,7 +49,7 @@ mkdir -p ../logs
 
 # Start frontend in background with logging
 echo "🔄 Starting frontend development server..."
-nohup pnpm dev > ../logs/fe.log 2>&1 &
+nohup pnpm dev --host 0.0.0.0 > ../logs/fe.log 2>&1 &
 FRONTEND_PID=$!
 echo "✅ Frontend started with PID: $FRONTEND_PID"
 
@@ -58,12 +58,12 @@ cd ..
 
 echo ""
 echo "🎉 Development environment started successfully!"
-echo "📊 Backend PID: $BACKEND_PID (logs: be/logs/be.log)"
-echo "🌐 Frontend PID: $FRONTEND_PID (logs: fe/logs/fe.log)"
+echo "📊 Backend PID: $BACKEND_PID (logs: logs/be.log)"
+echo "🌐 Frontend PID: $FRONTEND_PID (logs: logs/fe.log)"
 echo ""
 echo "📝 To monitor logs:"
-echo "   Backend:  tail -f be/logs/be.log"
-echo "   Frontend: tail -f fe/logs/fe.log"
+echo "   Backend:  tail -f logs/be.log"
+echo "   Frontend: tail -f logs/fe.log"
 echo ""
 echo "🛑 To stop services:"
 echo "   kill $BACKEND_PID $FRONTEND_PID"
