@@ -1,23 +1,21 @@
 import type { Application } from 'express';
 import request from 'supertest';
 import { createApp } from '../src/index';
+import { setupTestDatabase, cleanupTestDatabases } from './test-utils';
 import fs from 'fs';
 import path from 'path';
 
 let app: Application;
 
 beforeAll(async () => {
-  const dbFile = path.join(__dirname, 'session-test-db.json');
-  if (fs.existsSync(dbFile)) fs.unlinkSync(dbFile);
+  const dbFile = setupTestDatabase(__dirname, 'session-test-db.json');
   const config = require('../src/utils/config').default;
   config.dbFile = dbFile;
   ({ app } = await createApp());
 });
 
 afterAll(() => {
-  // cleanup
-  const dbFile = path.join(__dirname, 'session-test-db.json');
-  if (fs.existsSync(dbFile)) fs.unlinkSync(dbFile);
+  cleanupTestDatabases(__dirname, 'session-test-db.json');
 });
 
 describe('Session Management', () => {

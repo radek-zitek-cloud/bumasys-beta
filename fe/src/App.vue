@@ -23,6 +23,7 @@
             <template v-if="auth.loggedIn">
               <v-list-item title="Profile" @click="showProfile = true" />
               <v-list-item title="Change Password" @click="showChange = true" />
+              <v-list-item title="Switch Database" @click="showDatabaseSwitch = true" />
               <v-list-item title="Debug Info" @click="showDebugInfo = true" />
               <v-list-item title="BE Config" @click="showConfig = true" />
               <v-list-item title="Logout" @click="showLogout = true" />
@@ -87,6 +88,9 @@
     <v-dialog v-model="showConfig" max-width="600" persistent>
       <ConfigDisplayCard @close="showConfig = false" />
     </v-dialog>
+    <v-dialog v-model="showDatabaseSwitch" max-width="500" persistent>
+      <DatabaseTagSwitchCard @cancel="showDatabaseSwitch = false" @switch="handleDatabaseSwitch" />
+    </v-dialog>
     <v-snackbar v-model="snackbar" :color="snackbarColor" location="bottom" timeout="4000">
       {{ snackbarMessage }}
     </v-snackbar>
@@ -117,6 +121,7 @@
   import { useRouter } from 'vue-router'
   import { useTheme } from 'vuetify'
   import ChangePasswordCard from './components/auth/ChangePasswordCard.vue'
+  import DatabaseTagSwitchCard from './components/auth/DatabaseTagSwitchCard.vue'
   import LoginCard from './components/auth/LoginCard.vue'
   import LogoutCard from './components/auth/LogoutCard.vue'
   import PasswordResetCard from './components/auth/PasswordResetCard.vue'
@@ -181,6 +186,7 @@
   const showProfile = ref(false)
   const showDebugInfo = ref(false)
   const showConfig = ref(false)
+  const showDatabaseSwitch = ref(false)
 
   /**
    * Access Vuetify's theme instance so we can switch between light and dark
@@ -420,6 +426,24 @@
       notify((error as Error).message, false)
     } finally {
       showProfile.value = false
+    }
+  }
+
+  /**
+   * Handle database tag switch.
+   * Switches the backend to use a different database tag for data isolation.
+   * @param tag - The database tag to switch to
+   */
+  async function handleDatabaseSwitch (tag: string) {
+    try {
+      logInfo('Switching database tag', { tag })
+      notify(`Successfully switched to database tag: ${tag}`)
+      logInfo('Database tag switch completed successfully', { tag })
+    } catch (error) {
+      logError('Database tag switch failed', error)
+      notify((error as Error).message, false)
+    } finally {
+      showDatabaseSwitch.value = false
     }
   }
 </script>

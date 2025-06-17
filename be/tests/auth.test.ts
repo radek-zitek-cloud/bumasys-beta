@@ -1,35 +1,19 @@
 import type { Application } from 'express';
 import request from 'supertest';
 import { createApp } from '../src/index';
-import fs from 'fs';
-import path from 'path';
+import { setupTestDatabase, cleanupTestDatabases } from './test-utils';
 
 let app: Application;
 
 beforeAll(async () => {
-  const dbFile = path.join(__dirname, 'test-db.json');
-  const authFile = path.join(__dirname, 'auth.json');
-  const dataFile = path.join(__dirname, 'db-default.json');
-  
-  // Clean up any existing test database files
-  if (fs.existsSync(dbFile)) fs.unlinkSync(dbFile);
-  if (fs.existsSync(authFile)) fs.unlinkSync(authFile);
-  if (fs.existsSync(dataFile)) fs.unlinkSync(dataFile);
-  
+  const dbFile = setupTestDatabase(__dirname, 'test-db.json');
   const config = require('../src/utils/config').default;
   config.dbFile = dbFile;
   ({ app } = await createApp());
 });
 
 afterAll(() => {
-  // cleanup test database files
-  const dbFile = path.join(__dirname, 'test-db.json');
-  const authFile = path.join(__dirname, 'auth.json');
-  const dataFile = path.join(__dirname, 'db-default.json');
-  
-  if (fs.existsSync(dbFile)) fs.unlinkSync(dbFile);
-  if (fs.existsSync(authFile)) fs.unlinkSync(authFile);
-  if (fs.existsSync(dataFile)) fs.unlinkSync(dataFile);
+  cleanupTestDatabases(__dirname, 'test-db.json');
 });
 
 describe('Auth', () => {
