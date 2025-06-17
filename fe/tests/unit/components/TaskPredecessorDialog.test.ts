@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { createVuetify } from 'vuetify'
 import TaskPredecessorDialog from '../../../src/components/tasks/TaskPredecessorDialog.vue'
 
@@ -81,7 +81,7 @@ describe('TaskPredecessorDialog', () => {
   it('emits predecessor-selected event when form is submitted in select mode', async () => {
     wrapper.vm.selectForm.predecessorTaskId = '1'
     await wrapper.vm.onSelectSubmit()
-    
+
     expect(wrapper.emitted()['predecessor-selected']).toBeTruthy()
     expect(wrapper.emitted()['predecessor-selected'][0]).toEqual(['1'])
   })
@@ -90,9 +90,9 @@ describe('TaskPredecessorDialog', () => {
     wrapper.vm.selectedTab = 'create'
     wrapper.vm.createForm.name = 'New Task'
     wrapper.vm.createForm.projectId = 'proj1'
-    
+
     await wrapper.vm.onCreateSubmit()
-    
+
     expect(wrapper.emitted()['predecessor-created']).toBeTruthy()
     expect(wrapper.emitted()['predecessor-created'][0][0]).toMatchObject({
       name: 'New Task',

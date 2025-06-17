@@ -12,10 +12,10 @@
       <v-icon class="mr-2">mdi-file-tree</v-icon>
       Add Child Task
     </v-card-title>
-    
+
     <v-card-text>
       <!-- Mode Selection Tabs -->
-      <v-tabs v-model="selectedTab" color="primary" align-tabs="center">
+      <v-tabs v-model="selectedTab" align-tabs="center" color="primary">
         <v-tab value="create">Create New Task</v-tab>
         <v-tab value="select">Select Existing Task</v-tab>
       </v-tabs>
@@ -174,7 +174,7 @@
 </template>
 
 <script lang="ts" setup>
-  import type { Task, CreateTaskInput } from '../../services/tasks'
+  import type { CreateTaskInput, Task } from '../../services/tasks'
   import { computed, reactive, ref } from 'vue'
 
   /** Component props */
@@ -190,7 +190,7 @@
 
   /** Component events */
   const emit = defineEmits<{
-    cancel: []
+    'cancel': []
     'child-created': [data: CreateTaskInput]
     'child-selected': [childTaskId: string]
   }>()

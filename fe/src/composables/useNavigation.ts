@@ -100,7 +100,7 @@ const defaultOptions: Required<NavigationOptions> = {
  * Navigation management composable
  * Provides centralized navigation state and behavior management
  */
-export function useNavigation(options: NavigationOptions = {}) {
+export function useNavigation (options: NavigationOptions = {}) {
   const opts = { ...defaultOptions, ...options }
   const auth = useAuthStore()
   const route = useRoute()
@@ -109,14 +109,14 @@ export function useNavigation(options: NavigationOptions = {}) {
   /**
    * Load persisted drawer state from localStorage
    */
-  function loadPersistedState(): boolean {
+  function loadPersistedState (): boolean {
     if (!opts.persistState || typeof window === 'undefined') {
       return opts.initialDrawerState
     }
 
     try {
       const stored = localStorage.getItem(opts.persistKey)
-      return stored !== null ? JSON.parse(stored) : opts.initialDrawerState
+      return stored === null ? opts.initialDrawerState : JSON.parse(stored)
     } catch (error) {
       logDebug('Failed to load persisted navigation state', { error })
       return opts.initialDrawerState
@@ -126,8 +126,10 @@ export function useNavigation(options: NavigationOptions = {}) {
   /**
    * Save drawer state to localStorage
    */
-  function savePersistedState(state: boolean): void {
-    if (!opts.persistState || typeof window === 'undefined') return
+  function savePersistedState (state: boolean): void {
+    if (!opts.persistState || typeof window === 'undefined') {
+      return
+    }
 
     try {
       localStorage.setItem(opts.persistKey, JSON.stringify(state))
@@ -145,7 +147,7 @@ export function useNavigation(options: NavigationOptions = {}) {
    * Watch drawer state changes and persist them
    */
   if (opts.persistState) {
-    watch(drawer, (newState) => {
+    watch(drawer, newState => {
       savePersistedState(newState)
       logDebug('Navigation drawer state changed', { isOpen: newState })
     })
@@ -155,7 +157,9 @@ export function useNavigation(options: NavigationOptions = {}) {
    * Check if current viewport is mobile-sized
    */
   const isMobile = computed(() => {
-    if (typeof window === 'undefined') return false
+    if (typeof window === 'undefined') {
+      return false
+    }
     return window.innerWidth < opts.mobileBreakpoint
   })
 
@@ -165,13 +169,13 @@ export function useNavigation(options: NavigationOptions = {}) {
    * Separators are represented with `separator: true`.
    */
   const navigationItems = computed((): NavigationItem[] => [
-    { 
-      icon: 'mdi-home', 
-      title: 'Home', 
-      subtitle: 'Return to home page', 
+    {
+      icon: 'mdi-home',
+      title: 'Home',
+      subtitle: 'Return to home page',
       to: '/',
       requiresAuth: false,
-      tooltip: 'Navigate to the main dashboard'
+      tooltip: 'Navigate to the main dashboard',
     },
     { separator: true },
     {
@@ -180,7 +184,7 @@ export function useNavigation(options: NavigationOptions = {}) {
       subtitle: 'Manage organizations, departments and staff',
       to: '/people',
       requiresAuth: true,
-      tooltip: 'Manage organizational structure and staff members'
+      tooltip: 'Manage organizational structure and staff members',
     },
     {
       icon: 'mdi-account-multiple-outline',
@@ -188,7 +192,7 @@ export function useNavigation(options: NavigationOptions = {}) {
       subtitle: 'Manage teams and team members',
       to: '/teams',
       requiresAuth: true,
-      tooltip: 'Create and manage project teams'
+      tooltip: 'Create and manage project teams',
     },
     {
       icon: 'mdi-clipboard-check-outline',
@@ -196,7 +200,7 @@ export function useNavigation(options: NavigationOptions = {}) {
       subtitle: 'Manage projects and tasks',
       to: '/tasks',
       requiresAuth: true,
-      tooltip: 'Track projects and assign tasks'
+      tooltip: 'Track projects and assign tasks',
     },
     {
       icon: 'mdi-cash-multiple',
@@ -204,7 +208,7 @@ export function useNavigation(options: NavigationOptions = {}) {
       subtitle: 'Manage budget',
       to: '/budget',
       requiresAuth: true,
-      tooltip: 'Monitor and manage financial budgets'
+      tooltip: 'Monitor and manage financial budgets',
     },
     { separator: true },
     {
@@ -213,7 +217,7 @@ export function useNavigation(options: NavigationOptions = {}) {
       subtitle: 'Manage reference data',
       to: '/references',
       requiresAuth: true,
-      tooltip: 'Manage system reference data and configurations'
+      tooltip: 'Manage system reference data and configurations',
     },
     {
       icon: 'mdi-account-cog-outline',
@@ -221,7 +225,7 @@ export function useNavigation(options: NavigationOptions = {}) {
       subtitle: 'Manage system users',
       to: '/users',
       requiresAuth: true,
-      tooltip: 'User management and permissions'
+      tooltip: 'User management and permissions',
     },
     { separator: true },
     {
@@ -230,28 +234,32 @@ export function useNavigation(options: NavigationOptions = {}) {
       subtitle: 'System administration and configuration',
       to: '/admin',
       requiresAuth: true,
-      tooltip: 'System settings and administrative tools'
+      tooltip: 'System settings and administrative tools',
     },
   ])
 
   /**
    * Filtered navigation items based on authentication and visibility rules
    */
-  const visibleNavigationItems = computed(() => 
+  const visibleNavigationItems = computed(() =>
     navigationItems.value.filter(item => {
-      if (item.separator) return true
-      if (item.hideWhenDisabled && isNavigationItemDisabled(item)) return false
+      if (item.separator) {
+        return true
+      }
+      if (item.hideWhenDisabled && isNavigationItemDisabled(item)) {
+        return false
+      }
       return true
-    })
+    }),
   )
 
   /**
    * Get the current active navigation item based on the current route
    */
-  const activeNavigationItem = computed(() => 
-    navigationItems.value.find(item => 
-      !item.separator && item.to === route.path
-    )
+  const activeNavigationItem = computed(() =>
+    navigationItems.value.find(item =>
+      !item.separator && item.to === route.path,
+    ),
   )
 
   /**
@@ -260,7 +268,7 @@ export function useNavigation(options: NavigationOptions = {}) {
    * @param item - The navigation item to check
    * @returns true if the item should be disabled
    */
-  function isNavigationItemDisabled(item: NavigationItem): boolean {
+  function isNavigationItemDisabled (item: NavigationItem): boolean {
     // Skip separator items (they don't have disable property)
     if (item.separator) {
       return false
@@ -287,7 +295,7 @@ export function useNavigation(options: NavigationOptions = {}) {
   /**
    * Toggle the navigation drawer state
    */
-  function toggleDrawer(): void {
+  function toggleDrawer (): void {
     drawer.value = !drawer.value
     logDebug('Navigation drawer toggled', { isOpen: drawer.value })
   }
@@ -295,7 +303,7 @@ export function useNavigation(options: NavigationOptions = {}) {
   /**
    * Open the navigation drawer
    */
-  function openDrawer(): void {
+  function openDrawer (): void {
     if (!drawer.value) {
       drawer.value = true
       logDebug('Navigation drawer opened')
@@ -305,7 +313,7 @@ export function useNavigation(options: NavigationOptions = {}) {
   /**
    * Close the navigation drawer
    */
-  function closeDrawer(): void {
+  function closeDrawer (): void {
     if (drawer.value) {
       drawer.value = false
       logDebug('Navigation drawer closed')
@@ -316,9 +324,9 @@ export function useNavigation(options: NavigationOptions = {}) {
    * Handle navigation to a specific route
    * @param path - The route path to navigate to
    */
-  function navigateTo(path: string): void {
+  function navigateTo (path: string): void {
     logDebug('Navigation initiated', { path })
-    
+
     // Auto-close drawer on mobile after navigation
     if (opts.autoCloseOnMobile && isMobile.value) {
       closeDrawer()
@@ -330,9 +338,9 @@ export function useNavigation(options: NavigationOptions = {}) {
    * @param path - The route path
    * @returns Navigation item or undefined
    */
-  function getNavigationItemByPath(path: string): NavigationItem | undefined {
-    return navigationItems.value.find(item => 
-      !item.separator && item.to === path
+  function getNavigationItemByPath (path: string): NavigationItem | undefined {
+    return navigationItems.value.find(item =>
+      !item.separator && item.to === path,
     )
   }
 
@@ -341,26 +349,26 @@ export function useNavigation(options: NavigationOptions = {}) {
    * @param path - The route path to check
    * @returns true if the path is currently active
    */
-  function isPathActive(path: string): boolean {
+  function isPathActive (path: string): boolean {
     return route.path === path
   }
 
   /**
    * Get count of enabled navigation items
    */
-  const enabledItemsCount = computed(() => 
-    navigationItems.value.filter(item => 
-      !item.separator && !isNavigationItemDisabled(item)
-    ).length
+  const enabledItemsCount = computed(() =>
+    navigationItems.value.filter(item =>
+      !item.separator && !isNavigationItemDisabled(item),
+    ).length,
   )
 
   /**
    * Get count of disabled navigation items
    */
-  const disabledItemsCount = computed(() => 
-    navigationItems.value.filter(item => 
-      !item.separator && isNavigationItemDisabled(item)
-    ).length
+  const disabledItemsCount = computed(() =>
+    navigationItems.value.filter(item =>
+      !item.separator && isNavigationItemDisabled(item),
+    ).length,
   )
 
   return {
@@ -369,11 +377,11 @@ export function useNavigation(options: NavigationOptions = {}) {
     navigationItems: visibleNavigationItems,
     activeNavigationItem,
     isMobile,
-    
+
     // Counts
     enabledItemsCount,
     disabledItemsCount,
-    
+
     // Methods
     toggleDrawer,
     openDrawer,
@@ -382,7 +390,7 @@ export function useNavigation(options: NavigationOptions = {}) {
     isNavigationItemDisabled,
     getNavigationItemByPath,
     isPathActive,
-    
+
     // Raw data (for advanced use cases)
     allNavigationItems: navigationItems,
   }

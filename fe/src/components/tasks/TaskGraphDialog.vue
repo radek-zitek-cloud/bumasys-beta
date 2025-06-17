@@ -31,68 +31,68 @@
         <div class="graph-controls">
           <v-chip-group v-model="visibleRelations" multiple>
             <v-chip
-              value="predecessors"
-              size="small"
-              variant="outlined"
               color="orange"
+              size="small"
+              value="predecessors"
+              variant="outlined"
             >
               <v-icon start>mdi-arrow-left</v-icon>
               Predecessors
             </v-chip>
             <v-chip
-              value="childTasks"
-              size="small"
-              variant="outlined"
               color="green"
+              size="small"
+              value="childTasks"
+              variant="outlined"
             >
               <v-icon start>mdi-subdirectory-arrow-right</v-icon>
               Child Tasks
             </v-chip>
           </v-chip-group>
-          
+
           <div class="graph-actions">
             <v-btn
-              size="small"
               icon
+              size="small"
+              title="Fit to view"
               variant="outlined"
               @click="fitView"
-              title="Fit to view"
             >
               <v-icon>mdi-fit-to-page</v-icon>
             </v-btn>
             <v-btn
-              size="small"
               icon
+              size="small"
+              title="Zoom in"
               variant="outlined"
               @click="zoomIn"
-              title="Zoom in"
             >
               <v-icon>mdi-magnify-plus</v-icon>
             </v-btn>
             <v-btn
-              size="small"
               icon
+              size="small"
+              title="Zoom out"
               variant="outlined"
               @click="zoomOut"
-              title="Zoom out"
             >
               <v-icon>mdi-magnify-minus</v-icon>
             </v-btn>
             <v-btn
-              size="small"
               icon
+              size="small"
+              title="Toggle minimap"
               variant="outlined"
               @click="toggleMinimap"
-              title="Toggle minimap"
             >
               <v-icon>mdi-map</v-icon>
             </v-btn>
             <v-btn
-              size="small"
               icon
+              size="small"
+              title="Refresh graph"
               variant="outlined"
               @click="refreshGraph"
-              title="Refresh graph"
             >
               <v-icon>mdi-refresh</v-icon>
             </v-btn>
@@ -106,26 +106,26 @@
             :default-viewport="{ zoom: 0.8 }"
             :max-zoom="3"
             :min-zoom="0.1"
-            :snap-to-grid="true"
             :snap-grid="[15, 15]"
-            @node-click="onNodeClick"
+            :snap-to-grid="true"
             @edge-click="onEdgeClick"
+            @node-click="onNodeClick"
           >
             <!-- Built-in Controls -->
             <Controls />
-            
+
             <!-- Minimap -->
             <MiniMap v-if="showMinimap" />
-            
+
             <!-- Background is available in Vue Flow core -->
             <template #background>
               <svg>
                 <defs>
-                  <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e0e0e0" stroke-width="1"/>
+                  <pattern id="grid" height="20" patternUnits="userSpaceOnUse" width="20">
+                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e0e0e0" stroke-width="1" />
                   </pattern>
                 </defs>
-                <rect width="100%" height="100%" fill="url(#grid)" />
+                <rect fill="url(#grid)" height="100%" width="100%" />
               </svg>
             </template>
             <!-- Project Node Template -->
@@ -153,8 +153,8 @@
                 <Handle id="top" class="task-handle" :position="Position.Top" type="target" />
 
                 <!-- Status indicator -->
-                <div class="task-status-indicator" :class="getStatusColor(data.status)"></div>
-                
+                <div class="task-status-indicator" :class="getStatusColor(data.status)" />
+
                 <!-- Priority indicator -->
                 <div v-if="data.priority" class="task-priority-badge" :class="getPriorityClass(data.priority)">
                   {{ getPriorityIcon(data.priority) }}
@@ -176,10 +176,10 @@
                   <!-- Progress bar if task has progress data -->
                   <div v-if="data.progress !== undefined" class="node-progress">
                     <v-progress-linear
-                      :model-value="data.progress"
-                      height="4"
-                      color="white"
                       bg-color="rgba(255,255,255,0.3)"
+                      color="white"
+                      height="4"
+                      :model-value="data.progress"
                     />
                     <span class="progress-text">{{ data.progress }}%</span>
                   </div>
@@ -197,8 +197,8 @@
                 <Handle id="top" class="task-handle" :position="Position.Top" type="target" />
 
                 <!-- Status indicator -->
-                <div class="task-status-indicator" :class="getStatusColor(data.status)"></div>
-                
+                <div class="task-status-indicator" :class="getStatusColor(data.status)" />
+
                 <!-- Priority indicator -->
                 <div v-if="data.priority" class="task-priority-badge" :class="getPriorityClass(data.priority)">
                   {{ getPriorityIcon(data.priority) }}
@@ -212,14 +212,14 @@
                   <div v-if="data.project" class="node-project">{{ data.project }}</div>
                   <div v-if="data.status" class="node-status">{{ data.status }}</div>
                   <div class="node-type">Predecessor</div>
-                  
+
                   <!-- Progress bar -->
                   <div v-if="data.progress !== undefined" class="node-progress">
                     <v-progress-linear
-                      :model-value="data.progress"
-                      height="4"
-                      color="white"
                       bg-color="rgba(255,255,255,0.3)"
+                      color="white"
+                      height="4"
+                      :model-value="data.progress"
                     />
                     <span class="progress-text">{{ data.progress }}%</span>
                   </div>
@@ -237,8 +237,8 @@
                 <Handle id="top" class="task-handle" :position="Position.Top" type="target" />
 
                 <!-- Status indicator -->
-                <div class="task-status-indicator" :class="getStatusColor(data.status)"></div>
-                
+                <div class="task-status-indicator" :class="getStatusColor(data.status)" />
+
                 <!-- Priority indicator -->
                 <div v-if="data.priority" class="task-priority-badge" :class="getPriorityClass(data.priority)">
                   {{ getPriorityIcon(data.priority) }}
@@ -252,14 +252,14 @@
                   <div v-if="data.project" class="node-project">{{ data.project }}</div>
                   <div v-if="data.status" class="node-status">{{ data.status }}</div>
                   <div class="node-type">Child Task</div>
-                  
+
                   <!-- Progress bar -->
                   <div v-if="data.progress !== undefined" class="node-progress">
                     <v-progress-linear
-                      :model-value="data.progress"
-                      height="4"
-                      color="white"
                       bg-color="rgba(255,255,255,0.3)"
+                      color="white"
+                      height="4"
+                      :model-value="data.progress"
                     />
                     <span class="progress-text">{{ data.progress }}%</span>
                   </div>
@@ -301,8 +301,8 @@
 <script lang="ts" setup>
   import type { Task } from '../../services/tasks'
 
-  import { Handle, Position, VueFlow, useVueFlow } from '@vue-flow/core'
   import { Controls } from '@vue-flow/controls'
+  import { Handle, Position, useVueFlow, VueFlow } from '@vue-flow/core'
   import { MiniMap } from '@vue-flow/minimap'
 
   import { computed, nextTick, onMounted, ref, watch } from 'vue'
@@ -344,15 +344,15 @@
     'in-progress': 'blue',
     'completed': 'green',
     'on-hold': 'orange',
-    'cancelled': 'red'
+    'cancelled': 'red',
   }
 
   /** Priority mapping */
-  const priorityMapping: Record<string, { class: string; icon: string }> = {
-    'low': { class: 'priority-low', icon: '!' },
-    'medium': { class: 'priority-medium', icon: '!!' },
-    'high': { class: 'priority-high', icon: '!!!' },
-    'critical': { class: 'priority-critical', icon: '⚠' }
+  const priorityMapping: Record<string, { class: string, icon: string }> = {
+    low: { class: 'priority-low', icon: '!' },
+    medium: { class: 'priority-medium', icon: '!!' },
+    high: { class: 'priority-high', icon: '!!!' },
+    critical: { class: 'priority-critical', icon: '⚠' },
   }
 
   /** Utility functions */
@@ -383,7 +383,7 @@
       'in-progress': 'mdi-play-circle',
       'completed': 'mdi-check-circle',
       'on-hold': 'mdi-pause-circle',
-      'cancelled': 'mdi-close-circle'
+      'cancelled': 'mdi-close-circle',
     }
     return iconMapping[normalized] || 'mdi-clipboard-text'
   }
@@ -404,9 +404,9 @@
       'in progress': 50,
       'completed': 100,
       'on hold': 25,
-      'cancelled': 0
+      'cancelled': 0,
     }
-    
+
     const status = task.status?.name.toLowerCase() || 'not started'
     return statusProgress[status] || 0
   }
@@ -548,7 +548,7 @@
           height: projectHeight,
           predecessors: predecessorsInProject.length,
           childTasks: childTasksInProject.length,
-          currentTask: !!currentTaskInProject
+          currentTask: !!currentTaskInProject,
         })
 
         // Create project container node
@@ -591,15 +591,15 @@
               dates: {
                 planned: {
                   start: taskItem.plannedStartDate,
-                  end: taskItem.plannedEndDate
+                  end: taskItem.plannedEndDate,
                 },
                 actual: {
                   start: taskItem.actualStartDate,
-                  end: taskItem.actualEndDate
-                }
+                  end: taskItem.actualEndDate,
+                },
               },
               progress: calculateTaskProgress(taskItem),
-              evaluator: taskItem.evaluator ? `${taskItem.evaluator.firstName} ${taskItem.evaluator.lastName}` : undefined
+              evaluator: taskItem.evaluator ? `${taskItem.evaluator.firstName} ${taskItem.evaluator.lastName}` : undefined,
             },
           })
         }
@@ -623,15 +623,15 @@
               dates: {
                 planned: {
                   start: currentTaskInProject.plannedStartDate,
-                  end: currentTaskInProject.plannedEndDate
+                  end: currentTaskInProject.plannedEndDate,
                 },
                 actual: {
                   start: currentTaskInProject.actualStartDate,
-                  end: currentTaskInProject.actualEndDate
-                }
+                  end: currentTaskInProject.actualEndDate,
+                },
               },
               progress: calculateTaskProgress(currentTaskInProject),
-              evaluator: currentTaskInProject.evaluator ? `${currentTaskInProject.evaluator.firstName} ${currentTaskInProject.evaluator.lastName}` : undefined
+              evaluator: currentTaskInProject.evaluator ? `${currentTaskInProject.evaluator.firstName} ${currentTaskInProject.evaluator.lastName}` : undefined,
             },
           })
         }
@@ -658,15 +658,15 @@
               dates: {
                 planned: {
                   start: taskItem.plannedStartDate,
-                  end: taskItem.plannedEndDate
+                  end: taskItem.plannedEndDate,
                 },
                 actual: {
                   start: taskItem.actualStartDate,
-                  end: taskItem.actualEndDate
-                }
+                  end: taskItem.actualEndDate,
+                },
               },
               progress: calculateTaskProgress(taskItem),
-              evaluator: taskItem.evaluator ? `${taskItem.evaluator.firstName} ${taskItem.evaluator.lastName}` : undefined
+              evaluator: taskItem.evaluator ? `${taskItem.evaluator.firstName} ${taskItem.evaluator.lastName}` : undefined,
             },
           })
         }
@@ -682,12 +682,12 @@
             source: predecessor.id,
             target: task.id,
             sourceHandle: 'right', // Connect from right side of predecessor
-            targetHandle: 'left',  // Connect to left side of current task
+            targetHandle: 'left', // Connect to left side of current task
             // No type specified - will use default
-            style: { 
-              stroke: '#2196F3', 
+            style: {
+              stroke: '#2196F3',
               strokeWidth: 2,
-              strokeDasharray: '5,5' // Dashed line for predecessor relationships
+              strokeDasharray: '5,5', // Dashed line for predecessor relationships
             },
             label: 'predecessor',
             labelStyle: { fill: '#2196F3', fontSize: 10 },
@@ -702,11 +702,11 @@
             source: task.id,
             target: childTask.id,
             sourceHandle: 'bottom', // Connect from bottom of current task
-            targetHandle: 'top',    // Connect to top of child task
+            targetHandle: 'top', // Connect to top of child task
             // No type specified - will use default
-            style: { 
-              stroke: '#4CAF50', 
-              strokeWidth: 2 
+            style: {
+              stroke: '#4CAF50',
+              strokeWidth: 2,
             },
             label: 'child',
             labelStyle: { fill: '#4CAF50', fontSize: 10 },
@@ -750,12 +750,12 @@
     if (visibleRelations.value.includes('predecessors')) {
       const predecessorNodes = elements.value.filter(el => el.type === 'predecessor')
       nodes.push(...predecessorNodes)
-      
+
       // Add predecessor edges
-      const predecessorEdges = elements.value.filter(el => 
-        el.source && el.target && 
-        predecessorNodes.some(node => node.id === el.source) &&
-        el.target === taskData.value?.id
+      const predecessorEdges = elements.value.filter(el =>
+        el.source && el.target
+        && predecessorNodes.some(node => node.id === el.source)
+        && el.target === taskData.value?.id,
       )
       edges.push(...predecessorEdges)
     }
@@ -764,12 +764,12 @@
     if (visibleRelations.value.includes('childTasks')) {
       const childTaskNodes = elements.value.filter(el => el.type === 'childTask')
       nodes.push(...childTaskNodes)
-      
+
       // Add child task edges
-      const childTaskEdges = elements.value.filter(el => 
-        el.source && el.target && 
-        el.source === taskData.value?.id &&
-        childTaskNodes.some(node => node.id === el.target)
+      const childTaskEdges = elements.value.filter(el =>
+        el.source && el.target
+        && el.source === taskData.value?.id
+        && childTaskNodes.some(node => node.id === el.target),
       )
       edges.push(...childTaskEdges)
     }
@@ -1113,8 +1113,8 @@
   .task-priority-badge.priority-low { background-color: #4caf50; }
   .task-priority-badge.priority-medium { background-color: #ff9800; }
   .task-priority-badge.priority-high { background-color: #f44336; }
-  .task-priority-badge.priority-critical { 
-    background-color: #d32f2f; 
+  .task-priority-badge.priority-critical {
+    background-color: #d32f2f;
     animation: pulse 2s infinite;
   }
 

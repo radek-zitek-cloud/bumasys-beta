@@ -122,8 +122,8 @@
       const res = await fetch('/graphql', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          query: 'query { health databaseTag }' 
+        body: JSON.stringify({
+          query: 'query { health databaseTag }',
         }),
       })
       const json = await res.json()

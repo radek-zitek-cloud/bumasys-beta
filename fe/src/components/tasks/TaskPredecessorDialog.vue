@@ -202,7 +202,7 @@
 
   /** Component events */
   const emit = defineEmits<{
-    cancel: []
+    'cancel': []
     'predecessor-selected': [predecessorTaskId: string]
     'predecessor-created': [taskData: CreateTaskInput]
   }>()

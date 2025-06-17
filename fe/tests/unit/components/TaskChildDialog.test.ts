@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { createVuetify } from 'vuetify'
 import TaskChildDialog from '../../../src/components/tasks/TaskChildDialog.vue'
 
@@ -77,7 +77,7 @@ describe('TaskChildDialog', () => {
   it('emits child-created event when form is submitted in create mode', async () => {
     wrapper.vm.createForm.name = 'New Child Task'
     await wrapper.vm.onCreateSubmit()
-    
+
     expect(wrapper.emitted()['child-created']).toBeTruthy()
     expect(wrapper.emitted()['child-created'][0][0]).toMatchObject({
       name: 'New Child Task',
@@ -89,9 +89,9 @@ describe('TaskChildDialog', () => {
   it('emits child-selected event when form is submitted in select mode', async () => {
     wrapper.vm.selectedTab = 'select'
     wrapper.vm.selectForm.childTaskId = '1'
-    
+
     await wrapper.vm.onSelectSubmit()
-    
+
     expect(wrapper.emitted()['child-selected']).toBeTruthy()
     expect(wrapper.emitted()['child-selected'][0]).toEqual(['1'])
   })
