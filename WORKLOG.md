@@ -520,3 +520,81 @@ This provides real-time visibility into which database environment is currently 
 - ✅ **Public Access**: No authentication required for database tag info
 
 ---
+
+### 2025-06-17 - Task Graph Display Improvements
+
+#### Root Cause Analysis:
+The existing TaskGraphDialog component had a basic visualization of task relationships using Vue Flow, but lacked advanced visual features that would help users better understand task status, priorities, progress, and relationships. The graph was functional but not visually informative enough for effective project management.
+
+#### Impact of Changes:
+- **Enhanced Visual Clarity**: Task nodes now display status, priority, and progress information at a glance
+- **Better Interactivity**: Added graph controls for zooming, filtering, and navigation
+- **Improved User Experience**: Visual indicators help users quickly assess task states and priorities
+- **Professional Appearance**: Upgraded from basic nodes to rich, informative task cards
+- **Better Data Utilization**: Now displays more task properties including dates, evaluators, and complexity
+
+#### New Features Added:
+1. **Visual Status Indicators**:
+   - Color-coded status indicators on task nodes (green=completed, blue=in-progress, etc.)
+   - Dynamic task icons based on status (play icon for in-progress, check for completed)
+   - Status-based border colors for immediate visual feedback
+
+2. **Priority Visualization**:
+   - Priority badges in top-left corner of task nodes
+   - Color coding: green=low, orange=medium, red=high, pulsing red=critical
+   - Icon-based priority indicators (!,!!,!!!, ⚠)
+
+3. **Progress Tracking**:
+   - Progress bars showing task completion percentage
+   - Status-based progress calculation
+   - Visual progress indicators with percentage text
+
+4. **Interactive Graph Controls**:
+   - Filter chips to show/hide predecessors and child tasks
+   - Zoom in/out controls
+   - Fit-to-view functionality  
+   - Refresh graph button
+   - Toggle minimap option (prepared for future enhancement)
+
+5. **Enhanced Task Information**:
+   - Date information display (planned start dates)
+   - Evaluator information
+   - Project names and task complexity
+   - Better typography and spacing
+
+#### Technical Implementation:
+- **Enhanced Node Templates**: Updated currentTask, predecessor, and childTask node templates with rich information display
+- **Utility Functions**: Added helper functions for status colors, priority classes, task icons, and date formatting
+- **Graph State Management**: Implemented visibility filtering based on user selections
+- **TypeScript Improvements**: Added proper type definitions for mappings and resolved type errors
+- **CSS Enhancements**: Added comprehensive styling for status indicators, priority badges, progress bars, and responsive design
+
+#### Improvements Made:
+- **Visual Hierarchy**: Clear distinction between current task, predecessors, and child tasks
+- **Information Density**: Balanced information display without overwhelming the interface
+- **Accessibility**: Color coding combined with icons and text for better accessibility
+- **Performance**: Efficient filtering and update mechanisms
+- **Maintainability**: Well-structured utility functions and clear component organization
+
+#### Follow-up TODOs:
+- Implement actual Vue Flow Background, Controls, and MiniMap components (requires package updates)
+- Add hover tooltips with detailed task information
+- Implement click-to-navigate functionality to task details
+- Add animation transitions for node visibility changes
+- Consider implementing node clustering for large graphs
+- Add export functionality for graph visualization
+
+#### Recent Layout Improvements (June 17, 2025):
+- **Hierarchical Layout Structure**: Implemented requested layout with predecessors on the left, current task in center, and child tasks below extending right
+- **Improved Project Container Sizing**: Project nodes now properly encompass all contained task nodes with appropriate padding
+- **Optimized Task Spacing**: Set task spacing to half the node width (100px) for better visual balance
+- **Enhanced Edge Styling**: Fixed Vue Flow edge type compatibility by using default edge type with custom styling (dashed lines for predecessors, solid for child tasks)
+- **Better Proportions**: Increased task node minimum height to 100px and ensured consistent 200px width across all node types
+- **Vue Flow Compatibility Fix**: Resolved "[Vue Flow]: Edge type is missing" error by removing explicit edge type and using Vue Flow defaults
+- **Project Node Sizing Fix**: Fixed project container dimensions by properly configuring Vue Flow node style properties with px units and adding CSS overrides to ensure dynamic sizing works correctly
+
+#### Potential Issues/Risks:
+- Vue Flow component imports need to be verified for available features
+- Large graphs may need performance optimization
+- Mobile responsiveness may need additional testing
+- Filter state persistence across dialog reopening
