@@ -54,11 +54,11 @@
             <template #node-currentTask="{ data }">
               <div class="custom-current-task-node">
                 <!-- Connection handles -->
-                <Handle id="left" type="target" :position="Position.Left" class="task-handle" />
-                <Handle id="right" type="source" :position="Position.Right" class="task-handle" />
-                <Handle id="bottom" type="source" :position="Position.Bottom" class="task-handle" />
-                <Handle id="top" type="target" :position="Position.Top" class="task-handle" />
-                
+                <Handle id="left" class="task-handle" :position="Position.Left" type="target" />
+                <Handle id="right" class="task-handle" :position="Position.Right" type="source" />
+                <Handle id="bottom" class="task-handle" :position="Position.Bottom" type="source" />
+                <Handle id="top" class="task-handle" :position="Position.Top" type="target" />
+
                 <div class="node-icon">
                   <v-icon color="white">mdi-clipboard-text</v-icon>
                 </div>
@@ -73,11 +73,11 @@
             <template #node-predecessor="{ data }">
               <div class="custom-predecessor-node">
                 <!-- Connection handles -->
-                <Handle id="left" type="target" :position="Position.Left" class="task-handle" />
-                <Handle id="right" type="source" :position="Position.Right" class="task-handle" />
-                <Handle id="bottom" type="source" :position="Position.Bottom" class="task-handle" />
-                <Handle id="top" type="target" :position="Position.Top" class="task-handle" />
-                
+                <Handle id="left" class="task-handle" :position="Position.Left" type="target" />
+                <Handle id="right" class="task-handle" :position="Position.Right" type="source" />
+                <Handle id="bottom" class="task-handle" :position="Position.Bottom" type="source" />
+                <Handle id="top" class="task-handle" :position="Position.Top" type="target" />
+
                 <div class="node-icon">
                   <v-icon color="white">mdi-arrow-right</v-icon>
                 </div>
@@ -93,11 +93,11 @@
             <template #node-childTask="{ data }">
               <div class="custom-child-task-node">
                 <!-- Connection handles -->
-                <Handle id="left" type="target" :position="Position.Left" class="task-handle" />
-                <Handle id="right" type="source" :position="Position.Right" class="task-handle" />
-                <Handle id="bottom" type="source" :position="Position.Bottom" class="task-handle" />
-                <Handle id="top" type="target" :position="Position.Top" class="task-handle" />
-                
+                <Handle id="left" class="task-handle" :position="Position.Left" type="target" />
+                <Handle id="right" class="task-handle" :position="Position.Right" type="source" />
+                <Handle id="bottom" class="task-handle" :position="Position.Bottom" type="source" />
+                <Handle id="top" class="task-handle" :position="Position.Top" type="target" />
+
                 <div class="node-icon">
                   <v-icon color="white">mdi-subdirectory-arrow-right</v-icon>
                 </div>
@@ -114,11 +114,11 @@
             <template #node-task="{ data }">
               <div class="custom-task-node">
                 <!-- Connection handles -->
-                <Handle id="left" type="target" :position="Position.Left" class="task-handle" />
-                <Handle id="right" type="source" :position="Position.Right" class="task-handle" />
-                <Handle id="bottom" type="source" :position="Position.Bottom" class="task-handle" />
-                <Handle id="top" type="target" :position="Position.Top" class="task-handle" />
-                
+                <Handle id="left" class="task-handle" :position="Position.Left" type="target" />
+                <Handle id="right" class="task-handle" :position="Position.Right" type="source" />
+                <Handle id="bottom" class="task-handle" :position="Position.Bottom" type="source" />
+                <Handle id="top" class="task-handle" :position="Position.Top" type="target" />
+
                 <div class="node-icon">
                   <v-icon color="primary">mdi-clipboard-text</v-icon>
                 </div>
@@ -144,7 +144,7 @@
 <script lang="ts" setup>
   import type { Task } from '../../services/tasks'
 
-  import { VueFlow, Handle, Position } from '@vue-flow/core'
+  import { Handle, Position, VueFlow } from '@vue-flow/core'
 
   import { computed, onMounted, ref } from 'vue'
 
@@ -204,7 +204,7 @@
         if (!tasksByProject.has(projectId)) {
           tasksByProject.set(projectId, {
             project: t.project || { id: 'unknown', name: 'Unknown Project' },
-            tasks: []
+            tasks: [],
           })
         }
         tasksByProject.get(projectId).tasks.push(t)
@@ -224,7 +224,7 @@
         const taskHeight = 100 // Approximate task node height
         const taskSpacing = 20 // Spacing between tasks
         const projectPadding = 60 // Padding inside project container
-        
+
         const projectWidth = Math.max(300, (tasksPerRow * taskWidth) + ((tasksPerRow - 1) * taskSpacing) + (projectPadding * 2))
         const projectHeight = Math.max(200, (Math.ceil(tasksInProject / tasksPerRow) * taskHeight) + ((Math.ceil(tasksInProject / tasksPerRow) - 1) * taskSpacing) + (projectPadding * 2) + 60) // +60 for header
 

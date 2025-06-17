@@ -1,21 +1,19 @@
 import type { Application } from 'express';
 import request from 'supertest';
 import { createApp } from '../src/index';
-import fs from 'fs';
-import path from 'path';
+import { setupTestDatabase, cleanupTestDatabases } from './test-utils';
 
 let app: Application;
 
 beforeAll(async () => {
-  const dbFile = path.join(__dirname, 'test-db.json');
-  if (fs.existsSync(dbFile)) fs.unlinkSync(dbFile);
+  const dbFile = setupTestDatabase(__dirname, 'test-db.json');
   const config = require('../src/utils/config').default;
   config.dbFile = dbFile;
   ({ app } = await createApp());
 });
 
 afterAll(() => {
-  // cleanup
+  cleanupTestDatabases(__dirname, 'test-db.json');
 });
 
 describe('Auth', () => {

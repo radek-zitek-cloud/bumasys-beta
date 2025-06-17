@@ -7,9 +7,9 @@
  */
 
 import express from 'express';
+import path from 'path';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
-import { createDatabase } from './utils/database.utils';
 import type { Database } from './types';
 import config from './utils/config';
 import logger from './utils/logger';
@@ -32,8 +32,9 @@ import {
   TaskEvaluationService,
   TaskStatusReportService,
   ProjectStatusReportService,
+  DatabaseService,
+  createDatabaseService,
 } from './services';
-import { validateDatabase } from './utils';
 
 /**
  * Application configuration and instances
@@ -43,7 +44,9 @@ interface AppInstances {
   app: express.Application;
   /** Apollo GraphQL server instance */
   server: ApolloServer;
-  /** Database instance */
+  /** Database service instance */
+  dbService: DatabaseService;
+  /** Legacy database instance for backward compatibility */
   db: Database;
   /** Authentication service instance */
   authService: AuthService;
@@ -81,10 +84,14 @@ export async function createApp(): Promise<AppInstances> {
   // Initialize Express application
   const app = express();
 
-  // Initialize database
-  logger.info('Initializing database...');
-  const db = await createDatabase(config.dbFile);
-  await validateDatabase(db);
+  // Initialize database service with multiple databases
+  logger.info('Initializing database service...');
+  const authDbPath = path.resolve(path.dirname(config.dbFile), 'auth.json');
+  const dataDbBasePath = config.dbFile; // This will be used to determine the directory
+  const dbService = await createDatabaseService(authDbPath, dataDbBasePath, 'default');
+  
+  // Get unified database for backward compatibility
+  const db = dbService.getUnifiedDatabase();
 
   // Initialize services
   logger.info('Setting up services...');
@@ -108,6 +115,7 @@ export async function createApp(): Promise<AppInstances> {
   initializeResolvers(
     authService,
     userService,
+    dbService,
     organizationService,
     departmentService,
     staffService,
@@ -175,6 +183,7 @@ export async function createApp(): Promise<AppInstances> {
   return {
     app,
     server,
+    dbService,
     db,
     authService,
     userService,
