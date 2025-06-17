@@ -434,3 +434,89 @@ Comprehensive test suite verifying:
 - ✅ Comprehensive test coverage for database switching scenarios
 
 ---
+
+## 2025-06-17 - Health Query Enhancement: Database Tag Information
+
+### Feature Enhancement
+**Added**: Current database tag information to GraphQL health query response
+
+### Implementation Details
+
+#### New GraphQL Schema Field
+**Added to Query type**:
+```graphql
+"""
+Get the current database tag in use
+Returns the tag name of the currently active database
+"""
+databaseTag: String!
+```
+
+#### Modified Files
+
+##### `/be/src/schema/index.ts`
+- Added `databaseTag: String!` field to Query type
+- Fixed missing `teamMembers(teamId: ID!): [TeamMember!]!` query field
+
+##### `/be/src/resolvers/health.resolvers.ts`
+- Updated `setServices()` to accept database service parameter
+- Added `databaseTag` resolver that returns current database tag
+- Enhanced logging for database tag operations
+
+##### `/be/src/resolvers/index.ts`
+- Updated `setHealthServices()` call to pass database service
+
+### Technical Implementation
+
+#### Resolver Logic
+```typescript
+databaseTag: (): string => {
+  logger.debug({ operation: 'databaseTag' }, 'Getting current database tag');
+  const tag = databaseService?.getCurrentTag() || 'default';
+  logger.info({ operation: 'databaseTag', tag }, 'Database tag retrieved');
+  return tag;
+}
+```
+
+#### Service Integration
+- Health resolvers now receive both UserService and DatabaseService
+- Database tag is accessible without authentication (public information)
+- Falls back to 'default' if database service unavailable
+
+### Testing & Verification
+
+#### Created: `/be/tests/health-database-tag.test.ts`
+Comprehensive test coverage:
+1. ✅ Returns current database tag in health query
+2. ✅ Database tag changes when switching databases  
+3. ✅ Database tag accessible without authentication
+
+#### Test Results
+- All new tests passing
+- Existing health tests continue to pass
+- No regression in existing functionality
+
+### Frontend Integration
+Frontend can now query the current database tag:
+
+```graphql
+query {
+  health
+  databaseTag
+}
+```
+
+This provides real-time visibility into which database environment is currently active.
+
+### Bug Fix: Missing Schema Definition
+**Fixed**: `teamMembers` query resolver had no corresponding schema definition
+- Added missing `teamMembers(teamId: ID!): [TeamMember!]!` to schema
+- Resolved GraphQL server startup error
+
+### Benefits
+- ✅ **Transparency**: Frontend shows which database tag is active
+- ✅ **Debugging**: Easy verification of database switching
+- ✅ **Monitoring**: Health checks include database environment info
+- ✅ **Public Access**: No authentication required for database tag info
+
+---
