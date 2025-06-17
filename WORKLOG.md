@@ -2,6 +2,79 @@
 
 ## Change Log
 
+### 2025-06-17 - Multiple Database System Implementation
+
+#### Root Cause Analysis:
+The system was using a single database file (db.json) for all data, which made it impossible to separate different environments or work with different datasets. This limitation prevented users from having development, staging, and production data isolation, and mixing authentication data with business data created security and management concerns.
+
+#### Impact of Changes:
+- **Data Separation**: Authentication data (users, sessions) now stored separately from business data
+- **Environment Isolation**: Different database tags allow complete data isolation between environments
+- **Enhanced Security**: Authentication data remains consistent while business data can be switched
+- **Improved Development Workflow**: Developers can easily switch between different datasets
+- **Backward Compatibility**: Existing code continues to work with unified database interface
+
+#### New Features Added:
+1. **Multiple Database Architecture**:
+   - Split authentication database (`auth.json`) from application data databases (`db-{tag}.json`)
+   - DatabaseManager class for handling multiple database instances
+   - DatabaseService for unified access with backward compatibility
+   - Default tag system starting with "db-default.json"
+
+2. **GraphQL Database Switching**:
+   - New `dbtag(tag: String!)` mutation for switching active dataset
+   - Tag validation (alphanumeric + hyphens, length limits, reserved names)
+   - Authentication required for all database operations
+   - Automatic database creation for new tags
+
+3. **Frontend Integration**:
+   - "Switch Database" option in user menu (triple dot menu)
+   - DatabaseTagSwitchCard component with validation and error handling
+   - User-friendly tag input with real-time validation
+   - Success/error notifications for database operations
+
+4. **Enhanced Testing Infrastructure**:
+   - Test utilities for multi-database cleanup
+   - 5 new tests specifically for database tag functionality
+   - Updated all existing tests to handle new database structure
+   - Comprehensive validation of tag switching behavior
+
+#### Database Schema Changes:
+- **Before**: Single `db.json` with all data
+- **After**: 
+  - `auth.json`: users, sessions
+  - `db-{tag}.json`: organizations, departments, staff, projects, tasks, etc.
+
+#### Security Enhancements:
+- Tag format validation prevents injection attacks
+- Reserved tag names protect system integrity  
+- Authentication required for all database operations
+- Comprehensive logging of database operations
+
+#### Documentation Updates:
+- New comprehensive documentation in `docs/MULTIPLE_DATABASES.md`
+- API reference for database switching
+- Migration guide for existing deployments
+- Security considerations and best practices
+
+#### Testing Results:
+- All existing tests pass with new database structure
+- 5 new tests for database tag functionality (100% pass rate)
+- Frontend type checking passes
+- Backend compilation successful
+
+#### Performance Considerations:
+- Memory usage unchanged (only active tag loaded)
+- Atomic file operations for data integrity
+- No impact on existing GraphQL operations
+
+#### Migration Path:
+- Backward compatible unified database interface maintained
+- Gradual migration possible through DatabaseService abstraction
+- Clear separation allows for future database technology upgrades
+
+---
+
 ### 2025-01-21 - Task Details Updates Implementation
 
 #### Root Cause Analysis:
