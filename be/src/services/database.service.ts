@@ -54,7 +54,10 @@ export class DatabaseService {
    * @param tag - The tag to switch to
    */
   async switchToTag(tag: string): Promise<void> {
-    logger.info({ oldTag: this.getCurrentTag(), newTag: tag }, 'Switching database tag via service');
+    logger.info(
+      { oldTag: this.getCurrentTag(), newTag: tag },
+      'Switching database tag via service',
+    );
     await this.dbManager.switchToTag(tag);
     logger.info({ tag }, 'Database tag switched successfully via service');
   }
@@ -93,11 +96,10 @@ export class DatabaseService {
         };
       },
       async write() {
-        logger.debug('Writing unified database - saving both auth and data databases');
-        await Promise.all([
-          authDb.write(),
-          dataDb.write(),
-        ]);
+        logger.debug(
+          'Writing unified database - saving both auth and data databases',
+        );
+        await Promise.all([authDb.write(), dataDb.write()]);
         logger.debug('Unified database write completed successfully');
       },
     };
@@ -115,9 +117,15 @@ export class DatabaseService {
 export async function createDatabaseService(
   authDbPath: string,
   dataDbBasePath: string,
-  initialTag: string = 'default'
+  initialTag: string = 'default',
 ): Promise<DatabaseService> {
-  const { createDatabaseManager } = await import('../utils/database-manager.utils');
-  const dbManager = await createDatabaseManager(authDbPath, dataDbBasePath, initialTag);
+  const { createDatabaseManager } = await import(
+    '../utils/database-manager.utils'
+  );
+  const dbManager = await createDatabaseManager(
+    authDbPath,
+    dataDbBasePath,
+    initialTag,
+  );
   return new DatabaseService(dbManager);
 }

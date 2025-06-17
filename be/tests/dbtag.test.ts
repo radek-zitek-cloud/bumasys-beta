@@ -46,7 +46,7 @@ describe('Database Tag Management', () => {
       .send({
         query: `mutation { dbtag(tag: "production") }`,
       });
-    
+
     expect(res.body.data.dbtag).toBe(true);
   });
 
@@ -57,7 +57,7 @@ describe('Database Tag Management', () => {
       .send({
         query: `mutation { dbtag(tag: "invalid tag with spaces") }`,
       });
-    
+
     expect(res.body.errors).toBeTruthy();
     expect(res.body.errors[0].message).toContain('Invalid tag format');
   });
@@ -69,7 +69,7 @@ describe('Database Tag Management', () => {
       .send({
         query: `mutation { dbtag(tag: "auth") }`,
       });
-    
+
     expect(res.body.errors).toBeTruthy();
     expect(res.body.errors[0].message).toContain('reserved');
   });
@@ -82,9 +82,9 @@ describe('Database Tag Management', () => {
       .send({
         query: `mutation { dbtag(tag: "${newTag}") }`,
       });
-    
+
     expect(res.body.data.dbtag).toBe(true);
-    
+
     // Verify we can create data in the new database
     const orgRes = await request(app)
       .post('/graphql')
@@ -99,7 +99,7 @@ describe('Database Tag Management', () => {
           }
         `,
       });
-    
+
     expect(orgRes.body.data.createOrganization.name).toBe('Test Org in New DB');
   });
 });

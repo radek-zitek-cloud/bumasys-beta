@@ -46,7 +46,9 @@ export const databaseMutationResolvers = {
       // Validate tag format (only allow alphanumeric and hyphens for security)
       const tagRegex = /^[a-zA-Z0-9-]+$/;
       if (!tagRegex.test(args.tag)) {
-        throw new Error('Invalid tag format. Only alphanumeric characters and hyphens are allowed.');
+        throw new Error(
+          'Invalid tag format. Only alphanumeric characters and hyphens are allowed.',
+        );
       }
 
       // Prevent certain reserved tags
