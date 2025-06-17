@@ -89,10 +89,27 @@ export class DatabaseManager {
       'Switching database tag',
     );
 
+    // Log some data from the old database for debugging
+    const oldDataCount = this.dataDb.data.organizations?.length || 0;
+    logger.debug(
+      { oldTag: this.currentTag, organizationCount: oldDataCount },
+      'Old database data count before switch',
+    );
+
     this.currentTag = tag;
     this.dataDb = await this.createDataDatabase(tag);
 
-    logger.info({ tag }, 'Database tag switched successfully');
+    // Log some data from the new database for debugging
+    const newDataCount = this.dataDb.data.organizations?.length || 0;
+    logger.info(
+      {
+        tag,
+        oldOrganizationCount: oldDataCount,
+        newOrganizationCount: newDataCount,
+        dataDbPath: `db-${tag}.json`,
+      },
+      'Database tag switched successfully with data verification',
+    );
   }
 
   /**

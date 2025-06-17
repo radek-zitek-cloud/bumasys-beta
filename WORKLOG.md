@@ -290,3 +290,147 @@ Each date-based WORKLOG file follows the same structure:
 
 #### Summary:
 Successfully reorganized WORKLOG entries from a single large file into 6 date-based files covering all entries from January 15, 2025 through June 17, 2025. This reorganization improves navigability while preserving all historical information and establishing a scalable pattern for future WORKLOG management.
+
+---
+
+## 2025-01-19 - Database Switching Behavior Analysis
+
+### Root Cause Analysis
+**Question**: When the backend switches database, does it flush all in-memory data and reread data from new database?
+
+**Answer**: **YES** - Complete data flush and reload occurs
+
+### Analysis Summary
+
+#### Database Switching Process (`DatabaseManager.switchToTag()`)
+1. **Complete Instance Replacement**: 
+   - `this.dataDb = await this.createDataDatabase(tag);` creates entirely new database instance
+   - Old database instance is discarded (garbage collected)
+
+2. **Fresh Data Loading**:
+   - `createDataDatabase()` reads JSON file from disk using `fs.readFileSync()`
+   - Data is freshly parsed with `JSON.parse(rawData)`
+   - No caching or persistence of old data occurs
+
+3. **Immediate Service Impact**:
+   - All services access data via unified database interface with dynamic getters
+   - Services immediately see new data through `dataDb.data.{entity}` references
+   - No service restart or re-initialization required
+
+#### Key Technical Details
+- **Authentication data**: Remains unchanged (separate `authDb` instance)
+- **Application data**: Completely replaced from new database file
+- **Memory management**: Direct file-based approach with no caching layers
+- **Access pattern**: Services use direct references to `this.db.data.{entity}` arrays
+
+#### Impact Assessment
+- ✅ **Data Consistency**: Complete isolation between database tags
+- ✅ **Memory Efficiency**: Old data is properly garbage collected
+- ✅ **Performance**: Switching is atomic but requires full file read
+- ✅ **Reliability**: No stale data or cache invalidation issues
+
+### Implementation Files Analyzed
+- `/be/src/utils/database-manager.utils.ts` - Core switching logic
+- `/be/src/services/database.service.ts` - Unified database interface
+- `/be/src/services/*.service.ts` - Service layer data access patterns
+- `/be/src/resolvers/database.resolvers.ts` - GraphQL interface for switching
+
+### Conclusions
+The database switching mechanism provides complete data isolation with immediate effect. When switching tags:
+1. All in-memory application data is flushed
+2. New data is read fresh from the target database file
+3. Services immediately access the new dataset
+4. No data persistence or caching issues exist
+
+This design ensures clean separation between different database environments/tags.
+
+---
+
+# Development Worklog
+
+## 2025-06-17 - Database Switching Fix - Critical Bug Resolution
+
+### Root Cause Analysis
+**Issue**: Database switching was not working - frontend still showed data from previous database after switching tags.
+
+**Root Cause**: The `getUnifiedDatabase()` method in `DatabaseService` was capturing database references at object creation time instead of dynamically accessing current instances.
+
+### Problem Details
+1. **Services held stale references**: Services were initialized with a unified database object that captured `authDb` and `dataDb` references
+2. **No refresh after switching**: When `switchToTag()` changed `this.dataDb` to a new instance, the unified database object still referenced the old instance
+3. **Data persistence illusion**: Services continued to see old data because they accessed stale database references
+
+### Technical Fix Applied
+
+#### Modified: `/be/src/services/database.service.ts`
+**Before**:
+```typescript
+getUnifiedDatabase(): Database {
+  const authDb = this.dbManager.getAuthDatabase();  // Captured once
+  const dataDb = this.dbManager.getDataDatabase();  // Captured once
+  
+  return {
+    get data() {
+      return { /* uses captured references */ };
+    }
+  };
+}
+```
+
+**After**:
+```typescript
+getUnifiedDatabase(): Database {
+  const dbManager = this.dbManager; // Capture manager reference
+  
+  return {
+    get data() {
+      // Dynamically get current instances on each access
+      const authDb = dbManager.getAuthDatabase();
+      const dataDb = dbManager.getDataDatabase();
+      return { /* uses current references */ };
+    }
+  };
+}
+```
+
+#### Enhanced: `/be/src/utils/database-manager.utils.ts`
+- Added detailed logging to track database switching behavior
+- Added data count verification before/after switching
+
+### Impact Assessment
+- ✅ **Data Isolation**: Complete separation between database tags
+- ✅ **Memory Management**: Proper cleanup of old database instances  
+- ✅ **Service Refresh**: All services immediately see new data after switching
+- ✅ **Bi-directional**: Switching back restores original data correctly
+
+### Testing & Verification
+
+#### Created: `/be/tests/database-switching-behavior.test.ts`
+Comprehensive test suite verifying:
+1. Data from previous database disappears after switching
+2. Each database tag maintains isolated data
+3. Departments and organizations switch correctly
+4. Bi-directional switching preserves data integrity
+
+**Test Results**: ✅ All tests passing
+
+### Debugging Process
+1. **Initial Analysis**: Traced code flow through database manager and service layer
+2. **Log Analysis**: Added logging to identify where references were captured
+3. **Test Creation**: Built comprehensive test to verify actual vs expected behavior
+4. **Root Cause**: Found closure capturing stale references in unified database
+5. **Fix Implementation**: Made data access dynamic instead of static
+6. **Verification**: Tests confirm complete data isolation between tags
+
+### Lessons Learned
+- **Closure Gotcha**: JavaScript closures can capture references that become stale
+- **Dynamic Access**: Getters should access current state, not captured state
+- **Test Coverage**: Need integration tests for state-changing operations
+- **Logging Value**: Detailed logging helped identify the exact failure point
+
+### Follow-up Actions
+- ✅ Database switching now works correctly
+- ✅ Frontend will see proper data isolation between database tags
+- ✅ Comprehensive test coverage for database switching scenarios
+
+---

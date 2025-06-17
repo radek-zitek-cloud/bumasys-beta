@@ -81,11 +81,15 @@ export class DatabaseService {
    * This combines auth and data databases into a single interface
    */
   getUnifiedDatabase(): Database {
-    const authDb = this.dbManager.getAuthDatabase();
-    const dataDb = this.dbManager.getDataDatabase();
-
+    // Capture the database manager reference for the closures
+    const dbManager = this.dbManager;
+    
     return {
       get data() {
+        // Dynamically get current database instances to handle tag switching
+        const authDb = dbManager.getAuthDatabase();
+        const dataDb = dbManager.getDataDatabase();
+        
         return {
           // Auth data
           users: authDb.data.users,
@@ -110,6 +114,10 @@ export class DatabaseService {
         };
       },
       async write() {
+        // Dynamically get current database instances for writing
+        const authDb = dbManager.getAuthDatabase();
+        const dataDb = dbManager.getDataDatabase();
+        
         logger.debug(
           'Writing unified database - saving both auth and data databases',
         );
