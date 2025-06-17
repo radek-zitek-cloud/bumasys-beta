@@ -1,0 +1,370 @@
+# WORKLOG.md
+
+## Change Log
+
+<<<<<<< HEAD
+### 2025-06-17 - WORKLOG File Organization and Daily Entry Migration
+=======
+### 2025-06-17 - Multiple Database System Implementation
+
+#### Root Cause Analysis:
+The system was using a single database file (db.json) for all data, which made it impossible to separate different environments or work with different datasets. This limitation prevented users from having development, staging, and production data isolation, and mixing authentication data with business data created security and management concerns.
+
+#### Impact of Changes:
+- **Data Separation**: Authentication data (users, sessions) now stored separately from business data
+- **Environment Isolation**: Different database tags allow complete data isolation between environments
+- **Enhanced Security**: Authentication data remains consistent while business data can be switched
+- **Improved Development Workflow**: Developers can easily switch between different datasets
+- **Backward Compatibility**: Existing code continues to work with unified database interface
+
+#### New Features Added:
+1. **Multiple Database Architecture**:
+   - Split authentication database (`auth.json`) from application data databases (`db-{tag}.json`)
+   - DatabaseManager class for handling multiple database instances
+   - DatabaseService for unified access with backward compatibility
+   - Default tag system starting with "db-default.json"
+
+2. **GraphQL Database Switching**:
+   - New `dbtag(tag: String!)` mutation for switching active dataset
+   - Tag validation (alphanumeric + hyphens, length limits, reserved names)
+   - Authentication required for all database operations
+   - Automatic database creation for new tags
+
+3. **Frontend Integration**:
+   - "Switch Database" option in user menu (triple dot menu)
+   - DatabaseTagSwitchCard component with validation and error handling
+   - User-friendly tag input with real-time validation
+   - Success/error notifications for database operations
+
+4. **Enhanced Testing Infrastructure**:
+   - Test utilities for multi-database cleanup
+   - 5 new tests specifically for database tag functionality
+   - Updated all existing tests to handle new database structure
+   - Comprehensive validation of tag switching behavior
+
+#### Database Schema Changes:
+- **Before**: Single `db.json` with all data
+- **After**: 
+  - `auth.json`: users, sessions
+  - `db-{tag}.json`: organizations, departments, staff, projects, tasks, etc.
+
+#### Security Enhancements:
+- Tag format validation prevents injection attacks
+- Reserved tag names protect system integrity  
+- Authentication required for all database operations
+- Comprehensive logging of database operations
+
+#### Documentation Updates:
+- New comprehensive documentation in `docs/MULTIPLE_DATABASES.md`
+- API reference for database switching
+- Migration guide for existing deployments
+- Security considerations and best practices
+
+#### Testing Results:
+- All existing tests pass with new database structure
+- 5 new tests for database tag functionality (100% pass rate)
+- Frontend type checking passes
+- Backend compilation successful
+
+#### Performance Considerations:
+- Memory usage unchanged (only active tag loaded)
+- Atomic file operations for data integrity
+- No impact on existing GraphQL operations
+
+#### Migration Path:
+- Backward compatible unified database interface maintained
+- Gradual migration possible through DatabaseService abstraction
+- Clear separation allows for future database technology upgrades
+
+---
+
+### 2025-01-21 - Task Details Updates Implementation
+
+#### Root Cause Analysis:
+The task management page had limited functionality for editing task details, and reports were displayed in list format which didn't provide optimal data visibility. The task details form lacked important fields like evaluator, parent task, and date fields, and there was no way to save changes to task information.
+
+#### Impact of Changes:
+- **Enhanced Task Editing**: Users can now edit all task fields directly in the task details page
+- **Improved Data Layout**: Reorganized task details into a more logical 4-row layout for better space utilization
+- **Better Data Visualization**: Converted progress and status reports from lists to data tables for improved readability
+- **Enhanced User Experience**: Added Save/Undo functionality with proper state management
+
+#### New Features Added:
+1. **Editable Task Details Form**:
+   - All task fields are now editable (name, description, parent task, evaluator, status, priority, complexity, dates)
+   - Added Save/Undo buttons with proper form state tracking
+   - Real-time validation and feedback
+
+2. **Improved Layout Organization**:
+   - Row 1: Task name, Project, Parent task
+   - Row 2: Description (full width)
+   - Row 3: Evaluator, Status, Priority, Complexity
+   - Row 4: Planned start/end dates, Actual start/end dates
+
+3. **Enhanced Field Types**:
+   - Date pickers for start/end dates
+   - Dropdown selectors for parent task, evaluator, status, priority, complexity
+   - Proper form controls with validation
+
+4. **Data Table Conversion**:
+   - Progress reports: 5-column table (percentage, note, creator, date, actions)
+   - Status reports: 4-column table (summary, creator, date, actions)
+   - Improved sorting by date (descending)
+   - Color-coded progress indicators
+
+#### Technical Implementation:
+```typescript
+// Added reactive form data structure
+const taskForm = reactive({
+  name: '', description: '', parentTaskId: '', evaluatorId: '',
+  statusId: '', priorityId: '', complexityId: '',
+  plannedStartDate: '', plannedEndDate: '', actualStartDate: '', actualEndDate: ''
+})
+
+// State management for form modifications
+const taskFormModified = ref(false)
+watch(taskForm, () => { taskFormModified.value = true }, { deep: true })
+
+// Save functionality
+async function saveTaskChanges() {
+  const updateData: UpdateTaskInput = { id: task.value.id, ...taskForm }
+  const { updateTask: updatedTask } = await updateTask(updateData)
+  task.value = updatedTask
+  taskFormModified.value = false
+}
+```
+
+#### Bugs Fixed:
+- Task details were previously read-only, preventing users from making necessary updates
+- Progress reports were sorted by percentage instead of date
+- Reports displayed in list format made data comparison difficult
+- Missing important task fields (evaluator, parent task, dates) in the UI
+
+#### Improvements Made:
+- **Performance**: Optimized form reactivity with proper watchers
+- **UX**: Added compact density to forms for better space utilization  
+- **Accessibility**: Proper form labels and validation feedback
+- **Visual Design**: Color-coded progress chips and consistent styling
+- **Data Management**: Proper TypeScript typing and error handling
+
+#### Documentation Updates:
+- Updated component documentation with new functionality
+- Added proper JSDoc comments for new functions
+- Updated type definitions for enhanced form data
+
+#### TODOs and Follow-up Tasks:
+- [ ] Consider enhancing predecessor/child task dialogs to support both "select existing" and "create new" options
+- [ ] Add form validation rules for date fields (start date should be before end date)
+- [ ] Consider adding keyboard shortcuts for Save (Ctrl+S) and Undo (Ctrl+Z)
+- [ ] Add confirmation dialog for unsaved changes when navigating away
+- [ ] Consider adding auto-save functionality for long editing sessions
+
+#### Potential Issues and Risks Identified:
+- **Data Loss Risk**: Users might accidentally navigate away without saving changes
+- **Validation**: Date field validation could be enhanced to prevent logical errors
+- **Performance**: Large numbers of reports in tables might impact rendering performance
+- **Browser Compatibility**: Date input fields may render differently across browsers
+
+#### Testing Status:
+- ✅ TypeScript compilation successful
+- ✅ Build process successful  
+- ✅ All existing tests pass
+- ✅ Lint checks pass (file-specific)
+- ✅ Form state management works correctly
+- ✅ Table rendering and sorting functional
+
+### 2025-06-17 - Dynamic Project Sizing and Parent-Child Nesting Restoration
+
+#### Improvements Made:
+**Re-enabled Parent-Child Nesting:**
+- Restored `parentNode` and `extent: 'parent'` properties for proper task nesting
+- Tasks are now properly contained within their project nodes
+- Maintained working edge connections with proper handle targeting
+
+**Dynamic Project Node Sizing:**
+- Implemented intelligent project container sizing based on number of contained tasks
+- Projects now arrange tasks in a grid layout (roughly square) for optimal space usage
+- Dynamic width/height calculation: `projectWidth = max(300, (tasksPerRow * taskWidth) + spacing + padding)`
+- Projects automatically resize to fit all their tasks without overflow
+
+**Grid Layout for Tasks Within Projects:**
+- Tasks positioned in grid formation within project containers
+- Calculated positioning: `taskX = padding + (col * (taskWidth + spacing))`
+- Tasks arranged in rows and columns for clean organization
+- Header space reserved for project title and metadata
+
+**Improved Styling:**
+- Fixed task node dimensions to consistent 200px width × 80px min-height
+- Added `overflow: visible` to project content area for proper child visibility
+- Consistent spacing and padding throughout the layout
+- Project containers have minimum dimensions for proper display
+
+**Technical Implementation:**
+```typescript
+// Dynamic sizing algorithm
+const tasksInProject = tasks.length
+const tasksPerRow = Math.ceil(Math.sqrt(tasksInProject))
+const projectWidth = Math.max(300, (tasksPerRow * taskWidth) + spacing + padding)
+const projectHeight = Math.max(200, (rows * taskHeight) + spacing + padding + headerHeight)
+
+// Grid positioning within project
+const row = Math.floor(taskIndex / tasksPerRow)
+const col = taskIndex % tasksPerRow
+const taskX = projectPadding + (col * (taskWidth + taskSpacing))
+const taskY = projectPadding + 60 + (row * (taskHeight + taskSpacing))
+```
+
+**Result:**
+- ✅ Tasks properly nested inside project containers
+- ✅ Project nodes dynamically resize to fit their content
+- ✅ Clean grid layout for multiple tasks within projects
+- ✅ Maintained proper edge connections (predecessor: right→left, child: bottom→top)
+- ✅ Professional visual hierarchy and organization
+
+---
+
+### 2025-06-16 - Task Status Report and Progress Report Creator Staff Implementation
+>>>>>>> 9946f57445c700cb69991a23ac346888d1c39f9f
+
+#### Root Cause Analysis:
+The main WORKLOG.md file had grown very large with entries spanning multiple dates, making it difficult to navigate and find specific changes. The file contained comprehensive daily entries that would benefit from better organization by date for improved maintainability and readability.
+
+#### Impact of Changes:
+- **Improved Organization**: WORKLOG entries now organized into separate date-based files
+- **Better Navigation**: Each date has its own dedicated file for easier reference
+- **Reduced File Size**: Main WORKLOG.md is now smaller and more focused
+- **Historical Preservation**: All original content preserved in appropriate date files
+- **Enhanced Maintainability**: Future WORKLOG entries can follow the established date-based pattern
+
+#### New Features Added:
+- **Date-Based WORKLOG Files**:
+  - `WORKLOG 20250617.md`: June 17, 2025 entries (3 entries covering project nesting, edge connections, and UI improvements)
+  - `WORKLOG 20250616.md`: June 16, 2025 entries (7 entries covering task graphs, reports, and UI enhancements)
+  - `WORKLOG 20250615.md`: June 15, 2025 entries (3 entries covering dialog fixes, test improvements, and menu positioning)
+  - `WORKLOG 20250119.md`: January 19, 2025 entries (4 entries covering initial setup, frontend architecture, and test fixes)
+  - `WORKLOG 20250116.md`: January 16, 2025 entries (7 entries covering task management, UI improvements, and bug fixes)
+  - `WORKLOG 20250115.md`: January 15, 2025 entry (frontend test fix)
+
+#### Improvements Made:
+- **File Organization**: Clear separation of entries by date for better structure
+- **Content Preservation**: All original content maintained with full detail
+- **Consistent Formatting**: Maintained original markdown formatting and structure
+- **Complete Coverage**: Every entry from the original WORKLOG properly categorized
+
+#### Technical Implementation:
+- **Created New Files**: `WORKLOG 20250617.md` with 3 entries for June 17, 2025
+- **Enhanced Existing Files**: Added remaining entries to `WORKLOG 20250616.md` and `WORKLOG 20250116.md`
+- **Organized by Date**: All entries moved to their appropriate date-based files
+- **Maintained Structure**: Each file follows consistent format with proper headers and sections
+
+#### Documentation Structure:
+Each date-based WORKLOG file follows the same structure:
+- Clear date-based filename format: `WORKLOG YYYYMMDD.md`
+- Consistent header format: `# WORKLOG YYYYMMDD.md`
+- Date-specific subtitle: `## Change Log for [Month Day, Year]`
+- All original entry content preserved exactly as written
+- Proper markdown formatting maintained throughout
+
+#### Benefits Achieved:
+- **Faster Navigation**: Users can quickly find entries by date
+- **Reduced Cognitive Load**: Smaller files are easier to read and comprehend
+- **Better Version Control**: Changes to specific dates won't affect other date entries
+- **Scalable Organization**: Pattern established for future WORKLOG organization
+- **Historical Access**: Complete change history preserved and easily accessible
+
+#### Follow-up Tasks:
+- Continue using this pattern for future WORKLOG entries
+- Consider monthly organization if individual date files become too large
+- Monitor file sizes to determine if further subdivision becomes necessary
+
+#### Summary:
+Successfully reorganized WORKLOG entries from a single large file into 6 date-based files covering all entries from January 15, 2025 through June 17, 2025. This reorganization improves navigability while preserving all historical information and establishing a scalable pattern for future WORKLOG management.
+
+---
+
+### 2025-01-16 - Teams Search Input UI Consistency Fix (Issue #106)
+
+#### Root Cause Analysis:
+The Teams Management page had an inconsistent UI pattern where the search input field was positioned inside the card title section alongside the "Create Team" button. This violated the established design pattern used throughout the application, where search inputs should be positioned in a separate card subtitle section below the heading and action buttons.
+
+Examination of the Projects page (`fe/src/pages/tasks.vue`) revealed the correct pattern:
+- `v-card-title`: Contains heading and action buttons only
+- `v-card-subtitle`: Contains search input field
+- `v-data-table`: The data table itself
+
+#### Impact of Changes:
+- **UI Consistency**: Teams page now follows the same design pattern as Projects and other data management pages
+- **Improved User Experience**: Search input is now properly positioned below the Teams heading as requested
+- **Design System Compliance**: Maintains consistency with established UI patterns throughout the application
+- **Better Layout**: Cleaner separation between action buttons and search functionality
+- **Enhanced Accessibility**: Search input has dedicated section with proper hide-details prop
+
+#### New Features Added:
+- **Proper Card Structure**: Moved search input to dedicated `v-card-subtitle` section
+- **Consistent Styling**: Added `hide-details` prop to match Projects page pattern
+- **Improved Layout**: Simplified card title to contain only heading and action button
+
+#### Bugs Fixed:
+- **UI Inconsistency**: Fixed incorrect placement of search input mixed with action buttons
+- **Design Pattern Violation**: Search input now follows established application patterns
+
+#### Technical Changes:
+
+**Modified Files:**
+- `fe/src/pages/teams.vue`: Restructured Teams card to match Projects page pattern
+
+**Code Changes:**
+```diff
+- <!-- Mixed search input with buttons in card title -->
+  <v-card-title>
+    <div class="d-flex justify-space-between align-center w-100">
+      <span>Teams ({{ filteredTeams.length }})</span>
+-     <div class="d-flex gap-2 align-center">
+-       <v-btn color="primary" prepend-icon="mdi-plus" size="small" @click="openCreateDialog">
+-         Create Team
+-       </v-btn>
+-       <v-text-field
+-         v-model="teamSearch"
+-         clearable
+-         density="compact"
+-         label="Search teams..."
+-         prepend-inner-icon="mdi-magnify"
+-         style="max-width: 300px"
+-         variant="outlined"
+-       />
+-     </div>
++     <v-btn color="primary" prepend-icon="mdi-plus" size="small" @click="openCreateDialog">
++       Create Team
++     </v-btn>
+    </div>
+  </v-card-title>
+
++ <!-- Dedicated search input section -->
++ <v-card-subtitle>
++   <v-text-field
++     v-model="teamSearch"
++     clearable
++     density="compact"
++     hide-details
++     label="Search teams..."
++     prepend-inner-icon="mdi-magnify"
++     variant="outlined"
++   />
++ </v-card-subtitle>
+```
+
+#### Improvements Made:
+- **Simplified Card Title**: Removed unnecessary wrapper div and styling constraints
+- **Enhanced Search Field**: Added `hide-details` prop for better visual integration
+- **Better Spacing**: Search input now spans full width of card subtitle section
+- **Cleaner Code**: Removed inline styles and unnecessary flex containers
+
+#### User Experience Impact:
+- **Consistent Navigation**: Users can find search inputs in the same location across all management pages
+- **Visual Clarity**: Search field is clearly separated from action buttons
+- **Improved Usability**: Search input is more prominent and easier to locate
+- **Professional Appearance**: Matches design standards established in Projects and other pages
+
+#### Summary:
+Successfully implemented the requested UI change to move the Teams search input below the heading, matching the design pattern used in Projects page. The change maintains all existing functionality while improving UI consistency and user experience. The modification required only 20 lines added and 19 lines removed, representing a minimal and focused improvement that addresses the specific issue raised.
+
