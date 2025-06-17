@@ -1338,5 +1338,11 @@ export const typeDefs = gql`
     Delete a project status report by ID (requires authentication)
     """
     deleteProjectStatusReport(id: ID!): Boolean!
+
+    """
+    Switch to a different database tag (requires authentication)
+    Creates a new database if the tag doesn't exist
+    """
+    dbtag(tag: String!): Boolean!
   }
 `;

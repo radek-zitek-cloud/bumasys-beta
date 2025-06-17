@@ -1,14 +1,12 @@
 import type { Application } from 'express';
 import request from 'supertest';
 import { createApp } from '../src/index';
-import fs from 'fs';
-import path from 'path';
+import { setupTestDatabase, cleanupTestDatabases } from './test-utils';
 
 let app: Application;
 
 beforeAll(async () => {
-  const dbFile = path.join(__dirname, 'organization-db.json');
-  if (fs.existsSync(dbFile)) fs.unlinkSync(dbFile);
+  const dbFile = setupTestDatabase(__dirname, 'organization-db.json');
   const config = require('../src/utils/config').default;
   config.dbFile = dbFile;
   ({ app } = await createApp());
@@ -591,4 +589,8 @@ describe('Organization CRUD', () => {
       expect(res.body.errors[0].message).toBe('Unauthenticated');
     });
   });
+});
+
+afterAll(() => {
+  cleanupTestDatabases(__dirname, 'organization-db.json');
 });

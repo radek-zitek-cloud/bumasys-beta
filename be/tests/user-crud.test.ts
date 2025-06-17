@@ -1,17 +1,19 @@
 import type { Application } from 'express';
 import request from 'supertest';
 import { createApp } from '../src/index';
-import fs from 'fs';
-import path from 'path';
+import { setupTestDatabase, cleanupTestDatabases } from './test-utils';
 
 let app: Application;
 
 beforeAll(async () => {
-  const dbFile = path.join(__dirname, 'crud-db.json');
-  if (fs.existsSync(dbFile)) fs.unlinkSync(dbFile);
+  const dbFile = setupTestDatabase(__dirname, 'crud-db.json');
   const config = require('../src/utils/config').default;
   config.dbFile = dbFile;
   ({ app } = await createApp());
+});
+
+afterAll(() => {
+  cleanupTestDatabases(__dirname, 'crud-db.json');
 });
 
 describe('User CRUD', () => {

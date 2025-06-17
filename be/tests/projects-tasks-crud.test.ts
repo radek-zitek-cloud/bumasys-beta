@@ -1,17 +1,13 @@
 import type { Application } from 'express';
 import request from 'supertest';
 import { createApp } from '../src/index';
-import fs from 'fs';
-import path from 'path';
+import { setupTestDatabase, cleanupTestDatabases } from './test-utils';
 
 let app: Application;
 let authToken: string;
 
 beforeAll(async () => {
-  const dbFile = path.join(__dirname, 'projects-tasks-db.json');
-  if (fs.existsSync(dbFile)) {
-    fs.unlinkSync(dbFile);
-  }
+  const dbFile = setupTestDatabase(__dirname, 'projects-tasks-db.json');
   const config = require('../src/utils/config').default;
   config.dbFile = dbFile;
   ({ app } = await createApp());
@@ -432,4 +428,8 @@ describe('Projects and Tasks CRUD', () => {
     expect(complexityRes.body.data.complexities.length).toBe(1);
     expect(complexityRes.body.data.complexities[0].name).toBe('Medium');
   });
+});
+
+afterAll(() => {
+  cleanupTestDatabases(__dirname, 'projects-tasks-db.json');
 });
