@@ -63,6 +63,20 @@ export class DatabaseService {
   }
 
   /**
+   * Create a backup of the current database
+   * @returns Promise resolving to the backup file path relative to the data directory
+   */
+  async createBackup(): Promise<string> {
+    logger.info(
+      { currentTag: this.getCurrentTag() },
+      'Creating database backup via service',
+    );
+    const backupPath = await this.dbManager.createBackup();
+    logger.info({ backupPath }, 'Database backup created successfully via service');
+    return backupPath;
+  }
+
+  /**
    * Get a unified database interface for backward compatibility
    * This combines auth and data databases into a single interface
    */

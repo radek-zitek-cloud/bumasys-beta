@@ -73,4 +73,40 @@ export const databaseMutationResolvers = {
       throw error;
     }
   },
+
+  /**
+   * Create a backup of the current database
+   * Returns the backup file path relative to the data directory
+   */
+  backupDatabase: async (
+    parent: unknown,
+    args: Record<string, never>,
+    context: GraphQLContext,
+  ): Promise<string> => {
+    if (!context.user) {
+      throw new Error('Unauthenticated');
+    }
+
+    logger.info(
+      { operation: 'backupDatabase', userId: context.user.id },
+      'Creating database backup',
+    );
+
+    try {
+      const backupPath = await databaseService.createBackup();
+
+      logger.info(
+        { operation: 'backupDatabase', userId: context.user.id, backupPath },
+        'Database backup created successfully',
+      );
+
+      return backupPath;
+    } catch (error) {
+      logger.error(
+        { operation: 'backupDatabase', userId: context.user.id, error },
+        'Failed to create database backup',
+      );
+      throw error;
+    }
+  },
 };

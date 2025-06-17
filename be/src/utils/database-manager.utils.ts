@@ -96,6 +96,70 @@ export class DatabaseManager {
   }
 
   /**
+   * Create a backup of the current database
+   * @returns Promise resolving to the backup file path relative to the data directory
+   */
+  async createBackup(): Promise<string> {
+    const fs = await import('fs');
+    const path = await import('path');
+    
+    logger.info(
+      { currentTag: this.currentTag },
+      'Creating database backup',
+    );
+
+    // Create timestamp for backup file
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const backupFileName = `backup-${this.currentTag}-${timestamp}.json`;
+    
+    // Get the data directory from the base path
+    const dataDir = path.dirname(this.dataDbBasePath);
+    const backupPath = path.join(dataDir, 'backups', backupFileName);
+    
+    // Ensure backup directory exists
+    const backupDir = path.dirname(backupPath);
+    if (!fs.existsSync(backupDir)) {
+      logger.debug(
+        { operation: 'createBackup', backupDir },
+        'Creating backup directory',
+      );
+      fs.mkdirSync(backupDir, { recursive: true });
+    }
+
+    try {
+      // Create backup data containing both auth and current data database
+      const backupData = {
+        timestamp: new Date().toISOString(),
+        version: '1.0',
+        tag: this.currentTag,
+        auth: this.authDb.data,
+        data: this.dataDb.data,
+      };
+
+      // Write backup file atomically
+      const tempBackupPath = `${backupPath}.tmp`;
+      fs.writeFileSync(tempBackupPath, JSON.stringify(backupData, null, 2));
+      fs.renameSync(tempBackupPath, backupPath);
+
+      // Return relative path from data directory
+      const relativePath = path.relative(dataDir, backupPath);
+      
+      logger.info(
+        { operation: 'createBackup', backupPath: relativePath, tag: this.currentTag },
+        'Database backup created successfully',
+      );
+
+      return relativePath;
+    } catch (error) {
+      logger.error(
+        { operation: 'createBackup', backupPath, tag: this.currentTag, error },
+        'Failed to create database backup',
+      );
+      throw new Error(`Failed to create database backup: ${(error as Error).message}`);
+    }
+  }
+
+  /**
    * Create and initialize authentication database
    */
   private async createAuthDatabase(filePath: string): Promise<AuthDatabase> {
