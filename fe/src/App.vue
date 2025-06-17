@@ -8,36 +8,39 @@
       <v-app-bar-title class="font-weight-black text-h4">Fulcrum</v-app-bar-title>
       <template #append>
         <v-btn
-          :icon="vuetifyTheme.global.current.value.dark
-            ? 'mdi-weather-night'
-            : 'mdi-weather-sunny'
-          "
+          :icon="themeIcon"
+          :aria-label="`Switch to ${vuetifyTheme.global.current.value.dark ? 'light' : 'dark'} theme`"
           slim
           @click="toggleTheme"
         />
         <v-menu location="bottom end" offset="8">
           <template #activator="{ props }">
-            <v-btn v-bind="props" icon="mdi-dots-vertical" />
+            <v-btn v-bind="props" icon="mdi-dots-vertical" aria-label="User menu" />
           </template>
           <v-list density="compact">
             <template v-if="auth.loggedIn">
-              <v-list-item title="Profile" @click="showProfile = true" />
-              <v-list-item title="Change Password" @click="showChange = true" />
-              <v-list-item title="Switch Database" @click="showDatabaseSwitch = true" />
-              <v-list-item title="Logout" @click="showLogout = true" />
+              <v-list-item title="Profile" prepend-icon="mdi-account" @click="showProfile = true" />
+              <v-list-item title="Change Password" prepend-icon="mdi-key-change" @click="showChange = true" />
+              <v-list-item title="Switch Database" prepend-icon="mdi-database" @click="showDatabaseSwitch = true" />
+              <v-list-item title="Logout" prepend-icon="mdi-logout" @click="showLogout = true" />
             </template>
             <template v-else>
-              <v-list-item title="Login" @click="showLogin = true" />
-              <v-list-item title="Register" @click="showRegister = true" />
-              <v-list-item title="Password Reset" @click="showReset = true" />
+              <v-list-item title="Login" prepend-icon="mdi-login" @click="showLogin = true" />
+              <v-list-item title="Register" prepend-icon="mdi-account-plus" @click="showRegister = true" />
+              <v-list-item title="Password Reset" prepend-icon="mdi-key-remove" @click="showReset = true" />
             </template>
           </v-list>
         </v-menu>
       </template>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" :elevation="2" location="left">
-      <v-list density="compact">
+    <v-navigation-drawer 
+      v-model="drawer" 
+      :elevation="2" 
+      location="left"
+      aria-label="Main navigation"
+    >
+      <v-list density="compact" nav>
         <template v-for="(item, i) in navigationItems" :key="i">
           <v-divider v-if="item.separator" :thickness="3" />
           <v-list-item
@@ -48,6 +51,7 @@
             :subtitle="item.subtitle"
             :title="item.title"
             :to="item.to"
+            :aria-label="`Navigate to ${item.title}${item.subtitle ? ': ' + item.subtitle : ''}`"
           />
         </template>
       </v-list>
@@ -109,7 +113,7 @@
  * TODO: Implement proper toast/notification management system
  */
 
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   import { useRouter } from 'vue-router'
   import { useTheme } from 'vuetify'
   import ChangePasswordCard from './components/auth/ChangePasswordCard.vue'
@@ -120,8 +124,9 @@
   import ProfileCard from './components/auth/ProfileCard.vue'
   import RegisterCard from './components/auth/RegisterCard.vue'
   import AppFooter from './components/common/AppFooter.vue'
+  import { useAuth } from './composables/useAuth'
   import { useLogger } from './composables/useLogger'
-  import * as authApi from './services/auth'
+  import { useNotifications } from './composables/useNotifications'
   import { useAuthStore } from './stores/auth'
 
   /**
@@ -141,14 +146,54 @@
     separator?: boolean
   }
 
+  /**
+   * Interface for login credentials
+   */
+  interface LoginCredentials {
+    email: string
+    password: string
+  }
+
+  /**
+   * Interface for registration data
+   */
+  interface RegistrationData {
+    email: string
+    password: string
+    firstName?: string
+    lastName?: string
+    note?: string
+  }
+
+  /**
+   * Interface for password change data
+   */
+  interface PasswordChangeData {
+    oldPassword: string
+    newPassword: string
+  }
+
+  /**
+   * Interface for profile update data
+   */
+  interface ProfileUpdateData {
+    firstName: string
+    lastName: string
+    note: string
+  }
+
   const router = useRouter()
   const { logInfo, logError, logWarn } = useLogger()
+  const { notifySuccess, notifyError } = useNotifications()
+  
+  // Legacy notification support - TODO: Remove after migrating all notifications to useNotifications
   const snackbar = ref(false)
   const snackbarMessage = ref('')
   const snackbarColor = ref<'success' | 'error'>('success')
 
   /**
    * Display a notification message to the user.
+   * @deprecated Use useNotifications composable instead
    * @param message - The message to display
    * @param success - Whether this is a success (true) or error (false) message
    */
@@ -158,6 +203,15 @@
     snackbarColor.value = success ? 'success' : 'error'
     snackbar.value = true
   }
+
+  const { 
+    login: loginUser, 
+    register: registerUser, 
+    logout: logoutUser, 
+    changePassword: changeUserPassword,
+    resetPassword: resetUserPassword,
+    updateProfile: updateUserProfile 
+  } = useAuth(notify)
 
   /**
    * Reactive state for the navigation drawer.
@@ -181,6 +235,24 @@
    * modes.
    */
   const vuetifyTheme = useTheme()
+
+  /**
+   * Computed property for theme icon to improve performance
+   */
+  const themeIcon = computed(() => 
+    vuetifyTheme.global.current.value.dark
+      ? 'mdi-weather-night'
+      : 'mdi-weather-sunny'
+  )
+
+  /**
+   * Computed property for checking if any dialog is open
+   */
+  const hasOpenDialog = computed(() => 
+    showLogin.value || showRegister.value || showReset.value || 
+    showChange.value || showLogout.value || showProfile.value || 
+    showDatabaseSwitch.value
+  )
 
   /**
    * Toggle between light and dark themes.
@@ -265,138 +337,111 @@
   ]
 
   /**
-   * Handle login form submission via the GraphQL API.
+   * Handle login form submission via the useAuth composable.
    * Authenticates the user and updates the auth store on success.
    * @param payload - Login credentials containing email and password
    */
-  async function handleLogin (payload: { email: string, password: string }) {
+  async function handleLogin (payload: LoginCredentials) {
     try {
       logInfo('User attempting to login', { email: payload.email })
-      const { login } = await authApi.login(payload.email, payload.password)
-      auth.setAuth(login)
-      notify('Login successful')
-      logInfo('User login completed successfully', { userId: login.user.id })
+      await loginUser(payload)
+      logInfo('User login completed successfully')
       // Navigate to home page after successful login
       router.push('/')
     } catch (error) {
       logError('User login failed', error)
-      notify((error as Error).message, false)
+      // Error notification is handled by the composable
     } finally {
       showLogin.value = false
     }
   }
 
   /**
-   * Handle user registration form submission via the GraphQL API.
+   * Handle user registration form submission via the useAuth composable.
    * Creates a new user account and automatically logs them in on success.
    * @param payload - Registration data including email, password, and optional user details
    */
-  async function handleRegister (payload: {
-    email: string
-    password: string
-    firstName?: string
-    lastName?: string
-    note?: string
-  }) {
+  async function handleRegister (payload: RegistrationData) {
     try {
       logInfo('User attempting to register', {
         email: payload.email,
         firstName: payload.firstName,
         lastName: payload.lastName,
       })
-      const { register } = await authApi.register(
-        payload.email,
-        payload.password,
-        payload.firstName,
-        payload.lastName,
-        payload.note,
-      )
-      auth.setAuth(register)
-      notify('Registration successful')
-      logInfo('User registration completed successfully', { userId: register.user.id })
+      await registerUser(payload)
+      logInfo('User registration completed successfully')
       // Navigate to home page after successful registration
       router.push('/')
     } catch (error) {
       logError('User registration failed', error)
-      notify((error as Error).message, false)
+      // Error notification is handled by the composable
     } finally {
       showRegister.value = false
     }
   }
 
   /**
-   * Submit a password reset request
+   * Submit a password reset request via the useAuth composable.
    * Sends a password reset email to the specified address.
    * @param email - Email address to send the password reset link to
    */
   async function handleReset (email: string) {
     try {
       logInfo('User requesting password reset', { email })
-      await authApi.resetPassword(email)
-      notify('Password reset email sent')
+      await resetUserPassword(email)
       logInfo('Password reset email sent successfully', { email })
     } catch (error) {
       logError('Password reset request failed', error)
-      notify((error as Error).message, false)
+      // Error notification is handled by the composable
     } finally {
       showReset.value = false
     }
   }
 
   /**
-   * Change the authenticated user's password.
+   * Change the authenticated user's password via the useAuth composable.
    * Requires the current password for security verification.
    * @param payload - Object containing old and new passwords
    */
-  async function handleChange (payload: {
-    oldPassword: string
-    newPassword: string
-  }) {
+  async function handleChange (payload: PasswordChangeData) {
     try {
       logInfo('User attempting password change')
-      await authApi.changePassword(payload.oldPassword, payload.newPassword)
-      notify('Password changed')
+      await changeUserPassword(payload)
       logInfo('User password change completed successfully')
     } catch (error) {
       logError('User password change failed', error)
-      notify((error as Error).message, false)
+      // Error notification is handled by the composable
     } finally {
       showChange.value = false
     }
   }
 
   /**
-   * Handle user logout confirmation.
+   * Handle user logout confirmation via the useAuth composable.
    * Clears authentication state and navigates to home page.
    * Attempts to notify the backend but continues logout even if that fails.
    */
   async function handleLogout () {
     try {
       logInfo('User attempting logout')
-      if (auth.refreshToken) await authApi.logout(auth.refreshToken)
-      notify('Logged out')
+      await logoutUser()
       logInfo('User logout completed successfully')
-    } catch (error) {
-      logWarn('Logout request failed, but continuing with local logout', error)
-      notify((error as Error).message, false)
-    } finally {
-      auth.clearAuth()
-      showLogout.value = false
       // Navigate to home page after logout
       router.push('/')
+    } catch (error) {
+      logWarn('Logout request failed, but continuing with local logout', error)
+      // Error notification is handled by the composable
+    } finally {
+      showLogout.value = false
     }
   }
 
   /**
-   * Save the user's profile changes via the GraphQL API.
+   * Save the user's profile changes via the useAuth composable.
    * Updates the current user's profile information and refreshes the auth store.
    * @param payload - Updated profile data containing firstName, lastName, and note
    */
-  async function handleProfile (payload: {
-    firstName: string
-    lastName: string
-    note: string
-  }) {
+  async function handleProfile (payload: ProfileUpdateData) {
     if (!auth.user) {
       logWarn('Profile update attempted but no authenticated user found')
       return
@@ -407,18 +452,11 @@
         firstName: payload.firstName,
         lastName: payload.lastName,
       })
-      const { updateUser } = await authApi.updateUser(
-        auth.user.id,
-        payload.firstName,
-        payload.lastName,
-        payload.note,
-      )
-      auth.user = updateUser
-      notify('Profile updated')
-      logInfo('User profile update completed successfully', { userId: updateUser.id })
+      await updateUserProfile(payload)
+      logInfo('User profile update completed successfully', { userId: auth.user.id })
     } catch (error) {
       logError('User profile update failed', error)
-      notify((error as Error).message, false)
+      // Error notification is handled by the composable
     } finally {
       showProfile.value = false
     }

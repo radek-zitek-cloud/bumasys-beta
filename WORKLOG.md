@@ -2,6 +2,80 @@
 
 ## Change Log
 
+### 2025-06-17 - App.vue Code Review and Refactoring
+
+#### Root Cause Analysis:
+The main `App.vue` component violated several key architectural principles from the coding standards:
+1. **Separation of Concerns**: Contained extensive authentication logic that should be delegated to composables
+2. **Code Duplication**: Direct API calls duplicated functionality already available in the `useAuth` composable
+3. **Type Safety**: Missing proper interfaces for function parameters
+4. **Performance**: Not leveraging computed properties for reactive calculations
+5. **Accessibility**: Missing ARIA labels and semantic attributes
+
+#### Impact of Changes:
+- **Reduced Code Complexity**: Removed ~100 lines of authentication logic from App.vue
+- **Improved Maintainability**: Authentication logic now centralized in composables
+- **Enhanced Type Safety**: Added proper TypeScript interfaces for all function parameters
+- **Better Performance**: Implemented computed properties for reactive calculations
+- **Improved Accessibility**: Added ARIA labels and semantic attributes
+
+#### New Features Added:
+1. **Enhanced Type Safety**: 
+   - `LoginCredentials` interface for login form data
+   - `RegistrationData` interface for registration form data
+   - `PasswordChangeData` interface for password change operations
+   - `ProfileUpdateData` interface for profile updates
+
+2. **Performance Optimizations**:
+   - `themeIcon` computed property for theme toggle button
+   - `hasOpenDialog` computed property for dialog state management
+
+3. **Accessibility Improvements**:
+   - ARIA labels for theme toggle button
+   - ARIA labels for user menu button
+   - ARIA labels for navigation drawer
+   - Enhanced navigation item accessibility
+   - Added icons to menu items for better visual recognition
+
+#### Bugs Fixed:
+- **Authentication Logic Duplication**: Replaced direct API calls with existing `useAuth` composable
+- **Missing Error Handling**: Errors now properly handled by composables with consistent notification patterns
+- **Type Safety Issues**: All function parameters now properly typed with interfaces
+
+#### Improvements Made:
+1. **Architecture Compliance**: Now follows the separation of concerns principle from coding standards
+2. **Composable Usage**: Properly leverages existing `useAuth` and `useNotifications` composables
+3. **Code Organization**: Better structured with clear interfaces and computed properties
+4. **Performance**: Reduced unnecessary reactivity calculations through computed properties
+5. **Accessibility**: Enhanced user experience for screen readers and keyboard navigation
+6. **Maintainability**: Simplified authentication handlers with centralized error handling
+
+#### Documentation Updates:
+1. **Enhanced JSDoc Comments**: Updated all function documentation to reflect new composable usage
+2. **Interface Documentation**: Added comprehensive documentation for all new TypeScript interfaces
+3. **Deprecation Notices**: Added deprecation warning for legacy notification function
+
+#### TODOs Addressed:
+- ✅ Extracted authentication logic into composables (was in TODO comments)
+- ✅ Improved type safety with proper interfaces
+- ✅ Enhanced accessibility with ARIA labels
+- ✅ Added computed properties for better performance
+
+#### Remaining TODOs:
+- [ ] Complete migration from legacy `notify()` function to `useNotifications` composable
+- [ ] Implement keyboard shortcuts for common actions (mentioned in original TODOs)
+- [ ] Add error boundary component for better error handling
+- [ ] Implement loading states for authentication operations
+- [ ] Add navigation breadcrumbs for complex workflows
+- [ ] Implement proper toast/notification management system
+
+#### Potential Issues or Risks Identified:
+1. **Legacy Notification System**: The old `notify()` function is kept for backward compatibility but should be removed after full migration
+2. **Dialog State Management**: Current approach with multiple refs could be consolidated into a single dialog state manager
+3. **Navigation State**: Could benefit from a navigation composable for better state management
+
+---
+
 ### 2025-06-17 - Admin Menu/Page Implementation (Issue #114)
 
 #### Root Cause Analysis:

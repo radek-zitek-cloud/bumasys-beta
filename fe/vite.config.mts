@@ -80,7 +80,8 @@ export default defineConfig({
     proxy: {
       // Proxy API requests during development to the backend GraphQL server
       '/graphql': {
-        target: 'http://vm.zitek.cloud:4000',
+        // target: 'http://vm.zitek.cloud:4000',
+        target: 'http://localhost:4000',
         changeOrigin: true,
       },
     },
