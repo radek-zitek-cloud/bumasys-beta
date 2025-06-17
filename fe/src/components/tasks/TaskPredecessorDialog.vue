@@ -12,7 +12,7 @@
 
     <v-card-text>
       <!-- Mode Selection Tabs -->
-      <v-tabs v-model="selectedTab" align-tabs="center" color="primary" class="">
+      <v-tabs v-model="selectedTab" align-tabs="center" color="primary">
         <v-tab value="select">Select Existing Task</v-tab>
         <v-tab value="create">Create New Task</v-tab>
       </v-tabs>
