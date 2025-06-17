@@ -67,10 +67,15 @@ import {
   staffDepartmentFieldResolvers,
   initializeDepartmentResolvers,
 } from './department.resolvers';
+import {
+  databaseMutationResolvers,
+  setDatabaseServices,
+} from './database.resolvers';
 
 import {
   AuthService,
   UserService,
+  DatabaseService,
   OrganizationService,
   DepartmentService,
   StaffService,
@@ -115,6 +120,7 @@ export const resolvers = {
     ...teamMutationResolvers,
     ...projectMutationResolvers,
     ...taskMutationResolvers,
+    ...databaseMutationResolvers,
   },
   Organization: organizationFieldResolvers,
   Department: departmentFieldResolvers,
@@ -139,6 +145,7 @@ export const resolvers = {
  * Sets up services for query, mutation, health check, and authentication resolvers
  * @param authService - AuthService instance for authentication operations
  * @param userService - UserService instance for user operations
+ * @param databaseService - DatabaseService instance for database operations
  * @param organizationService - OrganizationService instance for organization operations
  * @param departmentService - DepartmentService instance for department operations
  * @param staffService - StaffService instance for staff operations
@@ -156,6 +163,7 @@ export const resolvers = {
 export function initializeResolvers(
   authService: AuthService,
   userService: UserService,
+  databaseService: DatabaseService,
   organizationService: OrganizationService,
   departmentService: DepartmentService,
   staffService: StaffService,
@@ -170,6 +178,7 @@ export function initializeResolvers(
   taskStatusReportService: TaskStatusReportService,
   projectStatusReportService: ProjectStatusReportService,
 ): void {
+  setDatabaseServices(databaseService);
   setReferenceDataServices(statusService, priorityService, complexityService);
   setHealthServices(userService);
   setAuthServices(userService, authService);

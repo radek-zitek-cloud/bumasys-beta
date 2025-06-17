@@ -11,5 +11,10 @@ export {
   getDatabaseStats,
 } from './database.utils';
 
+export {
+  DatabaseManager,
+  createDatabaseManager,
+} from './database-manager.utils';
+
 export { default as config } from './config';
 export { default as logger } from './logger';

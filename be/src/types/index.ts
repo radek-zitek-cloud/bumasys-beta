@@ -54,7 +54,68 @@ export interface Session {
 }
 
 /**
- * Database interface representing the JSON file structure
+ * Authentication database interface for user authentication data
+ */
+export interface AuthDatabase {
+  /** The authentication data stored in the database */
+  data: {
+    /** Array of all users in the system */
+    users: User[];
+    /** Array of active user sessions */
+    sessions: Session[];
+  };
+  /** Write current data to persistent storage */
+  write(): Promise<void>;
+}
+
+/**
+ * Application data database interface for business data with tag support
+ */
+export interface DataDatabase {
+  /** The business data stored in the database */
+  data: {
+    /** Array of all organizations in the system */
+    organizations: Organization[];
+    /** Array of all departments in the system */
+    departments: Department[];
+    /** Array of all staff members in the system */
+    staff: Staff[];
+    /** Array of all status values */
+    statuses: Status[];
+    /** Array of all priority values */
+    priorities: Priority[];
+    /** Array of all complexity values */
+    complexities: Complexity[];
+    /** Array of all projects */
+    projects: Project[];
+    /** Array of all tasks */
+    tasks: Task[];
+    /** Array of all task assignee relationships */
+    taskAssignees: TaskAssignee[];
+    /** Array of all task predecessor relationships */
+    taskPredecessors: TaskPredecessor[];
+    /** Array of all task progress reports */
+    taskProgress: TaskProgress[];
+    /** Array of all task evaluations */
+    taskEvaluations: TaskEvaluation[];
+    /** Array of all task status reports */
+    taskStatusReports: TaskStatusReport[];
+    /** Array of all project status reports */
+    projectStatusReports: ProjectStatusReport[];
+    /** Array of all teams */
+    teams: Team[];
+    /** Array of all team member relationships */
+    teamMembers: TeamMember[];
+  };
+  /** Current database tag identifier */
+  tag: string;
+  /** Write current data to persistent storage */
+  write(): Promise<void>;
+}
+
+/**
+ * Legacy database interface for backward compatibility
+ * @deprecated Use AuthDatabase and DataDatabase instead
  */
 export interface Database {
   /** The actual data stored in the database */
