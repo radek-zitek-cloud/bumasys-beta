@@ -54,10 +54,10 @@
             <template #node-currentTask="{ data }">
               <div class="custom-current-task-node">
                 <!-- Connection handles -->
-                <Handle type="target" :position="Position.Left" class="task-handle" />
-                <Handle type="source" :position="Position.Right" class="task-handle" />
-                <Handle type="source" :position="Position.Bottom" class="task-handle" />
-                <Handle type="target" :position="Position.Top" class="task-handle" />
+                <Handle id="left" type="target" :position="Position.Left" class="task-handle" />
+                <Handle id="right" type="source" :position="Position.Right" class="task-handle" />
+                <Handle id="bottom" type="source" :position="Position.Bottom" class="task-handle" />
+                <Handle id="top" type="target" :position="Position.Top" class="task-handle" />
                 
                 <div class="node-icon">
                   <v-icon color="white">mdi-clipboard-text</v-icon>
@@ -73,10 +73,10 @@
             <template #node-predecessor="{ data }">
               <div class="custom-predecessor-node">
                 <!-- Connection handles -->
-                <Handle type="target" :position="Position.Left" class="task-handle" />
-                <Handle type="source" :position="Position.Right" class="task-handle" />
-                <Handle type="source" :position="Position.Bottom" class="task-handle" />
-                <Handle type="target" :position="Position.Top" class="task-handle" />
+                <Handle id="left" type="target" :position="Position.Left" class="task-handle" />
+                <Handle id="right" type="source" :position="Position.Right" class="task-handle" />
+                <Handle id="bottom" type="source" :position="Position.Bottom" class="task-handle" />
+                <Handle id="top" type="target" :position="Position.Top" class="task-handle" />
                 
                 <div class="node-icon">
                   <v-icon color="white">mdi-arrow-right</v-icon>
@@ -93,10 +93,10 @@
             <template #node-childTask="{ data }">
               <div class="custom-child-task-node">
                 <!-- Connection handles -->
-                <Handle type="target" :position="Position.Left" class="task-handle" />
-                <Handle type="source" :position="Position.Right" class="task-handle" />
-                <Handle type="source" :position="Position.Bottom" class="task-handle" />
-                <Handle type="target" :position="Position.Top" class="task-handle" />
+                <Handle id="left" type="target" :position="Position.Left" class="task-handle" />
+                <Handle id="right" type="source" :position="Position.Right" class="task-handle" />
+                <Handle id="bottom" type="source" :position="Position.Bottom" class="task-handle" />
+                <Handle id="top" type="target" :position="Position.Top" class="task-handle" />
                 
                 <div class="node-icon">
                   <v-icon color="white">mdi-subdirectory-arrow-right</v-icon>
@@ -114,10 +114,10 @@
             <template #node-task="{ data }">
               <div class="custom-task-node">
                 <!-- Connection handles -->
-                <Handle type="target" :position="Position.Left" class="task-handle" />
-                <Handle type="source" :position="Position.Right" class="task-handle" />
-                <Handle type="source" :position="Position.Bottom" class="task-handle" />
-                <Handle type="target" :position="Position.Top" class="task-handle" />
+                <Handle id="left" type="target" :position="Position.Left" class="task-handle" />
+                <Handle id="right" type="source" :position="Position.Right" class="task-handle" />
+                <Handle id="bottom" type="source" :position="Position.Bottom" class="task-handle" />
+                <Handle id="top" type="target" :position="Position.Top" class="task-handle" />
                 
                 <div class="node-icon">
                   <v-icon color="primary">mdi-clipboard-text</v-icon>
@@ -218,14 +218,22 @@
       // Create nodes for each project and its tasks
       for (const [projectId, { project, tasks }] of tasksByProject.entries()) {
         // Calculate project dimensions based on contained tasks
-        const projectWidth = Math.max(300, tasks.length * taskSpacing)
-        const projectHeight = 400
+        const tasksInProject = tasks.length
+        const tasksPerRow = Math.ceil(Math.sqrt(tasksInProject)) // Arrange in roughly square grid
+        const taskWidth = 220 // Approximate task node width
+        const taskHeight = 100 // Approximate task node height
+        const taskSpacing = 20 // Spacing between tasks
+        const projectPadding = 60 // Padding inside project container
+        
+        const projectWidth = Math.max(300, (tasksPerRow * taskWidth) + ((tasksPerRow - 1) * taskSpacing) + (projectPadding * 2))
+        const projectHeight = Math.max(200, (Math.ceil(tasksInProject / tasksPerRow) * taskHeight) + ((Math.ceil(tasksInProject / tasksPerRow) - 1) * taskSpacing) + (projectPadding * 2) + 60) // +60 for header
 
         // Create project container node
         nodes.push({
           id: `project-${projectId}`,
           type: 'project',
           position: { x: currentProjectX, y: 100 },
+          resizing: true,
           data: {
             name: project.name,
             type: 'project',
@@ -247,9 +255,11 @@
             taskType = 'childTask'
           }
 
-          // Position relative to parent project
-          const taskX = 50 + (taskIndex * 180)
-          const taskY = 80
+          // Position in grid layout within parent project
+          const row = Math.floor(taskIndex / tasksPerRow)
+          const col = taskIndex % tasksPerRow
+          const taskX = projectPadding + (col * (taskWidth + taskSpacing))
+          const taskY = projectPadding + 60 + (row * (taskHeight + taskSpacing)) // +60 for project header
 
           nodes.push({
             id: taskItem.id,
@@ -257,6 +267,7 @@
             position: { x: taskX, y: taskY },
             parentNode: `project-${projectId}`,
             extent: 'parent',
+            expandParent: true,
             data: {
               name: taskItem.name,
               project: taskItem.project?.name || 'Unknown Project',
@@ -266,10 +277,10 @@
           })
         }
 
-        currentProjectX += projectWidth + projectSpacing
+        currentProjectX += projectWidth + 100 // 100px spacing between projects
       }
 
-      // Create edges between tasks (same as before)
+      // Create edges between tasks
       if (task.predecessors && task.predecessors.length > 0) {
         for (const predecessor of task.predecessors) {
           edges.push({
@@ -278,7 +289,7 @@
             target: task.id,
             sourceHandle: 'right',
             targetHandle: 'left',
-            type: 'straight',
+            type: 'bezier',
             style: { stroke: '#2196F3', strokeWidth: 2 },
           })
         }
@@ -292,7 +303,7 @@
             target: childTask.id,
             sourceHandle: 'bottom',
             targetHandle: 'top',
-            type: 'straight',
+            type: 'bezier',
             style: { stroke: '#4CAF50', strokeWidth: 2 },
           })
         }
@@ -372,7 +383,8 @@
     border: 2px solid #1976D2;
     border-radius: 8px;
     padding: 12px 16px;
-    min-width: 200px;
+    width: 200px;
+    min-height: 80px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -388,7 +400,7 @@
 
   /* Project Container Styles */
   .custom-project-container {
-    background: linear-gradient(135deg, #6A1B9A, #8E24AA);
+    background: transparent;
     border: 3px solid #4A148C;
     border-radius: 16px;
     padding: 20px;
@@ -399,8 +411,10 @@
     font-family: 'Roboto', sans-serif;
     box-shadow: 0 6px 24px rgba(106, 27, 154, 0.3);
     transition: all 0.2s ease;
-    color: white;
+    color: #4A148C;
     position: relative;
+    min-width: 300px;
+    min-height: 200px;
   }
 
   .custom-project-container:hover {
@@ -413,25 +427,31 @@
     gap: 12px;
     margin-bottom: 16px;
     padding-bottom: 12px;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 2px solid rgba(74, 20, 140, 0.3);
   }
 
   .project-icon {
     flex-shrink: 0;
   }
 
+  .project-icon .v-icon {
+    color: #4A148C !important;
+  }
+
   .project-title {
     font-size: 18px;
     font-weight: bold;
     line-height: 1.2;
+    color: #4A148C;
   }
 
   .project-content {
     flex: 1;
     position: relative;
-    background: rgba(255, 255, 255, 0.05);
+    background: transparent;
     border-radius: 8px;
-    min-height: 200px;
+    min-height: 120px;
+    overflow: visible; /* Allow child nodes to be visible */
   }
 
   /* Legacy Project Node Styles (hidden, replaced by container) */
@@ -445,7 +465,8 @@
     border: 3px solid #0D47A1;
     border-radius: 10px;
     padding: 16px 20px;
-    min-width: 220px;
+    width: 200px;
+    min-height: 80px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -466,7 +487,8 @@
     border: 2px solid #E65100;
     border-radius: 8px;
     padding: 12px 16px;
-    min-width: 200px;
+    width: 200px;
+    min-height: 80px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -487,7 +509,8 @@
     border: 2px solid #1B5E20;
     border-radius: 8px;
     padding: 12px 16px;
-    min-width: 200px;
+    width: 200px;
+    min-height: 80px;
     display: flex;
     align-items: center;
     gap: 12px;

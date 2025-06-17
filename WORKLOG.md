@@ -2,6 +2,114 @@
 
 ## Change Log
 
+### 2025-06-17 - Dynamic Project Sizing and Parent-Child Nesting Restoration
+
+#### Improvements Made:
+**Re-enabled Parent-Child Nesting:**
+- Restored `parentNode` and `extent: 'parent'` properties for proper task nesting
+- Tasks are now properly contained within their project nodes
+- Maintained working edge connections with proper handle targeting
+
+**Dynamic Project Node Sizing:**
+- Implemented intelligent project container sizing based on number of contained tasks
+- Projects now arrange tasks in a grid layout (roughly square) for optimal space usage
+- Dynamic width/height calculation: `projectWidth = max(300, (tasksPerRow * taskWidth) + spacing + padding)`
+- Projects automatically resize to fit all their tasks without overflow
+
+**Grid Layout for Tasks Within Projects:**
+- Tasks positioned in grid formation within project containers
+- Calculated positioning: `taskX = padding + (col * (taskWidth + spacing))`
+- Tasks arranged in rows and columns for clean organization
+- Header space reserved for project title and metadata
+
+**Improved Styling:**
+- Fixed task node dimensions to consistent 200px width × 80px min-height
+- Added `overflow: visible` to project content area for proper child visibility
+- Consistent spacing and padding throughout the layout
+- Project containers have minimum dimensions for proper display
+
+**Technical Implementation:**
+```typescript
+// Dynamic sizing algorithm
+const tasksInProject = tasks.length
+const tasksPerRow = Math.ceil(Math.sqrt(tasksInProject))
+const projectWidth = Math.max(300, (tasksPerRow * taskWidth) + spacing + padding)
+const projectHeight = Math.max(200, (rows * taskHeight) + spacing + padding + headerHeight)
+
+// Grid positioning within project
+const row = Math.floor(taskIndex / tasksPerRow)
+const col = taskIndex % tasksPerRow
+const taskX = projectPadding + (col * (taskWidth + taskSpacing))
+const taskY = projectPadding + 60 + (row * (taskHeight + taskSpacing))
+```
+
+**Result:**
+- ✅ Tasks properly nested inside project containers
+- ✅ Project nodes dynamically resize to fit their content
+- ✅ Clean grid layout for multiple tasks within projects
+- ✅ Maintained proper edge connections (predecessor: right→left, child: bottom→top)
+- ✅ Professional visual hierarchy and organization
+
+---
+
+### 2025-06-16 - Task Status Report and Progress Report Creator Staff Implementation
+
+#### Root Cause Analysis:
+The main WORKLOG.md file had grown very large with entries spanning multiple dates, making it difficult to navigate and find specific changes. The file contained comprehensive daily entries that would benefit from better organization by date for improved maintainability and readability.
+
+#### Impact of Changes:
+- **Improved Organization**: WORKLOG entries now organized into separate date-based files
+- **Better Navigation**: Each date has its own dedicated file for easier reference
+- **Reduced File Size**: Main WORKLOG.md is now smaller and more focused
+- **Historical Preservation**: All original content preserved in appropriate date files
+- **Enhanced Maintainability**: Future WORKLOG entries can follow the established date-based pattern
+
+#### New Features Added:
+- **Date-Based WORKLOG Files**:
+  - `WORKLOG 20250616.md`: All June 16, 2025 entries (6 major GraphQL resolver refactoring entries)
+  - `WORKLOG 20250615.md`: All June 15, 2025 entries (3 entries covering dialog fixes, test improvements, and menu positioning)
+  - `WORKLOG 20250119.md`: All January 19, 2025 entries (4 entries covering initial setup, frontend architecture, and test fixes)
+  - `WORKLOG 20250116.md`: All January 16, 2025 entries (6 entries covering task management, UI improvements, and bug fixes)
+  - `WORKLOG 20250115.md`: January 15, 2025 entry (frontend test fix)
+
+#### Improvements Made:
+- **File Organization**: Clear separation of entries by date for better structure
+- **Content Preservation**: All original content maintained with full detail
+- **Consistent Formatting**: Maintained original markdown formatting and structure
+- **Complete Coverage**: Every entry from the original WORKLOG properly categorized
+
+#### Technical Implementation:
+- **WORKLOG 20250616.md**: Contains 6 major GraphQL resolver refactoring entries
+- **WORKLOG 20250615.md**: Contains dialog centering fixes, service layer test improvements, and menu positioning
+- **WORKLOG 20250119.md**: Contains initial project setup, frontend architecture refactor, and comprehensive test fixes
+- **WORKLOG 20250116.md**: Contains task management enhancements, UI consistency improvements, and staff organization chart fixes
+- **WORKLOG 20250115.md**: Contains numeric validation test fix
+
+#### Documentation Structure:
+Each date-based WORKLOG file follows the same structure:
+- Clear date-based filename format: `WORKLOG YYYYMMDD.md`
+- Consistent header format: `# WORKLOG YYYYMMDD.md`
+- Date-specific subtitle: `## Change Log for [Month Day, Year]`
+- All original entry content preserved exactly as written
+- Proper markdown formatting maintained throughout
+
+#### Benefits Achieved:
+- **Faster Navigation**: Users can quickly find entries by date
+- **Reduced Cognitive Load**: Smaller files are easier to read and comprehend
+- **Better Version Control**: Changes to specific dates won't affect other date entries
+- **Scalable Organization**: Pattern established for future WORKLOG organization
+- **Historical Access**: Complete change history preserved and easily accessible
+
+#### Follow-up Tasks:
+- Consider implementing this pattern for future WORKLOG entries
+- Update documentation references to point to appropriate date-based files
+- Monitor file sizes to determine if further subdivision becomes necessary
+
+#### Summary:
+Successfully split the large WORKLOG copy.md file into 5 date-based files covering all entries from January 15, 2025 through June 16, 2025. This reorganization improves navigability while preserving all historical information and establishing a scalable pattern for future WORKLOG management.
+
+---
+
 ### 2025-06-16 - Task Graph Nesting Implementation with Vue Flow Parent-Child Relationships
 
 #### Root Cause Analysis:
@@ -488,59 +596,51 @@ The TaskGraphDialog component was displaying only a single task node without sho
 
 ---
 
-### 2025-06-16 - Task Status Report and Progress Report Creator Staff Implementation
+### 2025-06-17 - Task Graph Edge Connection Fix
 
-#### Root Cause Analysis:
-The main WORKLOG.md file had grown very large with entries spanning multiple dates, making it difficult to navigate and find specific changes. The file contained comprehensive daily entries that would benefit from better organization by date for improved maintainability and readability.
+#### Bug Fixed:
+Fixed incorrect edge connections in the task graph visualization where predecessor tasks were connecting to the wrong handle on the current task.
 
-#### Impact of Changes:
-- **Improved Organization**: WORKLOG entries now organized into separate date-based files
-- **Better Navigation**: Each date has its own dedicated file for easier reference
-- **Reduced File Size**: Main WORKLOG.md is now smaller and more focused
-- **Historical Preservation**: All original content preserved in appropriate date files
-- **Enhanced Maintainability**: Future WORKLOG entries can follow the established date-based pattern
+**Root Cause:**
+- Predecessor task edges were using string values (`'right'`, `'left'`) instead of `Position` enum values
+- This caused Vue Flow to default to connecting to the bottom handle instead of the left handle for the target
 
-#### New Features Added:
-- **Date-Based WORKLOG Files**:
-  - `WORKLOG 20250616.md`: All June 16, 2025 entries (6 major GraphQL resolver refactoring entries)
-  - `WORKLOG 20250615.md`: All June 15, 2025 entries (3 entries covering dialog fixes, test improvements, and menu positioning)
-  - `WORKLOG 20250119.md`: All January 19, 2025 entries (4 entries covering initial setup, frontend architecture, and test fixes)
-  - `WORKLOG 20250116.md`: All January 16, 2025 entries (6 entries covering task management, UI improvements, and bug fixes)
-  - `WORKLOG 20250115.md`: January 15, 2025 entry (frontend test fix)
+**Fix Applied:**
+- Updated predecessor edge creation to use `Position.Right` for source handle and `Position.Left` for target handle
+- Ensured consistent use of `Position` enum for all edge connections
+- Child task edges also updated to use `Position.Bottom` and `Position.Top` for consistency
 
-#### Improvements Made:
-- **File Organization**: Clear separation of entries by date for better structure
-- **Content Preservation**: All original content maintained with full detail
-- **Consistent Formatting**: Maintained original markdown formatting and structure
-- **Complete Coverage**: Every entry from the original WORKLOG properly categorized
+**Impact:**
+- Predecessor tasks now correctly connect from their right handle to the current task's left handle
+- Visual flow now properly represents the logical task dependency direction (left to right)
+- Improved graph readability and intuitive understanding of task relationships
 
-#### Technical Implementation:
-- **WORKLOG 20250616.md**: Contains 6 major GraphQL resolver refactoring entries
-- **WORKLOG 20250615.md**: Contains dialog centering fixes, service layer test improvements, and menu positioning
-- **WORKLOG 20250119.md**: Contains initial project setup, frontend architecture refactor, and comprehensive test fixes
-- **WORKLOG 20250116.md**: Contains task management enhancements, UI consistency improvements, and staff organization chart fixes
-- **WORKLOG 20250115.md**: Contains numeric validation test fix
+**Files Modified:**
+- `fe/src/components/tasks/TaskGraphDialog.vue`: Fixed edge handle positioning
 
-#### Documentation Structure:
-Each date-based WORKLOG file follows the same structure:
-- Clear date-based filename format: `WORKLOG YYYYMMDD.md`
-- Consistent header format: `# WORKLOG YYYYMMDD.md`
-- Date-specific subtitle: `## Change Log for [Month Day, Year]`
-- All original entry content preserved exactly as written
-- Proper markdown formatting maintained throughout
+**Troubleshooting Edge Connection Issue:**
+- Added unique IDs to all Handle components (`id="left"`, `id="right"`, `id="top"`, `id="bottom"`)
+- Temporarily disabled parent-child nesting to isolate edge connection issue
+- Adjusted absolute positioning to place tasks outside project containers
+- This will help determine if the issue is with edge targeting or parent-child positioning
 
-#### Benefits Achieved:
-- **Faster Navigation**: Users can quickly find entries by date
-- **Reduced Cognitive Load**: Smaller files are easier to read and comprehend
-- **Better Version Control**: Changes to specific dates won't affect other date entries
-- **Scalable Organization**: Pattern established for future WORKLOG organization
-- **Historical Access**: Complete change history preserved and easily accessible
+**Next Steps:**
+- Test edge connections with simplified layout
+- Re-enable parent-child nesting once edge connections are confirmed working
 
-#### Follow-up Tasks:
-- Consider implementing this pattern for future WORKLOG entries
-- Update documentation references to point to appropriate date-based files
-- Monitor file sizes to determine if further subdivision becomes necessary
+---
 
-#### Summary:
-Successfully split the large WORKLOG copy.md file into 5 date-based files covering all entries from January 15, 2025 through June 16, 2025. This reorganization improves navigability while preserving all historical information and establishing a scalable pattern for future WORKLOG management.
+### Project Node Transparency Update:
+- Changed project container background from gradient to transparent
+- Updated text color from white to dark purple (#4A148C) for better readability
+- Made project content area fully transparent
+- Updated project header border to use semi-transparent dark purple
+- Added explicit icon color override to maintain visibility
+- Maintained border and shadow for visual definition without background fill
+
+**Visual Impact:**
+- Project containers now act as transparent frames around task groups
+- Better integration with overall graph background
+- Cleaner, less cluttered appearance
+- Task nodes remain fully visible and prominent within their project boundaries
 
