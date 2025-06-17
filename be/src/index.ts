@@ -88,8 +88,12 @@ export async function createApp(): Promise<AppInstances> {
   logger.info('Initializing database service...');
   const authDbPath = path.resolve(path.dirname(config.dbFile), 'auth.json');
   const dataDbBasePath = config.dbFile; // This will be used to determine the directory
-  const dbService = await createDatabaseService(authDbPath, dataDbBasePath, 'default');
-  
+  const dbService = await createDatabaseService(
+    authDbPath,
+    dataDbBasePath,
+    'default',
+  );
+
   // Get unified database for backward compatibility
   const db = dbService.getUnifiedDatabase();
 

@@ -1344,5 +1344,11 @@ export const typeDefs = gql`
     Creates a new database if the tag doesn't exist
     """
     dbtag(tag: String!): Boolean!
+
+    """
+    Create a backup of the current database (requires authentication)
+    Returns the backup file path relative to the data directory
+    """
+    backupDatabase: String!
   }
 `;

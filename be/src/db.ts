@@ -9,7 +9,13 @@
  */
 
 // Re-export types from the centralized types module
-export type { Database, AuthDatabase, DataDatabase, User, Session } from './types';
+export type {
+  Database,
+  AuthDatabase,
+  DataDatabase,
+  User,
+  Session,
+} from './types';
 
 // Re-export the createDatabase function with backward-compatible name
 export { createDatabase as createDb } from './utils';

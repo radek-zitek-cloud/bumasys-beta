@@ -54,9 +54,26 @@ export class DatabaseService {
    * @param tag - The tag to switch to
    */
   async switchToTag(tag: string): Promise<void> {
-    logger.info({ oldTag: this.getCurrentTag(), newTag: tag }, 'Switching database tag via service');
+    logger.info(
+      { oldTag: this.getCurrentTag(), newTag: tag },
+      'Switching database tag via service',
+    );
     await this.dbManager.switchToTag(tag);
     logger.info({ tag }, 'Database tag switched successfully via service');
+  }
+
+  /**
+   * Create a backup of the current database
+   * @returns Promise resolving to the backup file path relative to the data directory
+   */
+  async createBackup(): Promise<string> {
+    logger.info(
+      { currentTag: this.getCurrentTag() },
+      'Creating database backup via service',
+    );
+    const backupPath = await this.dbManager.createBackup();
+    logger.info({ backupPath }, 'Database backup created successfully via service');
+    return backupPath;
   }
 
   /**
@@ -93,11 +110,10 @@ export class DatabaseService {
         };
       },
       async write() {
-        logger.debug('Writing unified database - saving both auth and data databases');
-        await Promise.all([
-          authDb.write(),
-          dataDb.write(),
-        ]);
+        logger.debug(
+          'Writing unified database - saving both auth and data databases',
+        );
+        await Promise.all([authDb.write(), dataDb.write()]);
         logger.debug('Unified database write completed successfully');
       },
     };
@@ -115,9 +131,15 @@ export class DatabaseService {
 export async function createDatabaseService(
   authDbPath: string,
   dataDbBasePath: string,
-  initialTag: string = 'default'
+  initialTag: string = 'default',
 ): Promise<DatabaseService> {
-  const { createDatabaseManager } = await import('../utils/database-manager.utils');
-  const dbManager = await createDatabaseManager(authDbPath, dataDbBasePath, initialTag);
+  const { createDatabaseManager } = await import(
+    '../utils/database-manager.utils'
+  );
+  const dbManager = await createDatabaseManager(
+    authDbPath,
+    dataDbBasePath,
+    initialTag,
+  );
   return new DatabaseService(dbManager);
 }

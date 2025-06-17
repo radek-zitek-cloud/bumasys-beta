@@ -46,7 +46,9 @@ export const databaseMutationResolvers = {
       // Validate tag format (only allow alphanumeric and hyphens for security)
       const tagRegex = /^[a-zA-Z0-9-]+$/;
       if (!tagRegex.test(args.tag)) {
-        throw new Error('Invalid tag format. Only alphanumeric characters and hyphens are allowed.');
+        throw new Error(
+          'Invalid tag format. Only alphanumeric characters and hyphens are allowed.',
+        );
       }
 
       // Prevent certain reserved tags
@@ -67,6 +69,42 @@ export const databaseMutationResolvers = {
       logger.error(
         { operation: 'dbtag', userId: context.user.id, tag: args.tag, error },
         'Failed to switch database tag',
+      );
+      throw error;
+    }
+  },
+
+  /**
+   * Create a backup of the current database
+   * Returns the backup file path relative to the data directory
+   */
+  backupDatabase: async (
+    parent: unknown,
+    args: Record<string, never>,
+    context: GraphQLContext,
+  ): Promise<string> => {
+    if (!context.user) {
+      throw new Error('Unauthenticated');
+    }
+
+    logger.info(
+      { operation: 'backupDatabase', userId: context.user.id },
+      'Creating database backup',
+    );
+
+    try {
+      const backupPath = await databaseService.createBackup();
+
+      logger.info(
+        { operation: 'backupDatabase', userId: context.user.id, backupPath },
+        'Database backup created successfully',
+      );
+
+      return backupPath;
+    } catch (error) {
+      logger.error(
+        { operation: 'backupDatabase', userId: context.user.id, error },
+        'Failed to create database backup',
       );
       throw error;
     }
