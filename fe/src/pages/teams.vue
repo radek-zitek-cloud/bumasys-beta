@@ -23,27 +23,28 @@
           <v-card-title>
             <div class="d-flex justify-space-between align-center w-100">
               <span>Teams ({{ filteredTeams.length }})</span>
-              <div class="d-flex gap-2 align-center">
-                <v-btn
-                  color="primary"
-                  prepend-icon="mdi-plus"
-                  size="small"
-                  @click="openCreateDialog"
-                >
-                  Create Team
-                </v-btn>
-                <v-text-field
-                  v-model="teamSearch"
-                  clearable
-                  density="compact"
-                  label="Search teams..."
-                  prepend-inner-icon="mdi-magnify"
-                  style="max-width: 300px"
-                  variant="outlined"
-                />
-              </div>
+              <v-btn
+                color="primary"
+                prepend-icon="mdi-plus"
+                size="small"
+                @click="openCreateDialog"
+              >
+                Create Team
+              </v-btn>
             </div>
           </v-card-title>
+
+          <v-card-subtitle>
+            <v-text-field
+              v-model="teamSearch"
+              clearable
+              density="compact"
+              hide-details
+              label="Search teams..."
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
+            />
+          </v-card-subtitle>
 
           <v-data-table
             class="elevation-0"

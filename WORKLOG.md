@@ -644,3 +644,91 @@ Fixed incorrect edge connections in the task graph visualization where predecess
 - Cleaner, less cluttered appearance
 - Task nodes remain fully visible and prominent within their project boundaries
 
+---
+
+### 2025-01-16 - Teams Search Input UI Consistency Fix (Issue #106)
+
+#### Root Cause Analysis:
+The Teams Management page had an inconsistent UI pattern where the search input field was positioned inside the card title section alongside the "Create Team" button. This violated the established design pattern used throughout the application, where search inputs should be positioned in a separate card subtitle section below the heading and action buttons.
+
+Examination of the Projects page (`fe/src/pages/tasks.vue`) revealed the correct pattern:
+- `v-card-title`: Contains heading and action buttons only
+- `v-card-subtitle`: Contains search input field
+- `v-data-table`: The data table itself
+
+#### Impact of Changes:
+- **UI Consistency**: Teams page now follows the same design pattern as Projects and other data management pages
+- **Improved User Experience**: Search input is now properly positioned below the Teams heading as requested
+- **Design System Compliance**: Maintains consistency with established UI patterns throughout the application
+- **Better Layout**: Cleaner separation between action buttons and search functionality
+- **Enhanced Accessibility**: Search input has dedicated section with proper hide-details prop
+
+#### New Features Added:
+- **Proper Card Structure**: Moved search input to dedicated `v-card-subtitle` section
+- **Consistent Styling**: Added `hide-details` prop to match Projects page pattern
+- **Improved Layout**: Simplified card title to contain only heading and action button
+
+#### Bugs Fixed:
+- **UI Inconsistency**: Fixed incorrect placement of search input mixed with action buttons
+- **Design Pattern Violation**: Search input now follows established application patterns
+
+#### Technical Changes:
+
+**Modified Files:**
+- `fe/src/pages/teams.vue`: Restructured Teams card to match Projects page pattern
+
+**Code Changes:**
+```diff
+- <!-- Mixed search input with buttons in card title -->
+  <v-card-title>
+    <div class="d-flex justify-space-between align-center w-100">
+      <span>Teams ({{ filteredTeams.length }})</span>
+-     <div class="d-flex gap-2 align-center">
+-       <v-btn color="primary" prepend-icon="mdi-plus" size="small" @click="openCreateDialog">
+-         Create Team
+-       </v-btn>
+-       <v-text-field
+-         v-model="teamSearch"
+-         clearable
+-         density="compact"
+-         label="Search teams..."
+-         prepend-inner-icon="mdi-magnify"
+-         style="max-width: 300px"
+-         variant="outlined"
+-       />
+-     </div>
++     <v-btn color="primary" prepend-icon="mdi-plus" size="small" @click="openCreateDialog">
++       Create Team
++     </v-btn>
+    </div>
+  </v-card-title>
+
++ <!-- Dedicated search input section -->
++ <v-card-subtitle>
++   <v-text-field
++     v-model="teamSearch"
++     clearable
++     density="compact"
++     hide-details
++     label="Search teams..."
++     prepend-inner-icon="mdi-magnify"
++     variant="outlined"
++   />
++ </v-card-subtitle>
+```
+
+#### Improvements Made:
+- **Simplified Card Title**: Removed unnecessary wrapper div and styling constraints
+- **Enhanced Search Field**: Added `hide-details` prop for better visual integration
+- **Better Spacing**: Search input now spans full width of card subtitle section
+- **Cleaner Code**: Removed inline styles and unnecessary flex containers
+
+#### User Experience Impact:
+- **Consistent Navigation**: Users can find search inputs in the same location across all management pages
+- **Visual Clarity**: Search field is clearly separated from action buttons
+- **Improved Usability**: Search input is more prominent and easier to locate
+- **Professional Appearance**: Matches design standards established in Projects and other pages
+
+#### Summary:
+Successfully implemented the requested UI change to move the Teams search input below the heading, matching the design pattern used in Projects page. The change maintains all existing functionality while improving UI consistency and user experience. The modification required only 20 lines added and 19 lines removed, representing a minimal and focused improvement that addresses the specific issue raised.
+

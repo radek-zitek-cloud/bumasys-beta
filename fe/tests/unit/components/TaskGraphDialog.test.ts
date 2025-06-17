@@ -261,7 +261,7 @@ describe('TaskGraphDialog', () => {
 
     // Verify project containers exist
     expect(wrapper.find('.mock-project-node').exists()).toBe(true)
-    
+
     // Verify tasks are grouped by project
     expect(wrapper.text()).toContain('Project: Test Project')
     expect(wrapper.text()).toContain('Current: Current Task')

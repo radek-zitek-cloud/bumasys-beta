@@ -5,14 +5,17 @@
  */
 
 import type { Task } from '../../../src/services/tasks'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+// Import the actual component implementation functions
+import TaskGraphDialog from '../../../src/components/tasks/TaskGraphDialog.vue'
+
+import { getTaskWithManagementData } from '../../../src/services/tasks'
 
 // Mock the GraphQL service
 vi.mock('../../../src/services/tasks', () => ({
   getTaskWithManagementData: vi.fn(),
 }))
-
-import { getTaskWithManagementData } from '../../../src/services/tasks'
 const mockGetTaskWithManagementData = vi.mocked(getTaskWithManagementData)
 
 // Mock task data with different projects for testing nesting
@@ -45,7 +48,7 @@ const mockTask: Task = {
       project: { id: 'project-other', name: 'Other Project' },
     },
     {
-      id: 'predecessor-2', 
+      id: 'predecessor-2',
       name: 'Predecessor from Same Project',
       description: 'A predecessor from same project',
       projectId: 'project-main',
@@ -63,9 +66,6 @@ const mockTask: Task = {
     },
   ],
 }
-
-// Import the actual component implementation functions
-import TaskGraphDialog from '../../../src/components/tasks/TaskGraphDialog.vue'
 
 describe('TaskGraphDialog Nesting Logic', () => {
   beforeEach(() => {
@@ -90,7 +90,7 @@ describe('TaskGraphDialog Nesting Logic', () => {
       if (!tasksByProject.has(projectId)) {
         tasksByProject.set(projectId, {
           project: t.project || { id: 'unknown', name: 'Unknown Project' },
-          tasks: []
+          tasks: [],
         })
       }
       tasksByProject.get(projectId).tasks.push(t)
@@ -100,14 +100,14 @@ describe('TaskGraphDialog Nesting Logic', () => {
     expect(tasksByProject.size).toBe(2) // Main Project and Other Project
     expect(tasksByProject.has('project-main')).toBe(true)
     expect(tasksByProject.has('project-other')).toBe(true)
-    
+
     // Verify Main Project has 3 tasks (main + predecessor-2 + child-1)
     const mainProjectTasks = tasksByProject.get('project-main').tasks
     expect(mainProjectTasks).toHaveLength(3)
     expect(mainProjectTasks.map((t: any) => t.id)).toContain('task-main')
     expect(mainProjectTasks.map((t: any) => t.id)).toContain('predecessor-2')
     expect(mainProjectTasks.map((t: any) => t.id)).toContain('child-1')
-    
+
     // Verify Other Project has 1 task (predecessor-1)
     const otherProjectTasks = tasksByProject.get('project-other').tasks
     expect(otherProjectTasks).toHaveLength(1)
@@ -120,16 +120,16 @@ describe('TaskGraphDialog Nesting Logic', () => {
     const tasks = [
       mockTask,
       mockTask.predecessors![1], // predecessor-2 from same project
-      mockTask.childTasks![0],   // child-1 from same project
+      mockTask.childTasks![0], // child-1 from same project
     ]
 
     // Create nodes as the component would
     const nodes: any[] = []
-    
+
     // Project container node
     const projectWidth = Math.max(300, tasks.length * 200)
     const projectHeight = 400
-    
+
     nodes.push({
       id: `project-${projectId}`,
       type: 'project',
@@ -175,14 +175,14 @@ describe('TaskGraphDialog Nesting Logic', () => {
 
     // Verify node structure
     expect(nodes).toHaveLength(4) // 1 project + 3 tasks
-    
+
     // Verify project node
     const projectNode = nodes[0]
     expect(projectNode.id).toBe('project-project-main')
     expect(projectNode.type).toBe('project')
     expect(projectNode.style.width).toBe(600) // 3 tasks * 200
     expect(projectNode.style.height).toBe(400)
-    
+
     // Verify task nodes have correct parent references
     const taskNodes = nodes.slice(1)
     for (const taskNode of taskNodes) {
@@ -191,12 +191,12 @@ describe('TaskGraphDialog Nesting Logic', () => {
       expect(taskNode.position.x).toBeGreaterThanOrEqual(50)
       expect(taskNode.position.y).toBe(80)
     }
-    
+
     // Verify task types
     const currentTaskNode = taskNodes.find(n => n.type === 'currentTask')
     const predecessorNode = taskNodes.find(n => n.type === 'predecessor')
     const childTaskNode = taskNodes.find(n => n.type === 'childTask')
-    
+
     expect(currentTaskNode).toBeDefined()
     expect(currentTaskNode.id).toBe('task-main')
     expect(predecessorNode).toBeDefined()
@@ -208,7 +208,7 @@ describe('TaskGraphDialog Nesting Logic', () => {
   it('maintains correct edge connections with nested nodes', () => {
     // Test edge creation logic remains correct
     const edges: any[] = []
-    
+
     // Predecessor edges
     if (mockTask.predecessors && mockTask.predecessors.length > 0) {
       for (const predecessor of mockTask.predecessors) {
@@ -224,7 +224,7 @@ describe('TaskGraphDialog Nesting Logic', () => {
       }
     }
 
-    // Child task edges  
+    // Child task edges
     if (mockTask.childTasks && mockTask.childTasks.length > 0) {
       for (const childTask of mockTask.childTasks) {
         edges.push({
@@ -245,7 +245,7 @@ describe('TaskGraphDialog Nesting Logic', () => {
     // Verify predecessor edges
     const predecessorEdges = edges.filter(e => e.style.stroke === '#2196F3')
     expect(predecessorEdges).toHaveLength(2)
-    
+
     for (const edge of predecessorEdges) {
       expect(edge.target).toBe('task-main')
       expect(edge.sourceHandle).toBe('right')
@@ -255,7 +255,7 @@ describe('TaskGraphDialog Nesting Logic', () => {
     // Verify child task edges
     const childEdges = edges.filter(e => e.style.stroke === '#4CAF50')
     expect(childEdges).toHaveLength(1)
-    
+
     const childEdge = childEdges[0]
     expect(childEdge.source).toBe('task-main')
     expect(childEdge.target).toBe('child-1')
