@@ -201,7 +201,28 @@ export const authMutationResolvers = {
     _: unknown,
     { refreshToken }: { refreshToken: string },
   ): Promise<boolean> => {
-    return authService.logout(refreshToken);
+    logger.debug(
+      { operation: 'logout' },
+      'Processing logout request',
+    );
+
+    try {
+      const result = await authService.logout(refreshToken);
+      logger.info(
+        { operation: 'logout' },
+        'Logout completed successfully',
+      );
+      return result;
+    } catch (error) {
+      logger.warn(
+        {
+          operation: 'logout',
+          error: error instanceof Error ? error.message : String(error),
+        },
+        'Logout failed',
+      );
+      throw error;
+    }
   },
 
   /**
@@ -214,7 +235,28 @@ export const authMutationResolvers = {
     _: unknown,
     { refreshToken }: { refreshToken: string },
   ) => {
-    return authService.refreshAccessToken(refreshToken);
+    logger.debug(
+      { operation: 'refreshToken' },
+      'Processing refresh token request',
+    );
+
+    try {
+      const result = await authService.refreshAccessToken(refreshToken);
+      logger.info(
+        { operation: 'refreshToken', userId: result.user.id },
+        'Refresh token processed successfully',
+      );
+      return result;
+    } catch (error) {
+      logger.warn(
+        {
+          operation: 'refreshToken',
+          error: error instanceof Error ? error.message : String(error),
+        },
+        'Refresh token processing failed',
+      );
+      throw error;
+    }
   },
 
   /**

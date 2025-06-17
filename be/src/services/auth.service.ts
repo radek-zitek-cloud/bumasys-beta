@@ -113,11 +113,24 @@ export class AuthService {
       'Verifying refresh token',
     );
 
+    // Debug: Log all sessions
+    logger.debug(
+      {
+        operation: 'verifyRefreshToken',
+        sessionsCount: this.db.data.sessions.length,
+        sessionTokens: this.db.data.sessions.map((s) => ({
+          token: s.token.substring(0, 20) + '...',
+          userId: s.userId,
+        })),
+      },
+      'Sessions in database',
+    );
+
     // Check if token exists in our session store
     const session = this.db.data.sessions.find((s) => s.token === token);
     if (!session) {
       logger.warn(
-        { operation: 'verifyRefreshToken' },
+        { operation: 'verifyRefreshToken', tokenPrefix: token.substring(0, 20) + '...' },
         'Refresh token not found in session store',
       );
       throw new Error('Invalid refresh token');
@@ -212,29 +225,52 @@ export class AuthService {
    * @throws Error if refresh token is invalid
    */
   public async refreshAccessToken(refreshToken: string): Promise<AuthPayload> {
-    // Verify and get user ID from refresh token
-    const payload = this.verifyRefreshToken(refreshToken);
+    logger.debug(
+      { operation: 'refreshAccessToken' },
+      'Processing refresh token request',
+    );
 
-    // Invalidate the old refresh token
-    await this.invalidateRefreshToken(refreshToken);
+    try {
+      // Verify and get user ID from refresh token
+      const payload = this.verifyRefreshToken(refreshToken);
 
-    // Find the user
-    const user = this.db.data.users.find((u) => u.id === payload.id);
-    if (!user) {
-      throw new Error('Invalid refresh token');
+      // Invalidate the old refresh token
+      await this.invalidateRefreshToken(refreshToken);
+
+      // Find the user
+      const user = this.db.data.users.find((u) => u.id === payload.id);
+      if (!user) {
+        throw new Error('Invalid refresh token - user not found');
+      }
+
+      // Generate new tokens
+      const newAccessToken = this.signToken(user.id);
+      const newRefreshToken = await this.signRefreshToken(user.id);
+
+      // Return new auth payload
+      const { password, ...safeUser } = user;
+      logger.info(
+        { operation: 'refreshAccessToken', userId: user.id },
+        'Refresh token processed successfully',
+      );
+      return {
+        token: newAccessToken,
+        refreshToken: newRefreshToken,
+        user: safeUser as SafeUser,
+      };
+    } catch (error) {
+      logger.error(
+        {
+          operation: 'refreshAccessToken',
+          error: error instanceof Error ? error.message : String(error),
+        },
+        'Refresh token processing failed',
+      );
+      // Re-throw the error to ensure it propagates to GraphQL
+      throw new Error(
+        error instanceof Error ? error.message : 'Refresh token processing failed',
+      );
     }
-
-    // Generate new tokens
-    const newAccessToken = this.signToken(user.id);
-    const newRefreshToken = await this.signRefreshToken(user.id);
-
-    // Return new auth payload
-    const { password, ...safeUser } = user;
-    return {
-      token: newAccessToken,
-      refreshToken: newRefreshToken,
-      user: safeUser as SafeUser,
-    };
   }
 
   /**
@@ -247,6 +283,15 @@ export class AuthService {
     if (index !== -1) {
       this.db.data.sessions.splice(index, 1);
       await this.db.write();
+      logger.debug(
+        { operation: 'invalidateRefreshToken', token },
+        'Token invalidated and removed from session store',
+      );
+    } else {
+      logger.warn(
+        { operation: 'invalidateRefreshToken', token },
+        'Token not found in session store',
+      );
     }
   }
 
@@ -257,13 +302,46 @@ export class AuthService {
    */
   public async invalidateAllUserTokens(userId: string): Promise<void> {
     const initialLength = this.db.data.sessions.length;
+    
+    // Debug: Log sessions before filtering
+    logger.debug(
+      { 
+        operation: 'invalidateAllUserTokens', 
+        userId,
+        initialSessionsCount: initialLength,
+        allSessions: this.db.data.sessions.map(s => ({ userId: s.userId, tokenPrefix: s.token.substring(0, 20) + '...' }))
+      },
+      'Invalidating tokens: before filtering',
+    );
+    
     this.db.data.sessions = this.db.data.sessions.filter(
       (s) => s.userId !== userId,
+    );
+
+    // Debug: Log sessions after filtering
+    logger.debug(
+      { 
+        operation: 'invalidateAllUserTokens', 
+        userId,
+        finalSessionsCount: this.db.data.sessions.length,
+        removedCount: initialLength - this.db.data.sessions.length,
+        remainingSessions: this.db.data.sessions.map(s => ({ userId: s.userId, tokenPrefix: s.token.substring(0, 20) + '...' }))
+      },
+      'Invalidating tokens: after filtering',
     );
 
     // Only write to database if sessions were actually removed
     if (this.db.data.sessions.length !== initialLength) {
       await this.db.write();
+      logger.debug(
+        { operation: 'invalidateAllUserTokens', userId },
+        'Database written after token invalidation',
+      );
+    } else {
+      logger.debug(
+        { operation: 'invalidateAllUserTokens', userId },
+        'No tokens were removed, database not written',
+      );
     }
   }
 
@@ -275,7 +353,30 @@ export class AuthService {
   public async logout(refreshToken: string): Promise<boolean> {
     // Verify token to get user ID, then invalidate all user tokens
     const payload = this.verifyRefreshToken(refreshToken);
+
+    // Debug: Log session state before logout
+    logger.debug(
+      {
+        operation: 'logout',
+        userId: payload.id,
+        sessionsCount: this.db.data.sessions.length,
+        tokenToInvalidate: refreshToken,
+      },
+      'Logout: sessions before invalidation',
+    );
+
     await this.invalidateAllUserTokens(payload.id);
+
+    // Debug: Log session state after logout
+    logger.debug(
+      {
+        operation: 'logout',
+        userId: payload.id,
+        sessionsCount: this.db.data.sessions.length,
+      },
+      'Logout: sessions after invalidation',
+    );
+
     return true;
   }
 }
