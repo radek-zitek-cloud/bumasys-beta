@@ -397,6 +397,7 @@
   import type { CreateTaskInput, Task, UpdateTaskInput } from '../services/tasks'
   import { computed, onMounted, ref } from 'vue'
   import { useNotifications } from '../composables/useNotifications'
+  import { useLogger } from '../composables/useLogger'
   import { useRouter } from 'vue-router'
   import { createProject, deleteProject, getProjects, updateProject } from '../services/projects'
   import { createTask, deleteTask, getTasks, updateTask } from '../services/tasks'
@@ -441,6 +442,7 @@
 
   // Notifications
   const { notifySuccess, notifyError } = useNotifications()
+  const { logError } = useLogger()
 
   // Types for data table headers
   type DataTableHeaders = VDataTable['$props']['headers']
@@ -543,7 +545,7 @@
       const { projects: projectData } = await getProjects()
       projects.value = projectData
     } catch (error) {
-      console.error('Failed to load projects:', error)
+      logError('Failed to load projects:', error)
       notifyError('Failed to load projects')
     } finally {
       projectLoading.value = false
@@ -556,7 +558,7 @@
       const { tasks: taskData } = await getTasks()
       tasks.value = taskData
     } catch (error) {
-      console.error('Failed to load tasks:', error)
+      logError('Failed to load tasks:', error)
       notifyError('Failed to load tasks')
     } finally {
       taskLoading.value = false
@@ -616,7 +618,7 @@
       showProjectCreateDialog.value = false
       await loadProjects()
     } catch (error) {
-      console.error('Failed to create project:', error)
+      logError('Failed to create project:', error)
       notifyError(`Failed to create project: ${(error as Error).message}`)
     }
   }
@@ -628,7 +630,7 @@
       showProjectEditDialog.value = false
       await loadProjects()
     } catch (error) {
-      console.error('Failed to update project:', error)
+      logError('Failed to update project:', error)
       notifyError(`Failed to update project: ${(error as Error).message}`)
     }
   }
@@ -641,7 +643,7 @@
       await loadProjects()
       await loadTasks() // Refresh tasks as they may be affected
     } catch (error) {
-      console.error('Failed to delete project:', error)
+      logError('Failed to delete project:', error)
       notifyError(`Failed to delete project: ${(error as Error).message}`)
     }
   }
@@ -654,7 +656,7 @@
       showTaskCreateDialog.value = false
       await loadTasks()
     } catch (error) {
-      console.error('Failed to create task:', error)
+      logError('Failed to create task:', error)
       notifyError(`Failed to create task: ${(error as Error).message}`)
     }
   }
@@ -666,7 +668,7 @@
       showTaskEditDialog.value = false
       await loadTasks()
     } catch (error) {
-      console.error('Failed to update task:', error)
+      logError('Failed to update task:', error)
       notifyError(`Failed to update task: ${(error as Error).message}`)
     }
   }
@@ -678,7 +680,7 @@
       showTaskDeleteDialog.value = false
       await loadTasks()
     } catch (error) {
-      console.error('Failed to delete task:', error)
+      logError('Failed to delete task:', error)
       notifyError(`Failed to delete task: ${(error as Error).message}`)
     }
   }

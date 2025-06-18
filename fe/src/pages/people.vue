@@ -119,6 +119,7 @@
   import { useDataTableConfig } from '../composables/shared/useDataTableConfig'
   import { useEntityHelpers } from '../composables/shared/useEntityHelpers'
   import { useNotifications } from '../composables/useNotifications'
+  import { useLogger } from '../composables/useLogger'
   import { useStaffManagement } from '../composables/staff/useStaffManagement'
 
   // Services
@@ -130,6 +131,7 @@
   const staffManagement = useStaffManagement()
   const tableConfig = useDataTableConfig()
   const { notifySuccess, notifyError } = useNotifications()
+  const { logError } = useLogger()
 
   // Entity helpers
   const entityHelpers = useEntityHelpers(
@@ -149,7 +151,7 @@
       await organizationManagement.createOrganization(data)
       notifySuccess('Organization created successfully')
     } catch (error) {
-      console.error('Error creating organization:', error)
+      logError('Error creating organization:', error)
       notifyError((error as Error).message)
     }
   }
@@ -159,7 +161,7 @@
       await organizationManagement.updateOrganization(data)
       notifySuccess('Organization updated successfully')
     } catch (error) {
-      console.error('Error updating organization:', error)
+      logError('Error updating organization:', error)
       notifyError((error as Error).message)
     }
   }
@@ -169,7 +171,7 @@
       await organizationManagement.deleteOrganization(organizationId)
       notifySuccess('Organization deleted successfully')
     } catch (error) {
-      console.error('Error deleting organization:', error)
+      logError('Error deleting organization:', error)
       notifyError((error as Error).message)
     }
   }
@@ -182,7 +184,7 @@
       await departmentManagement.createDepartment(data)
       notifySuccess('Department created successfully')
     } catch (error) {
-      console.error('Error creating department:', error)
+      logError('Error creating department:', error)
       notifyError((error as Error).message)
     }
   }
@@ -192,7 +194,7 @@
       await departmentManagement.updateDepartment(data)
       notifySuccess('Department updated successfully')
     } catch (error) {
-      console.error('Error updating department:', error)
+      logError('Error updating department:', error)
       notifyError((error as Error).message)
     }
   }
@@ -202,7 +204,7 @@
       await departmentManagement.deleteDepartment(departmentId)
       notifySuccess('Department deleted successfully')
     } catch (error) {
-      console.error('Error deleting department:', error)
+      logError('Error deleting department:', error)
       notifyError((error as Error).message)
     }
   }
@@ -215,7 +217,7 @@
       await staffManagement.createStaff(data)
       notifySuccess('Staff member created successfully')
     } catch (error) {
-      console.error('Error creating staff member:', error)
+      logError('Error creating staff member:', error)
       notifyError((error as Error).message)
     }
   }
@@ -225,7 +227,7 @@
       await staffManagement.updateStaff(data)
       notifySuccess('Staff member updated successfully')
     } catch (error) {
-      console.error('Error updating staff member:', error)
+      logError('Error updating staff member:', error)
       notifyError((error as Error).message)
     }
   }
@@ -235,7 +237,7 @@
       await staffManagement.deleteStaff(staffId)
       notifySuccess('Staff member deleted successfully')
     } catch (error) {
-      console.error('Error deleting staff member:', error)
+      logError('Error deleting staff member:', error)
       notifyError((error as Error).message)
     }
   }
@@ -250,7 +252,7 @@
       staffManagement.userCreationData.value = null
       notifySuccess(`User account created successfully for ${createUser.firstName} ${createUser.lastName}`)
     } catch (error) {
-      console.error('Error creating user from staff:', error)
+      logError('Error creating user from staff:', error)
       notifyError((error as Error).message)
     }
   }
@@ -266,7 +268,7 @@
         staffManagement.loadStaff(),
       ])
     } catch (error) {
-      console.error('Error loading data:', error)
+      logError('Error loading data:', error)
       notifyError('Failed to load organization data')
     }
   })

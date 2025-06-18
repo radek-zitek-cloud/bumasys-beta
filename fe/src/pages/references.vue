@@ -298,6 +298,7 @@
   import type { CreateStatusInput, Status, UpdateStatusInput } from '../services/status'
   import { computed, onMounted, reactive, ref } from 'vue'
   import { useNotifications } from '../composables/useNotifications'
+  import { useLogger } from '../composables/useLogger'
   import * as complexityService from '../services/complexity'
   import * as priorityService from '../services/priority'
   import * as statusService from '../services/status'
@@ -388,6 +389,7 @@
 
   // Notifications
   const { notifySuccess, notifyError } = useNotifications()
+  const { logError } = useLogger()
 
   /** Computed filtered data for the tables */
   const filteredStatuses = computed(() => {
@@ -424,7 +426,7 @@
       const response = await statusService.getStatuses()
       statuses.value = response.statuses
     } catch (error) {
-      console.error('Failed to load statuses:', error)
+      logError('Failed to load statuses:', error)
       notifyError('Failed to load statuses')
     } finally {
       statusLoading.value = false
@@ -437,7 +439,7 @@
       const response = await priorityService.getPriorities()
       priorities.value = response.priorities
     } catch (error) {
-      console.error('Failed to load priorities:', error)
+      logError('Failed to load priorities:', error)
       notifyError('Failed to load priorities')
     } finally {
       priorityLoading.value = false
@@ -450,7 +452,7 @@
       const response = await complexityService.getComplexities()
       complexities.value = response.complexities
     } catch (error) {
-      console.error('Failed to load complexities:', error)
+      logError('Failed to load complexities:', error)
       notifyError('Failed to load complexities')
     } finally {
       complexityLoading.value = false
@@ -479,7 +481,7 @@
       showStatusCreateDialog.value = false
       await loadStatuses()
     } catch (error) {
-      console.error('Failed to create status:', error)
+      logError('Failed to create status:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to create status',
       )
@@ -493,7 +495,7 @@
       showStatusEditDialog.value = false
       await loadStatuses()
     } catch (error) {
-      console.error('Failed to update status:', error)
+      logError('Failed to update status:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to update status',
       )
@@ -509,7 +511,7 @@
       showStatusDeleteDialog.value = false
       await loadStatuses()
     } catch (error) {
-      console.error('Failed to delete status:', error)
+      logError('Failed to delete status:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to delete status',
       )
@@ -538,7 +540,7 @@
       showPriorityCreateDialog.value = false
       await loadPriorities()
     } catch (error) {
-      console.error('Failed to create priority:', error)
+      logError('Failed to create priority:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to create priority',
       )
@@ -552,7 +554,7 @@
       showPriorityEditDialog.value = false
       await loadPriorities()
     } catch (error) {
-      console.error('Failed to update priority:', error)
+      logError('Failed to update priority:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to update priority',
       )
@@ -568,7 +570,7 @@
       showPriorityDeleteDialog.value = false
       await loadPriorities()
     } catch (error) {
-      console.error('Failed to delete priority:', error)
+      logError('Failed to delete priority:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to delete priority',
       )
@@ -597,7 +599,7 @@
       showComplexityCreateDialog.value = false
       await loadComplexities()
     } catch (error) {
-      console.error('Failed to create complexity:', error)
+      logError('Failed to create complexity:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to create complexity',
       )
@@ -611,7 +613,7 @@
       showComplexityEditDialog.value = false
       await loadComplexities()
     } catch (error) {
-      console.error('Failed to update complexity:', error)
+      logError('Failed to update complexity:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to update complexity',
       )
@@ -627,7 +629,7 @@
       showComplexityDeleteDialog.value = false
       await loadComplexities()
     } catch (error) {
-      console.error('Failed to delete complexity:', error)
+      logError('Failed to delete complexity:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to delete complexity',
       )

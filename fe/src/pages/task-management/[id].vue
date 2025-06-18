@@ -640,6 +640,7 @@
   } from '../../services/tasks'
   import { computed, onMounted, reactive, ref, watch } from 'vue'
   import { useNotifications } from '../../composables/useNotifications'
+  import { useLogger } from '../../composables/useLogger'
 
   import { useRoute, useRouter } from 'vue-router'
   // Import dialog components
@@ -779,6 +780,7 @@
 
   // Notifications
   const { notifySuccess, notifyError } = useNotifications()
+  const { logError } = useLogger()
 
   // Utility functions
   function formatDate (dateString: string): string {
@@ -832,7 +834,7 @@
       taskFormModified.value = false
       notifySuccess('Task updated successfully')
     } catch (error) {
-      console.error('Failed to update task:', error)
+      logError('Failed to update task:', error)
       notifyError(`Failed to update task: ${(error as Error).message}`)
     }
   }
@@ -858,7 +860,7 @@
       showAssigneeCreateDialog.value = false
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to add assignee:', error)
+      logError('Failed to add assignee:', error)
       notifyError(`Failed to add assignee: ${(error as Error).message}`)
     }
   }
@@ -869,7 +871,7 @@
       notifySuccess(`Removed assignee ${assignee.firstName} ${assignee.lastName}`)
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to remove assignee:', error)
+      logError('Failed to remove assignee:', error)
       notifyError(`Failed to remove assignee: ${(error as Error).message}`)
     }
   }
@@ -885,7 +887,7 @@
       showPredecessorCreateDialog.value = false
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to add predecessor:', error)
+      logError('Failed to add predecessor:', error)
       notifyError(`Failed to add predecessor: ${(error as Error).message}`)
     }
   }
@@ -900,7 +902,7 @@
       showPredecessorCreateDialog.value = false
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to create predecessor task:', error)
+      logError('Failed to create predecessor task:', error)
       notifyError(`Failed to create predecessor task: ${(error as Error).message}`)
     }
   }
@@ -911,7 +913,7 @@
       notifySuccess(`Removed predecessor ${predecessor.name}`)
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to remove predecessor:', error)
+      logError('Failed to remove predecessor:', error)
       notifyError(`Failed to remove predecessor: ${(error as Error).message}`)
     }
   }
@@ -927,7 +929,7 @@
       showChildTaskCreateDialog.value = false
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to create child task:', error)
+      logError('Failed to create child task:', error)
       notifyError(`Failed to create child task: ${(error as Error).message}`)
     }
   }
@@ -943,7 +945,7 @@
       showChildTaskCreateDialog.value = false
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to set task as child:', error)
+      logError('Failed to set task as child:', error)
       notifyError(`Failed to set task as child: ${(error as Error).message}`)
     }
   }
@@ -963,7 +965,7 @@
       showProgressReportCreateDialog.value = false
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to create progress report:', error)
+      logError('Failed to create progress report:', error)
       notifyError(`Failed to create progress report: ${(error as Error).message}`)
     }
   }
@@ -981,7 +983,7 @@
       selectedProgressReport.value = null
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to update progress report:', error)
+      logError('Failed to update progress report:', error)
       notifyError(`Failed to update progress report: ${(error as Error).message}`)
     }
   }
@@ -992,7 +994,7 @@
       notifySuccess('Progress report deleted')
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to delete progress report:', error)
+      logError('Failed to delete progress report:', error)
       notifyError(`Failed to delete progress report: ${(error as Error).message}`)
     }
   }
@@ -1008,7 +1010,7 @@
       showStatusReportCreateDialog.value = false
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to create status report:', error)
+      logError('Failed to create status report:', error)
       notifyError(`Failed to create status report: ${(error as Error).message}`)
     }
   }
@@ -1026,7 +1028,7 @@
       selectedStatusReport.value = null
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to update status report:', error)
+      logError('Failed to update status report:', error)
       notifyError(`Failed to update status report: ${(error as Error).message}`)
     }
   }
@@ -1037,7 +1039,7 @@
       notifySuccess('Status report deleted')
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to delete status report:', error)
+      logError('Failed to delete status report:', error)
       notifyError(`Failed to delete status report: ${(error as Error).message}`)
     }
   }
@@ -1067,7 +1069,7 @@
 
       notifySuccess('Task data loaded successfully')
     } catch (error) {
-      console.error('Failed to load task data:', error)
+      logError('Failed to load task data:', error)
       notifyError('Failed to load task data')
     } finally {
       loading.value = false
@@ -1093,7 +1095,7 @@
       availablePriorities.value = prioritiesResponse.priorities || []
       availableComplexities.value = complexitiesResponse.complexities || []
     } catch (error) {
-      console.error('Failed to load dropdown data:', error)
+      logError('Failed to load dropdown data:', error)
     }
   }
 

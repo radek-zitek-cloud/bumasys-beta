@@ -343,6 +343,7 @@
   } from '../services/teams'
   import { computed, onMounted, reactive, ref } from 'vue'
   import { useNotifications } from '../composables/useNotifications'
+  import { useLogger } from '../composables/useLogger'
   import * as staffService from '../services/staff'
   import * as teamService from '../services/teams'
 
@@ -434,6 +435,7 @@
 
   // Notifications
   const { notifySuccess, notifyError } = useNotifications()
+  const { logError } = useLogger()
 
   /** Computed filtered teams for the table */
   const filteredTeams = computed(() => {
@@ -490,7 +492,7 @@
       const response = await teamService.getTeams()
       teams.value = response.teams
     } catch (error) {
-      console.error('Failed to load teams:', error)
+      logError('Failed to load teams:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to load teams',
       )
@@ -511,7 +513,7 @@
       const allMembersArrays = await Promise.all(memberPromises)
       teamMembers.value = allMembersArrays.flat()
     } catch (error) {
-      console.error('Failed to load team members:', error)
+      logError('Failed to load team members:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to load team members',
       )
@@ -527,7 +529,7 @@
       const response = await teamService.getTeamMembers(teamId)
       teamMembers.value = response.teamMembers
     } catch (error) {
-      console.error('Failed to load team members:', error)
+      logError('Failed to load team members:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to load team members',
       )
@@ -542,7 +544,7 @@
       const response = await staffService.getStaff()
       staffMembers.value = response.staff
     } catch (error) {
-      console.error('Failed to load staff members:', error)
+      logError('Failed to load staff members:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to load staff members',
       )
@@ -605,7 +607,7 @@
       await loadTeams()
       await loadAllTeamMembers()
     } catch (error) {
-      console.error('Failed to create team:', error)
+      logError('Failed to create team:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to create team',
       )
@@ -624,7 +626,7 @@
       await loadTeams()
       await loadAllTeamMembers()
     } catch (error) {
-      console.error('Failed to update team:', error)
+      logError('Failed to update team:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to update team',
       )
@@ -649,7 +651,7 @@
         selectedTeamForMembers.value = null
       }
     } catch (error) {
-      console.error('Failed to delete team:', error)
+      logError('Failed to delete team:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to delete team',
       )
@@ -669,7 +671,7 @@
         await loadTeamMembers(selectedTeamForMembers.value.id)
       }
     } catch (error) {
-      console.error('Failed to add team member:', error)
+      logError('Failed to add team member:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to add team member',
       )
@@ -689,7 +691,7 @@
         await loadTeamMembers(selectedTeamForMembers.value.id)
       }
     } catch (error) {
-      console.error('Failed to update team member:', error)
+      logError('Failed to update team member:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to update team member',
       )
@@ -711,7 +713,7 @@
         await loadTeamMembers(selectedTeamForMembers.value.id)
       }
     } catch (error) {
-      console.error('Failed to remove team member:', error)
+      logError('Failed to remove team member:', error)
       notifyError(
         error instanceof Error ? error.message : 'Failed to remove team member',
       )
