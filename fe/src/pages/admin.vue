@@ -140,6 +140,7 @@
   import DatabaseTagSwitchCard from '../components/auth/DatabaseTagSwitchCard.vue'
   import ConfigDisplayCard from '../components/debug/ConfigDisplayCard.vue'
   import DebugInfoCard from '../components/debug/DebugInfoCard.vue'
+  import { useLoading } from '../composables/useLoading'
   import { useLogger } from '../composables/useLogger'
   import { useNotifications } from '../composables/useNotifications'
   import { backupDatabase } from '../services/backup'
@@ -147,6 +148,7 @@
 
   const { logInfo, logError } = useLogger()
   const { notifySuccess, notifyError } = useNotifications()
+  const { loading: backupLoading, withLoading: withBackupLoading } = useLoading('backup')
   const auth = useAuthStore()
 
   // Dialog visibility state
@@ -154,8 +156,7 @@
   const showConfig = ref(false)
   const showDatabaseSwitch = ref(false)
 
-  // Backup functionality state
-  const backupLoading = ref(false)
+  // Note: Backup loading state now managed by useLoading composable
 
   /**
    * Handle database tag switch.
@@ -177,19 +178,19 @@
   /**
    * Create a backup of the current database.
    */
-  async function createBackup () {
-    backupLoading.value = true
-    try {
-      logInfo('Creating database backup')
-      const backupPath = await backupDatabase()
-      notifySuccess(`Database backup created successfully: ${backupPath}`)
-      logInfo('Database backup completed successfully', { backupPath })
-    } catch (error) {
-      logError('Database backup failed', error)
-      notifyError((error as Error).message)
-    } finally {
-      backupLoading.value = false
-    }
+  async function createBackup() {
+    return withBackupLoading(async () => {
+      try {
+        logInfo('Creating database backup')
+        const backupPath = await backupDatabase()
+        notifySuccess(`Database backup created successfully: ${backupPath}`)
+        logInfo('Database backup completed successfully', { backupPath })
+      } catch (error) {
+        logError('Database backup failed', error)
+        notifyError((error as Error).message)
+        throw error
+      }
+    })
   }
 </script>
 
