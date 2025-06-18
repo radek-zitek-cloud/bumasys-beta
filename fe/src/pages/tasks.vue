@@ -396,9 +396,10 @@
 
   import type { CreateTaskInput, Task, UpdateTaskInput } from '../services/tasks'
   import { computed, onMounted, ref } from 'vue'
-  import { useNotifications } from '../composables/useNotifications'
-  import { useLogger } from '../composables/useLogger'
   import { useRouter } from 'vue-router'
+  import { useLoading } from '../composables/useLoading'
+  import { useLogger } from '../composables/useLogger'
+  import { useNotifications } from '../composables/useNotifications'
   import { createProject, deleteProject, getProjects, updateProject } from '../services/projects'
   import { createTask, deleteTask, getTasks, updateTask } from '../services/tasks'
 
@@ -408,8 +409,10 @@
   // Reactive data
   const projects = ref<Project[]>([])
   const tasks = ref<Task[]>([])
-  const projectLoading = ref(false)
-  const taskLoading = ref(false)
+  
+  // Loading states using composables
+  const { loading: projectLoading, withLoading: withProjectLoading } = useLoading('projects')
+  const { loading: taskLoading, withLoading: withTaskLoading } = useLoading('tasks')
 
   // Search and filter
   const projectSearch = ref('')
@@ -500,8 +503,6 @@
     return filtered
   })
 
-
-
   function formatDate (dateString: string): string {
     try {
       return new Date(dateString).toLocaleDateString('en-US', {
@@ -539,30 +540,30 @@
   }
 
   // Data loading functions
-  async function loadProjects () {
-    projectLoading.value = true
-    try {
-      const { projects: projectData } = await getProjects()
-      projects.value = projectData
-    } catch (error) {
-      logError('Failed to load projects:', error)
-      notifyError('Failed to load projects')
-    } finally {
-      projectLoading.value = false
-    }
+  async function loadProjects() {
+    return withProjectLoading(async () => {
+      try {
+        const { projects: projectData } = await getProjects()
+        projects.value = projectData
+      } catch (error) {
+        logError('Failed to load projects:', error)
+        notifyError('Failed to load projects')
+        throw error
+      }
+    })
   }
 
-  async function loadTasks () {
-    taskLoading.value = true
-    try {
-      const { tasks: taskData } = await getTasks()
-      tasks.value = taskData
-    } catch (error) {
-      logError('Failed to load tasks:', error)
-      notifyError('Failed to load tasks')
-    } finally {
-      taskLoading.value = false
-    }
+  async function loadTasks() {
+    return withTaskLoading(async () => {
+      try {
+        const { tasks: taskData } = await getTasks()
+        tasks.value = taskData
+      } catch (error) {
+        logError('Failed to load tasks:', error)
+        notifyError('Failed to load tasks')
+        throw error
+      }
+    })
   }
 
   // Project dialog functions

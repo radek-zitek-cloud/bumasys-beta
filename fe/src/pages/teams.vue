@@ -342,8 +342,9 @@
     UpdateTeamMemberInput,
   } from '../services/teams'
   import { computed, onMounted, reactive, ref } from 'vue'
-  import { useNotifications } from '../composables/useNotifications'
+  import { useLoading } from '../composables/useLoading'
   import { useLogger } from '../composables/useLogger'
+  import { useNotifications } from '../composables/useNotifications'
   import * as staffService from '../services/staff'
   import * as teamService from '../services/teams'
 
@@ -412,8 +413,11 @@
   const selectedTeamForMembers = ref<Team | null>(null)
   const teamSearch = ref('')
   const memberSearch = ref('')
-  const teamsLoading = ref(false)
-  const membersLoading = ref(false)
+  
+  // Loading states using composables
+  const { loading: teamsLoading, withLoading: withTeamsLoading } = useLoading('teams')
+  const { loading: membersLoading, withLoading: withMembersLoading } = useLoading('members')
+  
   const processing = ref(false)
   const itemsPerPage = ref(10)
   const itemsPerPageOptions = [
@@ -483,59 +487,57 @@
     return teamMembers.value.filter(member => member.teamId === teamId).length
   }
 
-
-
   /** Load teams from the API */
-  async function loadTeams () {
-    try {
-      teamsLoading.value = true
-      const response = await teamService.getTeams()
-      teams.value = response.teams
-    } catch (error) {
-      logError('Failed to load teams:', error)
-      notifyError(
-        error instanceof Error ? error.message : 'Failed to load teams',
-      )
-    } finally {
-      teamsLoading.value = false
-    }
+  async function loadTeams() {
+    return withTeamsLoading(async () => {
+      try {
+        const response = await teamService.getTeams()
+        teams.value = response.teams
+      } catch (error) {
+        logError('Failed to load teams:', error)
+        notifyError(
+          error instanceof Error ? error.message : 'Failed to load teams'
+        )
+        throw error
+      }
+    })
   }
 
   /** Load all team members */
-  async function loadAllTeamMembers () {
-    try {
-      membersLoading.value = true
-      // For simplicity, we'll load members for all teams
-      // In a real implementation, this might be optimized
-      const memberPromises = teams.value.map(team =>
-        teamService.getTeamMembers(team.id).then(response => response.teamMembers),
-      )
-      const allMembersArrays = await Promise.all(memberPromises)
-      teamMembers.value = allMembersArrays.flat()
-    } catch (error) {
-      logError('Failed to load team members:', error)
-      notifyError(
-        error instanceof Error ? error.message : 'Failed to load team members',
-      )
-    } finally {
-      membersLoading.value = false
-    }
+  async function loadAllTeamMembers() {
+    return withMembersLoading(async () => {
+      try {
+        // For simplicity, we'll load members for all teams
+        // In a real implementation, this might be optimized
+        const memberPromises = teams.value.map(team =>
+          teamService.getTeamMembers(team.id).then(response => response.teamMembers)
+        )
+        const allMembersArrays = await Promise.all(memberPromises)
+        teamMembers.value = allMembersArrays.flat()
+      } catch (error) {
+        logError('Failed to load team members:', error)
+        notifyError(
+          error instanceof Error ? error.message : 'Failed to load team members'
+        )
+        throw error
+      }
+    })
   }
 
   /** Load team members for a specific team */
-  async function loadTeamMembers (teamId: string) {
-    try {
-      membersLoading.value = true
-      const response = await teamService.getTeamMembers(teamId)
-      teamMembers.value = response.teamMembers
-    } catch (error) {
-      logError('Failed to load team members:', error)
-      notifyError(
-        error instanceof Error ? error.message : 'Failed to load team members',
-      )
-    } finally {
-      membersLoading.value = false
-    }
+  async function loadTeamMembers(teamId: string) {
+    return withMembersLoading(async () => {
+      try {
+        const response = await teamService.getTeamMembers(teamId)
+        teamMembers.value = response.teamMembers
+      } catch (error) {
+        logError('Failed to load team members:', error)
+        notifyError(
+          error instanceof Error ? error.message : 'Failed to load team members'
+        )
+        throw error
+      }
+    })
   }
 
   /** Load staff members */

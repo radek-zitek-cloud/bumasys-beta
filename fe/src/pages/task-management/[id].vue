@@ -639,20 +639,21 @@
     UpdateTaskStatusReportInput,
   } from '../../services/tasks'
   import { computed, onMounted, reactive, ref, watch } from 'vue'
-  import { useNotifications } from '../../composables/useNotifications'
-  import { useLogger } from '../../composables/useLogger'
-
   import { useRoute, useRouter } from 'vue-router'
   // Import dialog components
   import TaskAssigneeCreateDialog from '../../components/tasks/TaskAssigneeCreateDialog.vue'
+
   import TaskChildDialog from '../../components/tasks/TaskChildDialog.vue'
   import TaskGraphDialog from '../../components/tasks/TaskGraphDialog.vue'
   import TaskPredecessorDialog from '../../components/tasks/TaskPredecessorDialog.vue'
   import TaskProgressCreateDialog from '../../components/tasks/TaskProgressCreateDialog.vue'
   import TaskProgressEditDialog from '../../components/tasks/TaskProgressEditDialog.vue'
-
   import TaskStatusReportCreateDialog from '../../components/tasks/TaskStatusReportCreateDialog.vue'
   import TaskStatusReportEditDialog from '../../components/tasks/TaskStatusReportEditDialog.vue'
+
+  import { useLoading } from '../../composables/useLoading'
+  import { useLogger } from '../../composables/useLogger'
+  import { useNotifications } from '../../composables/useNotifications'
   import { getComplexities } from '../../services/complexity'
   import { getPriorities } from '../../services/priority'
   import { getProjects } from '../../services/projects'
@@ -689,7 +690,7 @@
   const childTasks = ref<Task[]>([])
   const progressReports = ref<TaskProgress[]>([])
   const statusReports = ref<TaskStatusReport[]>([])
-  const loading = ref(false)
+  // Note: loading state now managed by useLoading composable
 
   // Available data for dropdowns
   const availableStaff = ref<Staff[]>([])
@@ -778,9 +779,10 @@
   const selectedProgressReport = ref<TaskProgress | null>(null)
   const selectedStatusReport = ref<TaskStatusReport | null>(null)
 
-  // Notifications
+  // Notifications and loading
   const { notifySuccess, notifyError } = useNotifications()
   const { logError } = useLogger()
+  const { loading, withLoading } = useLoading('task-management')
 
   // Utility functions
   function formatDate (dateString: string): string {
@@ -1045,35 +1047,35 @@
   }
 
   // Data loading function
-  async function loadTaskData () {
-    loading.value = true
-    try {
-      // Load the task with all management data
-      const { task: taskData } = await getTaskWithManagementData(taskId.value)
+  async function loadTaskData() {
+    return withLoading(async () => {
+      try {
+        // Load the task with all management data
+        const { task: taskData } = await getTaskWithManagementData(taskId.value)
 
-      if (!taskData) {
-        notifyError('Task not found')
-        router.push('/tasks')
-        return
+        if (!taskData) {
+          notifyError('Task not found')
+          router.push('/tasks')
+          return
+        }
+
+        task.value = taskData
+        assignees.value = taskData.assignees || []
+        predecessors.value = taskData.predecessors || []
+        childTasks.value = taskData.childTasks || []
+        progressReports.value = taskData.progressReports || []
+        statusReports.value = taskData.statusReports || []
+
+        // Populate the task form with loaded data
+        populateTaskForm()
+
+        notifySuccess('Task data loaded successfully')
+      } catch (error) {
+        logError('Failed to load task data:', error)
+        notifyError('Failed to load task data')
+        throw error
       }
-
-      task.value = taskData
-      assignees.value = taskData.assignees || []
-      predecessors.value = taskData.predecessors || []
-      childTasks.value = taskData.childTasks || []
-      progressReports.value = taskData.progressReports || []
-      statusReports.value = taskData.statusReports || []
-
-      // Populate the task form with loaded data
-      populateTaskForm()
-
-      notifySuccess('Task data loaded successfully')
-    } catch (error) {
-      logError('Failed to load task data:', error)
-      notifyError('Failed to load task data')
-    } finally {
-      loading.value = false
-    }
+    })
   }
 
   // Load available staff and tasks for dropdowns
