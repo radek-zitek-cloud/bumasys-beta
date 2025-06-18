@@ -297,8 +297,8 @@
   import type { CreatePriorityInput, Priority, UpdatePriorityInput } from '../services/priority'
   import type { CreateStatusInput, Status, UpdateStatusInput } from '../services/status'
   import { computed, onMounted, reactive, ref } from 'vue'
-  import { useNotifications } from '../composables/useNotifications'
   import { useLogger } from '../composables/useLogger'
+  import { useNotifications } from '../composables/useNotifications'
   import * as complexityService from '../services/complexity'
   import * as priorityService from '../services/priority'
   import * as statusService from '../services/status'
@@ -635,8 +635,6 @@
       )
     }
   }
-
-
 
   /** Initialize page data */
   onMounted(async () => {

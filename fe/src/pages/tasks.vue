@@ -396,9 +396,9 @@
 
   import type { CreateTaskInput, Task, UpdateTaskInput } from '../services/tasks'
   import { computed, onMounted, ref } from 'vue'
-  import { useNotifications } from '../composables/useNotifications'
-  import { useLogger } from '../composables/useLogger'
   import { useRouter } from 'vue-router'
+  import { useLogger } from '../composables/useLogger'
+  import { useNotifications } from '../composables/useNotifications'
   import { createProject, deleteProject, getProjects, updateProject } from '../services/projects'
   import { createTask, deleteTask, getTasks, updateTask } from '../services/tasks'
 
@@ -499,8 +499,6 @@
 
     return filtered
   })
-
-
 
   function formatDate (dateString: string): string {
     try {

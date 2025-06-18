@@ -342,8 +342,8 @@
     UpdateTeamMemberInput,
   } from '../services/teams'
   import { computed, onMounted, reactive, ref } from 'vue'
-  import { useNotifications } from '../composables/useNotifications'
   import { useLogger } from '../composables/useLogger'
+  import { useNotifications } from '../composables/useNotifications'
   import * as staffService from '../services/staff'
   import * as teamService from '../services/teams'
 
@@ -482,8 +482,6 @@
   function getTeamMemberCount (teamId: string): number {
     return teamMembers.value.filter(member => member.teamId === teamId).length
   }
-
-
 
   /** Load teams from the API */
   async function loadTeams () {

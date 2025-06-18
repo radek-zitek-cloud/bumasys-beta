@@ -639,20 +639,20 @@
     UpdateTaskStatusReportInput,
   } from '../../services/tasks'
   import { computed, onMounted, reactive, ref, watch } from 'vue'
-  import { useNotifications } from '../../composables/useNotifications'
-  import { useLogger } from '../../composables/useLogger'
-
   import { useRoute, useRouter } from 'vue-router'
   // Import dialog components
   import TaskAssigneeCreateDialog from '../../components/tasks/TaskAssigneeCreateDialog.vue'
+
   import TaskChildDialog from '../../components/tasks/TaskChildDialog.vue'
   import TaskGraphDialog from '../../components/tasks/TaskGraphDialog.vue'
   import TaskPredecessorDialog from '../../components/tasks/TaskPredecessorDialog.vue'
   import TaskProgressCreateDialog from '../../components/tasks/TaskProgressCreateDialog.vue'
   import TaskProgressEditDialog from '../../components/tasks/TaskProgressEditDialog.vue'
-
   import TaskStatusReportCreateDialog from '../../components/tasks/TaskStatusReportCreateDialog.vue'
   import TaskStatusReportEditDialog from '../../components/tasks/TaskStatusReportEditDialog.vue'
+
+  import { useLogger } from '../../composables/useLogger'
+  import { useNotifications } from '../../composables/useNotifications'
   import { getComplexities } from '../../services/complexity'
   import { getPriorities } from '../../services/priority'
   import { getProjects } from '../../services/projects'

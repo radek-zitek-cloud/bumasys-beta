@@ -118,9 +118,9 @@
   import { useOrganizationManagement } from '../composables/organization/useOrganizationManagement'
   import { useDataTableConfig } from '../composables/shared/useDataTableConfig'
   import { useEntityHelpers } from '../composables/shared/useEntityHelpers'
-  import { useNotifications } from '../composables/useNotifications'
-  import { useLogger } from '../composables/useLogger'
   import { useStaffManagement } from '../composables/staff/useStaffManagement'
+  import { useLogger } from '../composables/useLogger'
+  import { useNotifications } from '../composables/useNotifications'
 
   // Services
   import * as userService from '../services/users'
