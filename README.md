@@ -4,6 +4,69 @@
 
 Bumasys Alfa is a full-stack scaffold featuring a Vuetify powered Vue front end and a TypeScript powered Express/Apollo GraphQL back end. It provides a minimal setup to experiment with Vuetify 3 and GraphQL based authentication.
 
+## Docker Deployment
+
+Bumasys can be deployed using Docker for both development and production environments.
+
+### Quick Start with Docker
+
+1. **Clone and navigate to the repository:**
+   ```bash
+   git clone <repository-url>
+   cd bumasys-beta
+   ```
+
+2. **Set up environment variables:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+3. **Start production deployment:**
+   ```bash
+   ./docker-deploy.sh start
+   ```
+
+4. **Access the application:**
+   - Frontend: http://localhost
+   - Backend GraphQL: http://localhost:4000/graphql
+
+### Docker Commands
+
+The `docker-deploy.sh` script provides convenient commands:
+
+- **Production deployment:** `./docker-deploy.sh start`
+- **Development environment:** `./docker-deploy.sh dev`
+- **View logs:** `./docker-deploy.sh logs`
+- **Stop services:** `./docker-deploy.sh stop`
+- **Build images:** `./docker-deploy.sh build`
+- **Show status:** `./docker-deploy.sh status`
+- **Clean up:** `./docker-deploy.sh clean`
+
+### Manual Docker Compose
+
+Alternatively, use Docker Compose directly:
+
+```bash
+# Production
+docker compose up -d
+
+# Development
+docker compose -f docker-compose.dev.yml up -d
+
+# Stop services
+docker compose down
+```
+
+### Docker Configuration
+
+- **Backend**: Node.js Alpine image with multi-stage build
+- **Frontend**: Nginx Alpine serving Vue.js build
+- **Database**: Persistent volumes for data storage
+- **Networking**: Internal Docker network for service communication
+
+For detailed Docker documentation, see [docs/DOCKER_DEPLOYMENT.md](docs/DOCKER_DEPLOYMENT.md).
+
 ## Installation Instructions
 
 Use [pnpm](https://pnpm.io/) to install dependencies for the front end and npm for the back end:
