@@ -287,19 +287,6 @@
         @confirm="handleDeleteComplexity"
       />
     </v-dialog>
-
-    <!-- Snackbar for notifications -->
-    <v-snackbar
-      v-model="snackbar.show"
-      :color="snackbar.color"
-      location="top"
-      timeout="4000"
-    >
-      {{ snackbar.message }}
-      <template #actions>
-        <v-btn variant="text" @click="snackbar.show = false">Close</v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>
 
@@ -310,6 +297,7 @@
   import type { CreatePriorityInput, Priority, UpdatePriorityInput } from '../services/priority'
   import type { CreateStatusInput, Status, UpdateStatusInput } from '../services/status'
   import { computed, onMounted, reactive, ref } from 'vue'
+  import { useNotifications } from '../composables/useNotifications'
   import * as complexityService from '../services/complexity'
   import * as priorityService from '../services/priority'
   import * as statusService from '../services/status'
@@ -398,12 +386,8 @@
   const showComplexityEditDialog = ref(false)
   const showComplexityDeleteDialog = ref(false)
 
-  /** Snackbar for notifications */
-  const snackbar = reactive({
-    show: false,
-    message: '',
-    color: 'success' as 'success' | 'error' | 'warning' | 'info',
-  })
+  // Notifications
+  const { notifySuccess, notifyError } = useNotifications()
 
   /** Computed filtered data for the tables */
   const filteredStatuses = computed(() => {
@@ -441,7 +425,7 @@
       statuses.value = response.statuses
     } catch (error) {
       console.error('Failed to load statuses:', error)
-      notify('Failed to load statuses', 'error')
+      notifyError('Failed to load statuses')
     } finally {
       statusLoading.value = false
     }
@@ -454,7 +438,7 @@
       priorities.value = response.priorities
     } catch (error) {
       console.error('Failed to load priorities:', error)
-      notify('Failed to load priorities', 'error')
+      notifyError('Failed to load priorities')
     } finally {
       priorityLoading.value = false
     }
@@ -467,7 +451,7 @@
       complexities.value = response.complexities
     } catch (error) {
       console.error('Failed to load complexities:', error)
-      notify('Failed to load complexities', 'error')
+      notifyError('Failed to load complexities')
     } finally {
       complexityLoading.value = false
     }
@@ -491,14 +475,13 @@
   async function handleCreateStatus (statusData: CreateStatusInput) {
     try {
       await statusService.createStatus(statusData)
-      notify('Status created successfully')
+      notifySuccess('Status created successfully')
       showStatusCreateDialog.value = false
       await loadStatuses()
     } catch (error) {
       console.error('Failed to create status:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to create status',
-        'error',
       )
     }
   }
@@ -506,14 +489,13 @@
   async function handleUpdateStatus (statusData: UpdateStatusInput) {
     try {
       await statusService.updateStatus(statusData)
-      notify('Status updated successfully')
+      notifySuccess('Status updated successfully')
       showStatusEditDialog.value = false
       await loadStatuses()
     } catch (error) {
       console.error('Failed to update status:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to update status',
-        'error',
       )
     }
   }
@@ -523,14 +505,13 @@
 
     try {
       await statusService.deleteStatus(selectedStatus.value.id)
-      notify('Status deleted successfully')
+      notifySuccess('Status deleted successfully')
       showStatusDeleteDialog.value = false
       await loadStatuses()
     } catch (error) {
       console.error('Failed to delete status:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to delete status',
-        'error',
       )
     }
   }
@@ -553,14 +534,13 @@
   async function handleCreatePriority (priorityData: CreatePriorityInput) {
     try {
       await priorityService.createPriority(priorityData)
-      notify('Priority created successfully')
+      notifySuccess('Priority created successfully')
       showPriorityCreateDialog.value = false
       await loadPriorities()
     } catch (error) {
       console.error('Failed to create priority:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to create priority',
-        'error',
       )
     }
   }
@@ -568,14 +548,13 @@
   async function handleUpdatePriority (priorityData: UpdatePriorityInput) {
     try {
       await priorityService.updatePriority(priorityData)
-      notify('Priority updated successfully')
+      notifySuccess('Priority updated successfully')
       showPriorityEditDialog.value = false
       await loadPriorities()
     } catch (error) {
       console.error('Failed to update priority:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to update priority',
-        'error',
       )
     }
   }
@@ -585,14 +564,13 @@
 
     try {
       await priorityService.deletePriority(selectedPriority.value.id)
-      notify('Priority deleted successfully')
+      notifySuccess('Priority deleted successfully')
       showPriorityDeleteDialog.value = false
       await loadPriorities()
     } catch (error) {
       console.error('Failed to delete priority:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to delete priority',
-        'error',
       )
     }
   }
@@ -615,14 +593,13 @@
   async function handleCreateComplexity (complexityData: CreateComplexityInput) {
     try {
       await complexityService.createComplexity(complexityData)
-      notify('Complexity created successfully')
+      notifySuccess('Complexity created successfully')
       showComplexityCreateDialog.value = false
       await loadComplexities()
     } catch (error) {
       console.error('Failed to create complexity:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to create complexity',
-        'error',
       )
     }
   }
@@ -630,14 +607,13 @@
   async function handleUpdateComplexity (complexityData: UpdateComplexityInput) {
     try {
       await complexityService.updateComplexity(complexityData)
-      notify('Complexity updated successfully')
+      notifySuccess('Complexity updated successfully')
       showComplexityEditDialog.value = false
       await loadComplexities()
     } catch (error) {
       console.error('Failed to update complexity:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to update complexity',
-        'error',
       )
     }
   }
@@ -647,24 +623,18 @@
 
     try {
       await complexityService.deleteComplexity(selectedComplexity.value.id)
-      notify('Complexity deleted successfully')
+      notifySuccess('Complexity deleted successfully')
       showComplexityDeleteDialog.value = false
       await loadComplexities()
     } catch (error) {
       console.error('Failed to delete complexity:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to delete complexity',
-        'error',
       )
     }
   }
 
-  /** Show notification */
-  function notify (message: string, color: 'success' | 'error' | 'warning' | 'info' = 'success') {
-    snackbar.message = message
-    snackbar.color = color
-    snackbar.show = true
-  }
+
 
   /** Initialize page data */
   onMounted(async () => {
