@@ -197,7 +197,7 @@ If in doubt:
 - Always prioritize clarity and maintainability over cleverness
 - Follow the established patterns and practices of the project
 
-Always output the summary of the changes made to /WORKLOG.md, including:
+Always output the summary of the changes made to /WORKLOG YYYYMMDD.md, including:
 - Root cause analysis
 - Impact of changes
 - New features added
