@@ -621,14 +621,6 @@
     <v-dialog v-model="showTaskGraphDialog" fullscreen persistent>
       <TaskGraphDialog v-if="task" :task="task" @close="showTaskGraphDialog = false" />
     </v-dialog>
-
-    <!-- Snackbar for notifications -->
-    <v-snackbar v-model="snackbar.show" :color="snackbar.color" location="top" timeout="4000">
-      {{ snackbar.message }}
-      <template #actions>
-        <v-btn variant="text" @click="snackbar.show = false">Close</v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>
 
@@ -647,6 +639,8 @@
     UpdateTaskStatusReportInput,
   } from '../../services/tasks'
   import { computed, onMounted, reactive, ref, watch } from 'vue'
+  import { useNotifications } from '../../composables/useNotifications'
+  import { useLogger } from '../../composables/useLogger'
 
   import { useRoute, useRouter } from 'vue-router'
   // Import dialog components
@@ -784,22 +778,13 @@
   const selectedProgressReport = ref<TaskProgress | null>(null)
   const selectedStatusReport = ref<TaskStatusReport | null>(null)
 
-  // Snackbar for notifications
-  const snackbar = ref({
-    show: false,
-    message: '',
-    color: 'success' as 'success' | 'error',
-  })
+  // Notifications
+  const { notifySuccess, notifyError } = useNotifications()
+  const { logError } = useLogger()
 
   // Utility functions
   function formatDate (dateString: string): string {
     return new Date(dateString).toLocaleDateString()
-  }
-
-  function showNotification (message: string, isSuccess = true) {
-    snackbar.value.message = message
-    snackbar.value.color = isSuccess ? 'success' : 'error'
-    snackbar.value.show = true
   }
 
   function goBackToTasks () {
@@ -847,16 +832,16 @@
       const { updateTask: updatedTask } = await updateTask(updateData)
       task.value = updatedTask
       taskFormModified.value = false
-      showNotification('Task updated successfully')
+      notifySuccess('Task updated successfully')
     } catch (error) {
-      console.error('Failed to update task:', error)
-      showNotification(`Failed to update task: ${(error as Error).message}`, false)
+      logError('Failed to update task:', error)
+      notifyError(`Failed to update task: ${(error as Error).message}`)
     }
   }
 
   async function undoTaskChanges () {
     populateTaskForm()
-    showNotification('Changes reverted')
+    notifySuccess('Changes reverted')
   }
 
   // Dialog functions
@@ -871,23 +856,23 @@
   async function handleAssigneeCreated (staffId: string) {
     try {
       await assignStaffToTask(taskId.value, staffId)
-      showNotification('Assignee added successfully')
+      notifySuccess('Assignee added successfully')
       showAssigneeCreateDialog.value = false
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to add assignee:', error)
-      showNotification(`Failed to add assignee: ${(error as Error).message}`, false)
+      logError('Failed to add assignee:', error)
+      notifyError(`Failed to add assignee: ${(error as Error).message}`)
     }
   }
 
   async function openAssigneeDeleteDialog (assignee: Staff) {
     try {
       await removeStaffFromTask(taskId.value, assignee.id)
-      showNotification(`Removed assignee ${assignee.firstName} ${assignee.lastName}`)
+      notifySuccess(`Removed assignee ${assignee.firstName} ${assignee.lastName}`)
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to remove assignee:', error)
-      showNotification(`Failed to remove assignee: ${(error as Error).message}`, false)
+      logError('Failed to remove assignee:', error)
+      notifyError(`Failed to remove assignee: ${(error as Error).message}`)
     }
   }
 
@@ -898,12 +883,12 @@
   async function handlePredecessorSelected (predecessorTaskId: string) {
     try {
       await addTaskPredecessor(taskId.value, predecessorTaskId)
-      showNotification('Predecessor added successfully')
+      notifySuccess('Predecessor added successfully')
       showPredecessorCreateDialog.value = false
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to add predecessor:', error)
-      showNotification(`Failed to add predecessor: ${(error as Error).message}`, false)
+      logError('Failed to add predecessor:', error)
+      notifyError(`Failed to add predecessor: ${(error as Error).message}`)
     }
   }
 
@@ -913,23 +898,23 @@
       const { createTask: newTask } = await createTask(taskData)
       // Then add it as a predecessor
       await addTaskPredecessor(taskId.value, newTask.id)
-      showNotification(`Task "${newTask.name}" created and added as predecessor`)
+      notifySuccess(`Task "${newTask.name}" created and added as predecessor`)
       showPredecessorCreateDialog.value = false
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to create predecessor task:', error)
-      showNotification(`Failed to create predecessor task: ${(error as Error).message}`, false)
+      logError('Failed to create predecessor task:', error)
+      notifyError(`Failed to create predecessor task: ${(error as Error).message}`)
     }
   }
 
   async function openPredecessorDeleteDialog (predecessor: Task) {
     try {
       await removeTaskPredecessor(taskId.value, predecessor.id)
-      showNotification(`Removed predecessor ${predecessor.name}`)
+      notifySuccess(`Removed predecessor ${predecessor.name}`)
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to remove predecessor:', error)
-      showNotification(`Failed to remove predecessor: ${(error as Error).message}`, false)
+      logError('Failed to remove predecessor:', error)
+      notifyError(`Failed to remove predecessor: ${(error as Error).message}`)
     }
   }
 
@@ -940,12 +925,12 @@
   async function handleChildTaskCreated (taskData: CreateTaskInput) {
     try {
       const { createTask: newTask } = await createTask(taskData)
-      showNotification(`Child task "${newTask.name}" created successfully`)
+      notifySuccess(`Child task "${newTask.name}" created successfully`)
       showChildTaskCreateDialog.value = false
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to create child task:', error)
-      showNotification(`Failed to create child task: ${(error as Error).message}`, false)
+      logError('Failed to create child task:', error)
+      notifyError(`Failed to create child task: ${(error as Error).message}`)
     }
   }
 
@@ -956,17 +941,17 @@
         id: childTaskId,
         parentTaskId: taskId.value,
       })
-      showNotification('Task converted to child task successfully')
+      notifySuccess('Task converted to child task successfully')
       showChildTaskCreateDialog.value = false
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to set task as child:', error)
-      showNotification(`Failed to set task as child: ${(error as Error).message}`, false)
+      logError('Failed to set task as child:', error)
+      notifyError(`Failed to set task as child: ${(error as Error).message}`)
     }
   }
 
   function openChildTaskDeleteDialog (childTask: Task) {
-    showNotification(`Remove child task ${childTask.name} - coming soon`, false)
+    notifyError(`Remove child task ${childTask.name} - coming soon`)
   }
 
   function openProgressReportCreateDialog () {
@@ -976,12 +961,12 @@
   async function handleProgressReportCreated (progressData: CreateTaskProgressInput) {
     try {
       await createTaskProgress(progressData)
-      showNotification('Progress report created successfully')
+      notifySuccess('Progress report created successfully')
       showProgressReportCreateDialog.value = false
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to create progress report:', error)
-      showNotification(`Failed to create progress report: ${(error as Error).message}`, false)
+      logError('Failed to create progress report:', error)
+      notifyError(`Failed to create progress report: ${(error as Error).message}`)
     }
   }
 
@@ -993,24 +978,24 @@
   async function handleProgressReportUpdated (progressData: UpdateTaskProgressInput) {
     try {
       await updateTaskProgress(progressData)
-      showNotification('Progress report updated successfully')
+      notifySuccess('Progress report updated successfully')
       showProgressReportEditDialog.value = false
       selectedProgressReport.value = null
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to update progress report:', error)
-      showNotification(`Failed to update progress report: ${(error as Error).message}`, false)
+      logError('Failed to update progress report:', error)
+      notifyError(`Failed to update progress report: ${(error as Error).message}`)
     }
   }
 
   async function openProgressReportDeleteDialog (report: TaskProgress) {
     try {
       await deleteTaskProgress(report.id)
-      showNotification('Progress report deleted')
+      notifySuccess('Progress report deleted')
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to delete progress report:', error)
-      showNotification(`Failed to delete progress report: ${(error as Error).message}`, false)
+      logError('Failed to delete progress report:', error)
+      notifyError(`Failed to delete progress report: ${(error as Error).message}`)
     }
   }
 
@@ -1021,12 +1006,12 @@
   async function handleStatusReportCreated (statusData: CreateTaskStatusReportInput) {
     try {
       await createTaskStatusReport(statusData)
-      showNotification('Status report created successfully')
+      notifySuccess('Status report created successfully')
       showStatusReportCreateDialog.value = false
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to create status report:', error)
-      showNotification(`Failed to create status report: ${(error as Error).message}`, false)
+      logError('Failed to create status report:', error)
+      notifyError(`Failed to create status report: ${(error as Error).message}`)
     }
   }
 
@@ -1038,24 +1023,24 @@
   async function handleStatusReportUpdated (statusData: UpdateTaskStatusReportInput) {
     try {
       await updateTaskStatusReport(statusData)
-      showNotification('Status report updated successfully')
+      notifySuccess('Status report updated successfully')
       showStatusReportEditDialog.value = false
       selectedStatusReport.value = null
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to update status report:', error)
-      showNotification(`Failed to update status report: ${(error as Error).message}`, false)
+      logError('Failed to update status report:', error)
+      notifyError(`Failed to update status report: ${(error as Error).message}`)
     }
   }
 
   async function openStatusReportDeleteDialog (report: TaskStatusReport) {
     try {
       await deleteTaskStatusReport(report.id)
-      showNotification('Status report deleted')
+      notifySuccess('Status report deleted')
       await loadTaskData()
     } catch (error) {
-      console.error('Failed to delete status report:', error)
-      showNotification(`Failed to delete status report: ${(error as Error).message}`, false)
+      logError('Failed to delete status report:', error)
+      notifyError(`Failed to delete status report: ${(error as Error).message}`)
     }
   }
 
@@ -1067,7 +1052,7 @@
       const { task: taskData } = await getTaskWithManagementData(taskId.value)
 
       if (!taskData) {
-        showNotification('Task not found', false)
+        notifyError('Task not found')
         router.push('/tasks')
         return
       }
@@ -1082,10 +1067,10 @@
       // Populate the task form with loaded data
       populateTaskForm()
 
-      showNotification('Task data loaded successfully')
+      notifySuccess('Task data loaded successfully')
     } catch (error) {
-      console.error('Failed to load task data:', error)
-      showNotification('Failed to load task data', false)
+      logError('Failed to load task data:', error)
+      notifyError('Failed to load task data')
     } finally {
       loading.value = false
     }
@@ -1110,7 +1095,7 @@
       availablePriorities.value = prioritiesResponse.priorities || []
       availableComplexities.value = complexitiesResponse.complexities || []
     } catch (error) {
-      console.error('Failed to load dropdown data:', error)
+      logError('Failed to load dropdown data:', error)
     }
   }
 

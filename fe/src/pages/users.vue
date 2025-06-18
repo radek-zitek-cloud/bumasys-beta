@@ -253,7 +253,7 @@
   /** Handle user deletion */
   async function handleDeleteUser () {
     if (!selectedUser.value) return
-    
+
     try {
       await deleteUser(selectedUser.value.id, selectedUser.value.email)
       handleDialogSuccess('delete', 'delete')

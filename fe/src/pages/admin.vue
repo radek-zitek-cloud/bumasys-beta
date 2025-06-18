@@ -122,11 +122,6 @@
         @switch="handleDatabaseSwitch"
       />
     </v-dialog>
-
-    <!-- Snackbar for notifications -->
-    <v-snackbar v-model="snackbar" :color="snackbarColor" location="bottom" timeout="4000">
-      {{ snackbarMessage }}
-    </v-snackbar>
   </v-container>
 </template>
 
@@ -146,10 +141,12 @@
   import ConfigDisplayCard from '../components/debug/ConfigDisplayCard.vue'
   import DebugInfoCard from '../components/debug/DebugInfoCard.vue'
   import { useLogger } from '../composables/useLogger'
+  import { useNotifications } from '../composables/useNotifications'
   import { backupDatabase } from '../services/backup'
   import { useAuthStore } from '../stores/auth'
 
   const { logInfo, logError } = useLogger()
+  const { notifySuccess, notifyError } = useNotifications()
   const auth = useAuthStore()
 
   // Dialog visibility state
@@ -160,23 +157,6 @@
   // Backup functionality state
   const backupLoading = ref(false)
 
-  // Notification state
-  const snackbar = ref(false)
-  const snackbarMessage = ref('')
-  const snackbarColor = ref<'success' | 'error'>('success')
-
-  /**
-   * Display a notification message to the user.
-   * @param message - The message to display
-   * @param success - Whether this is a success (true) or error (false) message
-   */
-  function notify (message: string, success = true) {
-    logInfo('Showing notification to user', { message, success })
-    snackbarMessage.value = message
-    snackbarColor.value = success ? 'success' : 'error'
-    snackbar.value = true
-  }
-
   /**
    * Handle database tag switch.
    * @param tag - The database tag to switch to
@@ -184,11 +164,11 @@
   async function handleDatabaseSwitch (tag: string) {
     try {
       logInfo('Switching database tag', { tag })
-      notify(`Successfully switched to database tag: ${tag}`)
+      notifySuccess(`Successfully switched to database tag: ${tag}`)
       logInfo('Database tag switch completed successfully', { tag })
     } catch (error) {
       logError('Database tag switch failed', error)
-      notify((error as Error).message, false)
+      notifyError((error as Error).message)
     } finally {
       showDatabaseSwitch.value = false
     }
@@ -202,11 +182,11 @@
     try {
       logInfo('Creating database backup')
       const backupPath = await backupDatabase()
-      notify(`Database backup created successfully: ${backupPath}`)
+      notifySuccess(`Database backup created successfully: ${backupPath}`)
       logInfo('Database backup completed successfully', { backupPath })
     } catch (error) {
       logError('Database backup failed', error)
-      notify((error as Error).message, false)
+      notifyError((error as Error).message)
     } finally {
       backupLoading.value = false
     }

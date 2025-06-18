@@ -95,16 +95,6 @@
       @updated="handleStaffUpdated"
       @user-created="handleUserCreatedFromStaff"
     />
-
-    <!-- Snackbar for notifications -->
-    <v-snackbar
-      v-model="notifications.snackbar.show"
-      :color="notifications.snackbar.color"
-      location="bottom"
-      timeout="4000"
-    >
-      {{ notifications.snackbar.message }}
-    </v-snackbar>
   </v-container>
 </template>
 
@@ -128,7 +118,8 @@
   import { useOrganizationManagement } from '../composables/organization/useOrganizationManagement'
   import { useDataTableConfig } from '../composables/shared/useDataTableConfig'
   import { useEntityHelpers } from '../composables/shared/useEntityHelpers'
-  import { useNotifications } from '../composables/shared/useNotifications'
+  import { useNotifications } from '../composables/useNotifications'
+  import { useLogger } from '../composables/useLogger'
   import { useStaffManagement } from '../composables/staff/useStaffManagement'
 
   // Services
@@ -139,7 +130,8 @@
   const departmentManagement = useDepartmentManagement()
   const staffManagement = useStaffManagement()
   const tableConfig = useDataTableConfig()
-  const notifications = useNotifications()
+  const { notifySuccess, notifyError } = useNotifications()
+  const { logError } = useLogger()
 
   // Entity helpers
   const entityHelpers = useEntityHelpers(
@@ -157,30 +149,30 @@
   async function handleOrganizationCreated (data: CreateOrganizationInput) {
     try {
       await organizationManagement.createOrganization(data)
-      notifications.showSuccess('Organization created successfully')
+      notifySuccess('Organization created successfully')
     } catch (error) {
-      console.error('Error creating organization:', error)
-      notifications.showError((error as Error).message)
+      logError('Error creating organization:', error)
+      notifyError((error as Error).message)
     }
   }
 
   async function handleOrganizationUpdated (data: UpdateOrganizationInput) {
     try {
       await organizationManagement.updateOrganization(data)
-      notifications.showSuccess('Organization updated successfully')
+      notifySuccess('Organization updated successfully')
     } catch (error) {
-      console.error('Error updating organization:', error)
-      notifications.showError((error as Error).message)
+      logError('Error updating organization:', error)
+      notifyError((error as Error).message)
     }
   }
 
   async function handleOrganizationDeleted (organizationId: string) {
     try {
       await organizationManagement.deleteOrganization(organizationId)
-      notifications.showSuccess('Organization deleted successfully')
+      notifySuccess('Organization deleted successfully')
     } catch (error) {
-      console.error('Error deleting organization:', error)
-      notifications.showError((error as Error).message)
+      logError('Error deleting organization:', error)
+      notifyError((error as Error).message)
     }
   }
 
@@ -190,30 +182,30 @@
   async function handleDepartmentCreated (data: CreateDepartmentInput) {
     try {
       await departmentManagement.createDepartment(data)
-      notifications.showSuccess('Department created successfully')
+      notifySuccess('Department created successfully')
     } catch (error) {
-      console.error('Error creating department:', error)
-      notifications.showError((error as Error).message)
+      logError('Error creating department:', error)
+      notifyError((error as Error).message)
     }
   }
 
   async function handleDepartmentUpdated (data: UpdateDepartmentInput) {
     try {
       await departmentManagement.updateDepartment(data)
-      notifications.showSuccess('Department updated successfully')
+      notifySuccess('Department updated successfully')
     } catch (error) {
-      console.error('Error updating department:', error)
-      notifications.showError((error as Error).message)
+      logError('Error updating department:', error)
+      notifyError((error as Error).message)
     }
   }
 
   async function handleDepartmentDeleted (departmentId: string) {
     try {
       await departmentManagement.deleteDepartment(departmentId)
-      notifications.showSuccess('Department deleted successfully')
+      notifySuccess('Department deleted successfully')
     } catch (error) {
-      console.error('Error deleting department:', error)
-      notifications.showError((error as Error).message)
+      logError('Error deleting department:', error)
+      notifyError((error as Error).message)
     }
   }
 
@@ -223,30 +215,30 @@
   async function handleStaffCreated (data: CreateStaffInput) {
     try {
       await staffManagement.createStaff(data)
-      notifications.showSuccess('Staff member created successfully')
+      notifySuccess('Staff member created successfully')
     } catch (error) {
-      console.error('Error creating staff member:', error)
-      notifications.showError((error as Error).message)
+      logError('Error creating staff member:', error)
+      notifyError((error as Error).message)
     }
   }
 
   async function handleStaffUpdated (data: UpdateStaffInput) {
     try {
       await staffManagement.updateStaff(data)
-      notifications.showSuccess('Staff member updated successfully')
+      notifySuccess('Staff member updated successfully')
     } catch (error) {
-      console.error('Error updating staff member:', error)
-      notifications.showError((error as Error).message)
+      logError('Error updating staff member:', error)
+      notifyError((error as Error).message)
     }
   }
 
   async function handleStaffDeleted (staffId: string) {
     try {
       await staffManagement.deleteStaff(staffId)
-      notifications.showSuccess('Staff member deleted successfully')
+      notifySuccess('Staff member deleted successfully')
     } catch (error) {
-      console.error('Error deleting staff member:', error)
-      notifications.showError((error as Error).message)
+      logError('Error deleting staff member:', error)
+      notifyError((error as Error).message)
     }
   }
 
@@ -258,10 +250,10 @@
       const { createUser } = await userService.createUser(userData)
       staffManagement.showCreateUserFromStaffDialog.value = false
       staffManagement.userCreationData.value = null
-      notifications.showSuccess(`User account created successfully for ${createUser.firstName} ${createUser.lastName}`)
+      notifySuccess(`User account created successfully for ${createUser.firstName} ${createUser.lastName}`)
     } catch (error) {
-      console.error('Error creating user from staff:', error)
-      notifications.showError((error as Error).message)
+      logError('Error creating user from staff:', error)
+      notifyError((error as Error).message)
     }
   }
 
@@ -276,8 +268,8 @@
         staffManagement.loadStaff(),
       ])
     } catch (error) {
-      console.error('Error loading data:', error)
-      notifications.showError('Failed to load organization data')
+      logError('Error loading data:', error)
+      notifyError('Failed to load organization data')
     }
   })
 </script>

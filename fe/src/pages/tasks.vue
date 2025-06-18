@@ -386,19 +386,6 @@
         @confirm="handleDeleteTask"
       />
     </v-dialog>
-
-    <!-- Snackbar for notifications -->
-    <v-snackbar
-      v-model="snackbar.show"
-      :color="snackbar.color"
-      location="top"
-      timeout="4000"
-    >
-      {{ snackbar.message }}
-      <template #actions>
-        <v-btn variant="text" @click="snackbar.show = false">Close</v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>
 
@@ -409,6 +396,8 @@
 
   import type { CreateTaskInput, Task, UpdateTaskInput } from '../services/tasks'
   import { computed, onMounted, ref } from 'vue'
+  import { useNotifications } from '../composables/useNotifications'
+  import { useLogger } from '../composables/useLogger'
   import { useRouter } from 'vue-router'
   import { createProject, deleteProject, getProjects, updateProject } from '../services/projects'
   import { createTask, deleteTask, getTasks, updateTask } from '../services/tasks'
@@ -451,12 +440,9 @@
   const selectedProject = ref<Project>({} as Project)
   const selectedTask = ref<Task>({} as Task)
 
-  // Snackbar for notifications
-  const snackbar = ref({
-    show: false,
-    message: '',
-    color: 'success' as 'success' | 'error',
-  })
+  // Notifications
+  const { notifySuccess, notifyError } = useNotifications()
+  const { logError } = useLogger()
 
   // Types for data table headers
   type DataTableHeaders = VDataTable['$props']['headers']
@@ -514,14 +500,7 @@
     return filtered
   })
 
-  // Utility functions
-  function showNotification (message: string, success = true) {
-    snackbar.value = {
-      show: true,
-      message,
-      color: success ? 'success' : 'error',
-    }
-  }
+
 
   function formatDate (dateString: string): string {
     try {
@@ -566,8 +545,8 @@
       const { projects: projectData } = await getProjects()
       projects.value = projectData
     } catch (error) {
-      console.error('Failed to load projects:', error)
-      showNotification('Failed to load projects', false)
+      logError('Failed to load projects:', error)
+      notifyError('Failed to load projects')
     } finally {
       projectLoading.value = false
     }
@@ -579,8 +558,8 @@
       const { tasks: taskData } = await getTasks()
       tasks.value = taskData
     } catch (error) {
-      console.error('Failed to load tasks:', error)
-      showNotification('Failed to load tasks', false)
+      logError('Failed to load tasks:', error)
+      notifyError('Failed to load tasks')
     } finally {
       taskLoading.value = false
     }
@@ -635,37 +614,37 @@
   async function handleCreateProject (projectData: CreateProjectInput) {
     try {
       await createProject(projectData)
-      showNotification('Project created successfully')
+      notifySuccess('Project created successfully')
       showProjectCreateDialog.value = false
       await loadProjects()
     } catch (error) {
-      console.error('Failed to create project:', error)
-      showNotification(`Failed to create project: ${(error as Error).message}`, false)
+      logError('Failed to create project:', error)
+      notifyError(`Failed to create project: ${(error as Error).message}`)
     }
   }
 
   async function handleUpdateProject (projectData: UpdateProjectInput) {
     try {
       await updateProject(projectData)
-      showNotification('Project updated successfully')
+      notifySuccess('Project updated successfully')
       showProjectEditDialog.value = false
       await loadProjects()
     } catch (error) {
-      console.error('Failed to update project:', error)
-      showNotification(`Failed to update project: ${(error as Error).message}`, false)
+      logError('Failed to update project:', error)
+      notifyError(`Failed to update project: ${(error as Error).message}`)
     }
   }
 
   async function handleDeleteProject (project: Project) {
     try {
       await deleteProject(project.id)
-      showNotification('Project deleted successfully')
+      notifySuccess('Project deleted successfully')
       showProjectDeleteDialog.value = false
       await loadProjects()
       await loadTasks() // Refresh tasks as they may be affected
     } catch (error) {
-      console.error('Failed to delete project:', error)
-      showNotification(`Failed to delete project: ${(error as Error).message}`, false)
+      logError('Failed to delete project:', error)
+      notifyError(`Failed to delete project: ${(error as Error).message}`)
     }
   }
 
@@ -673,36 +652,36 @@
   async function handleCreateTask (taskData: CreateTaskInput) {
     try {
       await createTask(taskData)
-      showNotification('Task created successfully')
+      notifySuccess('Task created successfully')
       showTaskCreateDialog.value = false
       await loadTasks()
     } catch (error) {
-      console.error('Failed to create task:', error)
-      showNotification(`Failed to create task: ${(error as Error).message}`, false)
+      logError('Failed to create task:', error)
+      notifyError(`Failed to create task: ${(error as Error).message}`)
     }
   }
 
   async function handleUpdateTask (taskData: UpdateTaskInput) {
     try {
       await updateTask(taskData)
-      showNotification('Task updated successfully')
+      notifySuccess('Task updated successfully')
       showTaskEditDialog.value = false
       await loadTasks()
     } catch (error) {
-      console.error('Failed to update task:', error)
-      showNotification(`Failed to update task: ${(error as Error).message}`, false)
+      logError('Failed to update task:', error)
+      notifyError(`Failed to update task: ${(error as Error).message}`)
     }
   }
 
   async function handleDeleteTask (task: Task) {
     try {
       await deleteTask(task.id)
-      showNotification('Task deleted successfully')
+      notifySuccess('Task deleted successfully')
       showTaskDeleteDialog.value = false
       await loadTasks()
     } catch (error) {
-      console.error('Failed to delete task:', error)
-      showNotification(`Failed to delete task: ${(error as Error).message}`, false)
+      logError('Failed to delete task:', error)
+      notifyError(`Failed to delete task: ${(error as Error).message}`)
     }
   }
 
