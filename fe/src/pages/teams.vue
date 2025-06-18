@@ -327,19 +327,6 @@
         Processing...
       </v-card>
     </v-overlay>
-
-    <!-- Snackbar for notifications -->
-    <v-snackbar
-      v-model="snackbar.show"
-      :color="snackbar.color"
-      location="bottom"
-      timeout="4000"
-    >
-      {{ snackbar.message }}
-      <template #actions>
-        <v-btn variant="text" @click="snackbar.show = false">Close</v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>
 
@@ -355,6 +342,7 @@
     UpdateTeamMemberInput,
   } from '../services/teams'
   import { computed, onMounted, reactive, ref } from 'vue'
+  import { useNotifications } from '../composables/useNotifications'
   import * as staffService from '../services/staff'
   import * as teamService from '../services/teams'
 
@@ -444,12 +432,8 @@
   const showEditMemberDialog = ref(false)
   const showRemoveMemberDialog = ref(false)
 
-  /** Snackbar for notifications */
-  const snackbar = reactive({
-    show: false,
-    message: '',
-    color: 'success' as 'success' | 'error' | 'warning' | 'info',
-  })
+  // Notifications
+  const { notifySuccess, notifyError } = useNotifications()
 
   /** Computed filtered teams for the table */
   const filteredTeams = computed(() => {
@@ -497,12 +481,7 @@
     return teamMembers.value.filter(member => member.teamId === teamId).length
   }
 
-  /** Show notification */
-  function notify (message: string, color: typeof snackbar.color = 'success') {
-    snackbar.message = message
-    snackbar.color = color
-    snackbar.show = true
-  }
+
 
   /** Load teams from the API */
   async function loadTeams () {
@@ -512,9 +491,8 @@
       teams.value = response.teams
     } catch (error) {
       console.error('Failed to load teams:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to load teams',
-        'error',
       )
     } finally {
       teamsLoading.value = false
@@ -534,9 +512,8 @@
       teamMembers.value = allMembersArrays.flat()
     } catch (error) {
       console.error('Failed to load team members:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to load team members',
-        'error',
       )
     } finally {
       membersLoading.value = false
@@ -551,9 +528,8 @@
       teamMembers.value = response.teamMembers
     } catch (error) {
       console.error('Failed to load team members:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to load team members',
-        'error',
       )
     } finally {
       membersLoading.value = false
@@ -567,9 +543,8 @@
       staffMembers.value = response.staff
     } catch (error) {
       console.error('Failed to load staff members:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to load staff members',
-        'error',
       )
     }
   }
@@ -625,15 +600,14 @@
     try {
       processing.value = true
       await teamService.createTeam(teamData)
-      notify('Team created successfully')
+      notifySuccess('Team created successfully')
       showCreateDialog.value = false
       await loadTeams()
       await loadAllTeamMembers()
     } catch (error) {
       console.error('Failed to create team:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to create team',
-        'error',
       )
     } finally {
       processing.value = false
@@ -645,15 +619,14 @@
     try {
       processing.value = true
       await teamService.updateTeam(teamData)
-      notify('Team updated successfully')
+      notifySuccess('Team updated successfully')
       showEditDialog.value = false
       await loadTeams()
       await loadAllTeamMembers()
     } catch (error) {
       console.error('Failed to update team:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to update team',
-        'error',
       )
     } finally {
       processing.value = false
@@ -667,7 +640,7 @@
     try {
       processing.value = true
       await teamService.deleteTeam(selectedTeam.value.id)
-      notify('Team deleted successfully')
+      notifySuccess('Team deleted successfully')
       showDeleteDialog.value = false
       await loadTeams()
       await loadAllTeamMembers()
@@ -677,9 +650,8 @@
       }
     } catch (error) {
       console.error('Failed to delete team:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to delete team',
-        'error',
       )
     } finally {
       processing.value = false
@@ -691,16 +663,15 @@
     try {
       processing.value = true
       await teamService.addTeamMember(memberData)
-      notify('Team member added successfully')
+      notifySuccess('Team member added successfully')
       showAddMemberDialog.value = false
       if (selectedTeamForMembers.value) {
         await loadTeamMembers(selectedTeamForMembers.value.id)
       }
     } catch (error) {
       console.error('Failed to add team member:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to add team member',
-        'error',
       )
     } finally {
       processing.value = false
@@ -712,16 +683,15 @@
     try {
       processing.value = true
       await teamService.updateTeamMember(memberData)
-      notify('Team member updated successfully')
+      notifySuccess('Team member updated successfully')
       showEditMemberDialog.value = false
       if (selectedTeamForMembers.value) {
         await loadTeamMembers(selectedTeamForMembers.value.id)
       }
     } catch (error) {
       console.error('Failed to update team member:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to update team member',
-        'error',
       )
     } finally {
       processing.value = false
@@ -735,16 +705,15 @@
     try {
       processing.value = true
       await teamService.removeTeamMember(selectedTeamMember.value.id)
-      notify('Team member removed successfully')
+      notifySuccess('Team member removed successfully')
       showRemoveMemberDialog.value = false
       if (selectedTeamForMembers.value) {
         await loadTeamMembers(selectedTeamForMembers.value.id)
       }
     } catch (error) {
       console.error('Failed to remove team member:', error)
-      notify(
+      notifyError(
         error instanceof Error ? error.message : 'Failed to remove team member',
-        'error',
       )
     } finally {
       processing.value = false
