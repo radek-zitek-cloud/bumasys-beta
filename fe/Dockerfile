@@ -25,6 +25,9 @@ RUN pnpm build
 # Production stage - Use nginx to serve static files
 FROM nginx:1.25-alpine AS production
 
+# Install wget for healthcheck
+RUN apk add --no-cache wget
+
 # Copy built application from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 

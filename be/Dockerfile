@@ -25,6 +25,9 @@ RUN pnpm build
 # Production stage
 FROM node:20-alpine AS production
 
+# Install wget for healthcheck
+RUN apk add --no-cache wget
+
 # Set working directory
 WORKDIR /app
 
@@ -47,6 +50,10 @@ COPY config ./config
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
+# Create database directory and set permissions
+RUN mkdir -p /data && \
+    chown -R nodejs:nodejs /data
+
 # Change ownership to nodejs user
 RUN chown -R nodejs:nodejs /app
 USER nodejs
@@ -55,8 +62,8 @@ USER nodejs
 EXPOSE 4000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:4000/graphql?query={__typename}', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:4000/health || exit 1
 
 # Start the application
 CMD ["node", "dist/index.js"]

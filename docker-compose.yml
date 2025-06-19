@@ -9,18 +9,18 @@ services:
       - "4000:4000"
     environment:
       - NODE_ENV=production
-      - PORT=4000
-      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
-      - DB_FILE=/app/data/database.json
-      - BETTER_STACK_ENABLED=${BETTER_STACK_ENABLED:-false}
-      - BETTER_STACK_SOURCE_TOKEN=${BETTER_STACK_SOURCE_TOKEN:-}
+      - FCRM_PORT=4000
+      - FCRM_JWT_SECRET=${FCRM_JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      - FCRM_DB_FILE=/data/db.json
+      - FCRM_BETTER_STACK_ENABLED=${FCRM_BETTER_STACK_ENABLED:-false}
+      - FCRM_BETTER_STACK_SOURCE_TOKEN=${FCRM_BETTER_STACK_SOURCE_TOKEN:-}
     volumes:
       # Persist database
-      - backend_data:/app/data
+      - backend_data:/data
     networks:
       - bumasys-network
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:4000/graphql?query={__typename}', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
